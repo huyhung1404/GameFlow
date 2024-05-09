@@ -1,1 +1,1 @@
-GameFlow copyright © huyhung1404
+This library is under the MIT License.
