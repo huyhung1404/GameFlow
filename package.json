@@ -22,9 +22,9 @@
   },
   "samples": [
     {
-      "displayName": "Initialization",
-      "description": "This sample logic initialization.",
-      "path": "Samples~/Initialization"
+      "displayName": "Simple Manager",
+      "description": "This sample logic initialization simple game flow.",
+      "path": "Samples~/Simple Manager"
     }
   ]
 }
