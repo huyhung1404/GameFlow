@@ -1,4 +1,4 @@
-GameFlow
+Game Flow
 ===
 * Game flow management system using Unity's addressable asset structure.
 
@@ -38,8 +38,7 @@ the `dependencies` block:
 ```json
 {
   "dependencies": {
-    "com.huyhung1404.gameflow": "https://github.com/huyhung1404/com.huyhung1404.gameflow.git",
-    ...
+    "com.huyhung1404.gameflow": "https://github.com/huyhung1404/com.huyhung1404.gameflow.git"
   }
 }
 ```
