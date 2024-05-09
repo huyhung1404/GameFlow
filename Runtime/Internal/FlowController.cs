@@ -65,6 +65,12 @@ namespace GameFlow.Internal
             return false;
         }
 
+        internal void CommandsIsEmpty()
+        {
+            Assert.IsTrue(commands.Count == 0, "commands.Count != 0");
+            Assert.IsTrue(current == null, current?.ToString());
+        }
+
         #endregion
 
         #region Key Back Handle

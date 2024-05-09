@@ -8,7 +8,7 @@
 
         internal void Release()
         {
-            isRelease = false;
+            isRelease = true;
         }
 
         internal abstract void Execute();
