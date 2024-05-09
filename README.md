@@ -18,7 +18,7 @@ Getting started
 Install via [UPM package](#upm-package) with git reference.
 
 ```csharp
-async UniTask<string> DemoAsync()
+void Demo()
 {
 
 }
@@ -49,3 +49,7 @@ To update the package, change suffix `#{version}` to the target version.
 * e.g. `"com.huyhung1404.gameflow": "https://github.com/huyhung1404/com.huyhung1404.gameflow.git"#2.0.0",`
 
 Or, use [UpmGitExtension](https://github.com/huyhung1404/com.huyhung1404.gameflow) to install and update the package.
+
+License
+---
+This library is under the MIT License.
