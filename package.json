@@ -9,8 +9,8 @@
   "licensesUrl": "https://example.com/licensing.html",
   "dependencies": {
     "com.unity.addressables": "1.19.19"
- },
- "keywords": [
+  },
+  "keywords": [
     "flow",
     "ui",
     "ux"
@@ -19,5 +19,12 @@
     "name": "huyhung1404",
     "email": "huyhung1404@gmail.com",
     "url": "https://github.com/huyhung1404"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Initialization",
+      "description": "This sample logic initialization.",
+      "path": "Samples~/Initialization"
+    }
+  ]
 }
