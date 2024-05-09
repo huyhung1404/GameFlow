@@ -1,0 +1,16 @@
+{
+    "name": "com.huyhung1404.gameflow",
+    "rootNamespace": "GameFlow",
+    "references": [
+        "Unity.Addressables"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

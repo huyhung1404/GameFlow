@@ -1,0 +1,20 @@
+{
+    "name": "com.huyhung1404.gameflow.Editor",
+    "rootNamespace": "GameFlow.Editor",
+    "references": [
+        "com.huyhung1404.gameflow"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
