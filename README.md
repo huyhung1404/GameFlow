@@ -28,7 +28,7 @@ UPM Package
 ---
 ### Install via git URL
 
-Requires a version of unity that supports path query parameter for git packages (Unity >= 2019.3.4f1, Unity >= 2020.1a21). You can add `https://github.com/huyhung1404/com.huyhung1404.gameflow.git` to Package Manager
+Requires a version of unity that supports path query parameter for git packages. You can add `https://github.com/huyhung1404/GameFlow.git` to Package Manager
 
 ![image](https://docs.unity3d.com/uploads/Main/upm-ui-giturl.png)
 
@@ -38,16 +38,16 @@ the `dependencies` block:
 ```json
 {
   "dependencies": {
-    "com.huyhung1404.gameflow": "https://github.com/huyhung1404/com.huyhung1404.gameflow.git"
+    "com.huyhung1404.gameflow": "https://github.com/huyhung1404/GameFlow.git"
   }
 }
 ```
 
 To update the package, change suffix `#{version}` to the target version.
 
-* e.g. `"com.huyhung1404.gameflow": "https://github.com/huyhung1404/com.huyhung1404.gameflow.git"#2.0.0",`
+* e.g. `"com.huyhung1404.gameflow": "https://github.com/huyhung1404/GameFlow.git"#2.0.0",`
 
-Or, use [UpmGitExtension](https://github.com/huyhung1404/com.huyhung1404.gameflow) to install and update the package.
+Or, use [UpmGitExtension](https://github.com/huyhung1404/GameFlow.git) to install and update the package.
 
 License
 ---
