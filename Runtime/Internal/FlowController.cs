@@ -65,10 +65,11 @@ namespace GameFlow.Internal
             return false;
         }
 
-        internal void CommandsIsEmpty()
+        internal static void CommandsIsEmpty()
         {
-            Assert.IsTrue(commands.Count == 0, "commands.Count != 0");
-            Assert.IsTrue(current == null, current?.ToString());
+            Assert.IsTrue(instance != null);
+            Assert.IsTrue(instance.commands.Count == 0, "commands.Count != 0");
+            Assert.IsTrue(instance.current == null, instance.current?.ToString());
         }
 
         #endregion
