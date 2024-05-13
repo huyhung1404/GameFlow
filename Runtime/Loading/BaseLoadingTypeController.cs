@@ -18,6 +18,7 @@ namespace GameFlow
         public bool isEnable;
 #endif
         protected Action callback;
+        protected bool cacheCallback;
         protected float timeExecute;
 
         private void OnEnable()
@@ -45,25 +46,14 @@ namespace GameFlow
         protected abstract void OnShow();
         protected abstract void OnHide();
 
-        public BaseLoadingTypeController OnCompleted(Action onCompleted)
+        public virtual BaseLoadingTypeController OnCompleted(Action onCompleted)
         {
-            if (callback != null)
-            {
-                try
-                {
-                    callback.Invoke();
-                }
-                catch (Exception e)
-                {
-                    ErrorHandle.LogException(e, "Loading Callback");
-                }
-            }
-
+            ExecuteCallback();
             callback = onCompleted;
             return this;
         }
 
-        public BaseLoadingTypeController SetTime(float time)
+        public virtual BaseLoadingTypeController SetTime(float time)
         {
             timeExecute = time;
             return this;
@@ -75,6 +65,12 @@ namespace GameFlow
             try
             {
                 callback.Invoke();
+                if (cacheCallback)
+                {
+                    cacheCallback = false;
+                    return;
+                }
+
                 callback = null;
             }
             catch (Exception e)

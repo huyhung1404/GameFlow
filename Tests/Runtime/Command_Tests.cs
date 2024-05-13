@@ -103,13 +103,18 @@ namespace GameFlow.Tests
         {
             InitController();
             yield return null;
+            yield return MultiExecuteOrder(
+                new CommandData(0, 0),
+                new CommandData(0, 0),
+                new CommandData(0, 0),
+                new CommandData(0, 0));
             for (var i = 0; i < 1000; i++)
             {
                 yield return MultiExecuteOrder(
-                    new CommandData(Random.Range(1, 15), Random.Range(1, 15)),
-                    new CommandData(Random.Range(1, 15), Random.Range(1, 15)),
-                    new CommandData(Random.Range(1, 15), Random.Range(1, 15)),
-                    new CommandData(Random.Range(1, 15), Random.Range(1, 15)));
+                    new CommandData(Random.Range(0, 15), Random.Range(0, 15)),
+                    new CommandData(Random.Range(0, 15), Random.Range(0, 15)),
+                    new CommandData(Random.Range(0, 15), Random.Range(0, 15)),
+                    new CommandData(Random.Range(0, 15), Random.Range(0, 15)));
                 yield return DelayFrame(10);
             }
         }
