@@ -7,7 +7,7 @@ namespace GameFlow
     public abstract class BaseLoadingTypeController : MonoBehaviour
     {
 #if UNITY_EDITOR
-        public bool isShow { get; private set; }
+        public bool isShow { get; protected set; }
 #else
         public bool isShow;
 #endif
@@ -23,30 +23,27 @@ namespace GameFlow
         private void OnEnable()
         {
             isEnable = true;
-            Enable();
         }
-
-        protected abstract void Enable();
 
         private void OnDisable()
         {
             isEnable = false;
-            Disable();
         }
-
-        protected abstract void Disable();
 
         internal BaseLoadingTypeController On()
         {
-            isShow = true;
+            OnShow();
             return this;
         }
 
         internal BaseLoadingTypeController Off()
         {
-            isShow = false;
+            OnHide();
             return this;
         }
+
+        protected abstract void OnShow();
+        protected abstract void OnHide();
 
         public BaseLoadingTypeController OnCompleted(Action onCompleted)
         {
@@ -70,6 +67,20 @@ namespace GameFlow
         {
             timeExecute = time;
             return this;
+        }
+
+        protected void ExecuteCallback()
+        {
+            if (callback == null) return;
+            try
+            {
+                callback.Invoke();
+                callback = null;
+            }
+            catch (Exception e)
+            {
+                ErrorHandle.LogException(e, "Execute Callback");
+            }
         }
     }
 }
