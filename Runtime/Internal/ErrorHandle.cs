@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace GameFlow.Internal
 {
@@ -9,6 +10,12 @@ namespace GameFlow.Internal
         public static void LogError(string content)
         {
             Debug.LogErrorFormat(LOG_FORMAT, content);
+        }
+
+        public static void LogException(Exception e, string content)
+        {
+            Debug.LogError(content);
+            Debug.LogException(e);
         }
     }
 }

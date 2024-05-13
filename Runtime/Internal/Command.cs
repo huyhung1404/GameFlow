@@ -2,9 +2,11 @@
 {
     internal abstract class Command
     {
-        private bool isRelease;
-
-        internal bool IsRelease() => isRelease;
+#if UNITY_EDITOR
+        internal bool isRelease { get; private set; }
+#else
+        internal bool isRelease;
+#endif
 
         internal void Release()
         {

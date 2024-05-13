@@ -55,7 +55,7 @@ namespace GameFlow.Internal
         {
             if (current != null)
             {
-                if (!current.IsRelease()) return false;
+                if (!current.isRelease) return false;
                 current = null;
             }
 
