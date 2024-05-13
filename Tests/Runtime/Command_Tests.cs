@@ -110,7 +110,6 @@ namespace GameFlow.Tests
                     new CommandData(Random.Range(1, 15), Random.Range(1, 15)),
                     new CommandData(Random.Range(1, 15), Random.Range(1, 15)),
                     new CommandData(Random.Range(1, 15), Random.Range(1, 15)));
-                Debug.Log($"Execute {i}");
                 yield return DelayFrame(10);
             }
         }
@@ -122,6 +121,10 @@ namespace GameFlow.Tests
             CommandData commandData4
         )
         {
+            Debug.Log($"Execute [{commandData1.executeFrame} - {commandData1.delayFrame}]  " +
+                      $"[{commandData2.executeFrame} - {commandData2.delayFrame}]  " +
+                      $"[{commandData3.executeFrame} - {commandData3.delayFrame}]  " +
+                      $"[{commandData4.executeFrame} - {commandData4.delayFrame}]");
             var listAdd = new List<DelayCommand>();
             var listExecute = new List<DelayCommand>();
             var command1 = new DelayCommand(commandData1, listAdd, listExecute);
