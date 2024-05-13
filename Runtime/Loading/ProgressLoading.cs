@@ -6,7 +6,7 @@ namespace GameFlow
     [RequireComponent(typeof(CanvasGroup))]
     public class ProgressLoading : BaseLoadingTypeController
     {
-        [SerializeField] private Slider progressSlider;
+        [SerializeField] internal Slider progressSlider;
         [SerializeField] private float hideSpeed = 0.15f;
         private CanvasGroup canvasGroup;
         private float currentProgress;

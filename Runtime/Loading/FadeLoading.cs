@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GameFlow.Internal;
+using UnityEngine;
 
 namespace GameFlow
 {
@@ -69,6 +70,18 @@ namespace GameFlow
 
             var speed = 1 / timeExecute;
             canvasGroup.alpha = Mathf.Clamp01(alpha - speed * Time.deltaTime);
+        }
+
+        internal void LoadingIsShow()
+        {
+            Assert.IsTrue(gameObject.activeSelf);
+            Assert.IsTrue(canvasGroup.alpha >= 1);
+        }
+
+        internal void LoadingIsHide()
+        {
+            Assert.IsTrue(!gameObject.activeSelf);
+            Assert.IsTrue(canvasGroup.alpha <= 0);
         }
     }
 }

@@ -4,12 +4,18 @@ namespace GameFlow.Internal
 {
     internal class LoadingController : MonoBehaviour
     {
-        [SerializeField] internal BaseLoadingTypeController[] controllers;
+        [SerializeField] private BaseLoadingTypeController[] controllers;
         private int totalController;
+
+        internal void OverriderControllers(BaseLoadingTypeController[] overriderController)
+        {
+            controllers = overriderController;
+            totalController = overriderController.Length;
+        }
 
         private void Awake()
         {
-            totalController = controllers.Length;
+            totalController = controllers?.Length ?? 0;
         }
 
         internal bool IsShow()
