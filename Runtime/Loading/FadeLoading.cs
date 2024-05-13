@@ -13,6 +13,7 @@ namespace GameFlow
         private bool isShowing;
         private bool isHiding;
         private float timeExecuteHide;
+        private bool isCacheShowCallback;
 
         private void Awake()
         {
@@ -77,6 +78,13 @@ namespace GameFlow
         public override BaseLoadingTypeController OnCompleted(Action onCompleted)
         {
             if (!isShowing || !isHiding || callback == null) return base.OnCompleted(onCompleted);
+            if (isCacheShowCallback)
+            {
+                callback += onCompleted;
+                return this;
+            }
+
+            isCacheShowCallback = true;
             var showingCallback = callback;
             callback = () =>
             {
@@ -91,6 +99,7 @@ namespace GameFlow
 
                 callback = onCompleted;
                 cacheCallback = true;
+                isCacheShowCallback = false;
             };
             return this;
         }

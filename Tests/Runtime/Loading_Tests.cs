@@ -173,7 +173,15 @@ namespace GameFlow.Tests
                 var timeExecute2 = Random.Range(0, 0.5f);
                 var timeExecute3 = Random.Range(0, 0.5f);
                 var timeExecute4 = Random.Range(0, 0.5f);
-                // [0.01414388 - 0.239598]  [0.2966626 - 0.2277192]  [0.08744401 - 0.1012809]  [0.02651149 - 0.2941101]
+                //[0.3091832 - 0.4057707]  [0.4002204 - 0.0292238]  [0.3313382 - 0.2478376]  [0.06143129 - 0.428575]
+                // var time1 = 0.01414388f;
+                // var time2 = 0.2966626f;
+                // var time3 = 0.08744401f;
+                // var time4 = 0.02651149f;
+                // var timeExecute1 = 0.239598f;
+                // var timeExecute2 = 0.2277192f;
+                // var timeExecute3 = 0.1012809f;
+                // var timeExecute4 = 0.2941101f;
                 Debug.Log($"[{time1} - {timeExecute1}]  " +
                           $"[{time2} - {timeExecute2}]  " +
                           $"[{time3} - {timeExecute3}]  " +
@@ -182,24 +190,28 @@ namespace GameFlow.Tests
                 var execute = 0;
                 controller.StartCoroutine(CreateFadeOn(controller, time1, timeExecute1, () =>
                 {
+                    // Debug.Log("Run 1");
                     lastIsHide = false;
                     execute++;
-                }));
+                }, 1));
                 controller.StartCoroutine(CreateFadeOn(controller, time2, timeExecute2, () =>
                 {
+                    // Debug.Log("Run 2");
                     lastIsHide = false;
                     execute++;
-                }));
+                }, 2));
                 controller.StartCoroutine(CreateFadeOff(controller, time3, timeExecute3, () =>
                 {
+                    // Debug.Log("Run 3");
                     lastIsHide = true;
                     execute++;
-                }));
+                }, 3));
                 controller.StartCoroutine(CreateFadeOff(controller, time4, timeExecute4, () =>
                 {
+                    // Debug.Log("Run 4");
                     lastIsHide = true;
                     execute++;
-                }));
+                }, 4));
                 yield return new WaitForSeconds(time1 + time2 + time3 + time4 + 0.2f + timeExecute1 + timeExecute2 + timeExecute3 + timeExecute4);
                 Assert.IsTrue(execute == 4, "execute == 4");
                 if (lastIsHide)
@@ -213,15 +225,17 @@ namespace GameFlow.Tests
             }
         }
 
-        private static IEnumerator CreateFadeOn(LoadingController controller, float time, float timeExecute, Action onCompleted)
+        private static IEnumerator CreateFadeOn(LoadingController controller, float time, float timeExecute, Action onCompleted, int i)
         {
             yield return new WaitForSeconds(time);
+            // Debug.Log("Execute " + i);
             controller.LoadingOn(1).OnCompleted(onCompleted).SetTime(timeExecute);
         }
 
-        private static IEnumerator CreateFadeOff(LoadingController controller, float time, float timeExecute, Action onCompleted)
+        private static IEnumerator CreateFadeOff(LoadingController controller, float time, float timeExecute, Action onCompleted, int i)
         {
             yield return new WaitForSeconds(time);
+            // Debug.Log("Execute " + i);
             controller.LoadingOff(1).OnCompleted(onCompleted).SetTime(timeExecute);
         }
     }
