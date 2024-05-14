@@ -6,7 +6,6 @@ using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Assert = GameFlow.Internal.Assert;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace GameFlow.Tests
@@ -14,35 +13,29 @@ namespace GameFlow.Tests
     public class Loading_Tests
     {
         private LoadingController loadingController;
+        private DisplayLoading displayLoading;
         private FadeLoading fadeLoading;
+        private ProgressLoading progressLoading;
 
-        [SetUp]
-        public void SetUp()
+        [UnitySetUp]
+        public IEnumerator SetUp()
         {
-            loadingController = Object.Instantiate(new GameObject()).AddComponent<LoadingController>();
-            var controllers = new BaseLoadingTypeController[3];
-            var displayLoading = Object.Instantiate(new GameObject(), loadingController.transform)
-                .AddComponent<DisplayLoading>();
-            displayLoading.gameObject.SetActive(false);
-            controllers[0] = displayLoading;
+            loadingController = Builder.CreateMono<LoadingController>();
 
-            fadeLoading = Object.Instantiate(new GameObject(), loadingController.transform)
-                .AddComponent<CanvasGroup>()
-                .gameObject.AddComponent<FadeLoading>();
-            fadeLoading.GetComponent<CanvasGroup>().alpha = 0;
-            fadeLoading.gameObject.SetActive(false);
-            controllers[1] = fadeLoading;
+            displayLoading = loadingController.CreateChildMono<DisplayLoading>()
+                .Disable();
 
-            var progressLoading = Object.Instantiate(new GameObject(), loadingController.transform)
-                .AddComponent<CanvasGroup>()
-                .gameObject.AddComponent<ProgressLoading>();
+            fadeLoading = loadingController.CreateChildMono<FadeLoading>()
+                .AddCanvasGroup(0)
+                .Disable();
 
-            progressLoading.GetComponent<CanvasGroup>().alpha = 0;
-            progressLoading.progressSlider = Object.Instantiate(new GameObject(), progressLoading.transform).AddComponent<Slider>();
-            progressLoading.gameObject.SetActive(false);
-            controllers[2] = progressLoading;
+            progressLoading = loadingController.CreateChildMono<ProgressLoading>()
+                .AddCanvasGroup(0)
+                .CreateChildMono<ProgressLoading, Slider>(slider => progressLoading.progressSlider = slider)
+                .Disable();
 
-            loadingController.OverriderControllers(controllers);
+            loadingController.RegisterControllers(displayLoading, fadeLoading, progressLoading);
+            yield return null;
         }
 
         [UnityTest]

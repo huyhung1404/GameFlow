@@ -1,21 +1,25 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace GameFlow.Internal
 {
     internal class LoadingController : MonoBehaviour
     {
-        [SerializeField] private BaseLoadingTypeController[] controllers;
+        [SerializeField] private BaseLoadingTypeController[] controllers = Array.Empty<BaseLoadingTypeController>();
         private int totalController;
-
-        internal void OverriderControllers(BaseLoadingTypeController[] overriderController)
-        {
-            controllers = overriderController;
-            totalController = overriderController.Length;
-        }
 
         private void Awake()
         {
-            totalController = controllers?.Length ?? 0;
+            totalController = controllers.Length;
+        }
+
+        public void RegisterControllers(params BaseLoadingTypeController[] registerControllers)
+        {
+            totalController += registerControllers.Length;
+            var mergedArray = new BaseLoadingTypeController[totalController];
+            controllers.CopyTo(mergedArray, 0);
+            registerControllers.CopyTo(mergedArray, totalController);
+            controllers = mergedArray;
         }
 
         internal bool IsShow()
