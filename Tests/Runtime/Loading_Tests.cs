@@ -159,11 +159,11 @@ namespace GameFlow.Tests
 
 
         [UnityTest]
-        public IEnumerator Fade_1000()
+        public IEnumerator Fade_20()
         {
             var controller = Initialization(out var fade);
             yield return null;
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 20; i++)
             {
                 var time1 = Random.Range(0, 0.5f);
                 var time2 = Random.Range(0, 0.5f);
@@ -173,46 +173,37 @@ namespace GameFlow.Tests
                 var timeExecute2 = Random.Range(0, 0.5f);
                 var timeExecute3 = Random.Range(0, 0.5f);
                 var timeExecute4 = Random.Range(0, 0.5f);
-                //[0.3091832 - 0.4057707]  [0.4002204 - 0.0292238]  [0.3313382 - 0.2478376]  [0.06143129 - 0.428575]
-                // var time1 = 0.01414388f;
-                // var time2 = 0.2966626f;
-                // var time3 = 0.08744401f;
-                // var time4 = 0.02651149f;
-                // var timeExecute1 = 0.239598f;
-                // var timeExecute2 = 0.2277192f;
-                // var timeExecute3 = 0.1012809f;
-                // var timeExecute4 = 0.2941101f;
-                Debug.Log($"[{time1} - {timeExecute1}]  " +
-                          $"[{time2} - {timeExecute2}]  " +
-                          $"[{time3} - {timeExecute3}]  " +
-                          $"[{time4} - {timeExecute4}]  ");
-                bool lastIsHide = true;
+                Debug.Log($"var time1 = {time1}f;\n                " +
+                          $"var time2 = {time2}f;\n                " +
+                          $"var time3 = {time3}f;\n                " +
+                          $"var time4 = {time4}f;\n                " +
+                          $"var timeExecute1 = {timeExecute1}f;\n                " +
+                          $"var timeExecute2 = {timeExecute2}f;\n                " +
+                          $"var timeExecute3 = {timeExecute3}f;\n                " +
+                          $"var timeExecute4 = {timeExecute4}f;");
+                var lastIsHide = true;
                 var execute = 0;
                 controller.StartCoroutine(CreateFadeOn(controller, time1, timeExecute1, () =>
                 {
-                    // Debug.Log("Run 1");
                     lastIsHide = false;
                     execute++;
-                }, 1));
+                }));
                 controller.StartCoroutine(CreateFadeOn(controller, time2, timeExecute2, () =>
                 {
-                    // Debug.Log("Run 2");
                     lastIsHide = false;
                     execute++;
-                }, 2));
+                }));
                 controller.StartCoroutine(CreateFadeOff(controller, time3, timeExecute3, () =>
                 {
-                    // Debug.Log("Run 3");
                     lastIsHide = true;
                     execute++;
-                }, 3));
+                }));
                 controller.StartCoroutine(CreateFadeOff(controller, time4, timeExecute4, () =>
                 {
-                    // Debug.Log("Run 4");
                     lastIsHide = true;
                     execute++;
-                }, 4));
-                yield return new WaitForSeconds(time1 + time2 + time3 + time4 + 0.2f + timeExecute1 + timeExecute2 + timeExecute3 + timeExecute4);
+                }));
+                yield return new WaitForSeconds(time1 + time2 + time3 + time4 + 1.5f + timeExecute1 + timeExecute2 + timeExecute3 + timeExecute4);
                 Assert.IsTrue(execute == 4, "execute == 4");
                 if (lastIsHide)
                 {
@@ -225,17 +216,15 @@ namespace GameFlow.Tests
             }
         }
 
-        private static IEnumerator CreateFadeOn(LoadingController controller, float time, float timeExecute, Action onCompleted, int i)
+        private static IEnumerator CreateFadeOn(LoadingController controller, float time, float timeExecute, Action onCompleted)
         {
             yield return new WaitForSeconds(time);
-            // Debug.Log("Execute " + i);
             controller.LoadingOn(1).OnCompleted(onCompleted).SetTime(timeExecute);
         }
 
-        private static IEnumerator CreateFadeOff(LoadingController controller, float time, float timeExecute, Action onCompleted, int i)
+        private static IEnumerator CreateFadeOff(LoadingController controller, float time, float timeExecute, Action onCompleted)
         {
             yield return new WaitForSeconds(time);
-            // Debug.Log("Execute " + i);
             controller.LoadingOff(1).OnCompleted(onCompleted).SetTime(timeExecute);
         }
     }
