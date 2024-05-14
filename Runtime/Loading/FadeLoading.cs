@@ -30,6 +30,13 @@ namespace GameFlow
 
         protected override void OnHide()
         {
+            if (!isEnable)
+            {
+                isHiding = false;
+                isShow = false;
+                return;
+            }
+
             timeExecuteHide = defaultFadeTime;
             isHiding = true;
         }
@@ -77,7 +84,21 @@ namespace GameFlow
 
         public override BaseLoadingTypeController OnCompleted(Action onCompleted)
         {
-            if (!isShowing || !isHiding || callback == null) return base.OnCompleted(onCompleted);
+            if (!isEnable && !isShowing && !isShow)
+            {
+                callback = onCompleted;
+                ExecuteCallback();
+                return this;
+            }
+
+            if (!isShowing || !isHiding || callback == null)
+            {
+                ExecuteCallback();
+                ExecuteCallback();
+                callback = onCompleted;
+                return this;
+            }
+
             if (isCacheShowCallback)
             {
                 callback += onCompleted;
