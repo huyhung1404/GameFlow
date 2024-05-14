@@ -30,7 +30,7 @@ namespace GameFlow
 
         protected override void OnHide()
         {
-            if (!isEnable)
+            if (!isEnable && !isShow)
             {
                 isHiding = false;
                 isShow = false;

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 using GameFlow.Internal;
+using NUnit.Framework;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Assert = GameFlow.Internal.Assert;
@@ -12,9 +13,13 @@ namespace GameFlow.Tests
 {
     public class Loading_Tests
     {
-        private static LoadingController Initialization(out FadeLoading fadeLoading)
+        private LoadingController loadingController;
+        private FadeLoading fadeLoading;
+
+        [SetUp]
+        public void SetUp()
         {
-            var loadingController = Object.Instantiate(new GameObject()).AddComponent<LoadingController>();
+            loadingController = Object.Instantiate(new GameObject()).AddComponent<LoadingController>();
             var controllers = new BaseLoadingTypeController[3];
             var displayLoading = Object.Instantiate(new GameObject(), loadingController.transform)
                 .AddComponent<DisplayLoading>();
@@ -38,29 +43,26 @@ namespace GameFlow.Tests
             controllers[2] = progressLoading;
 
             loadingController.OverriderControllers(controllers);
-            return loadingController;
         }
 
         [UnityTest]
-        public IEnumerator Simple_Show_Hide()
+        public IEnumerator _0_Simple_Show_Hide()
         {
-            var controller = Initialization(out _);
-            yield return null;
-            var display = controller.LoadingOn(0);
+            var display = loadingController.LoadingOn(0);
             yield return null;
             Assert.IsTrue(display.gameObject.activeSelf);
-            controller.LoadingOff(0);
+            loadingController.LoadingOff(0);
             yield return null;
             Assert.IsTrue(!display.gameObject.activeSelf);
 
-            var fade = (FadeLoading)controller.LoadingOn(1);
+            var fade = (FadeLoading)loadingController.LoadingOn(1);
             yield return new WaitForSeconds(0.5f);
             fade.LoadingIsShow();
-            controller.LoadingOff(1);
+            loadingController.LoadingOff(1);
             yield return new WaitForSeconds(0.5f);
             fade.LoadingIsHide();
 
-            var progress = (ProgressLoading)controller.LoadingOn(2);
+            var progress = (ProgressLoading)loadingController.LoadingOn(2);
             yield return null;
             progress.UpdateProgress(0.3f);
             yield return new WaitForSeconds(0.2f);
@@ -73,19 +75,17 @@ namespace GameFlow.Tests
         }
 
         [UnityTest]
-        public IEnumerator Fade_Show_Hide_StraightWay()
+        public IEnumerator _1_Fade_Show_Hide_StraightWay()
         {
-            var controller = Initialization(out _);
-            yield return null;
             var time = Time.time;
             float timeOn;
             float timeOff;
-            var fade = (FadeLoading)controller.LoadingOn(1).OnCompleted(() =>
+            var fade = (FadeLoading)loadingController.LoadingOn(1).OnCompleted(() =>
             {
                 timeOn = Time.time - time;
                 Assert.IsTrue(timeOn >= 0.5, timeOn.ToString("0.0000"));
             }).SetTime(0.5f);
-            controller.LoadingOff(1).OnCompleted(() =>
+            loadingController.LoadingOff(1).OnCompleted(() =>
             {
                 timeOff = Time.time - time;
                 Assert.IsTrue(timeOff > 1f, timeOff.ToString("0.0000"));
@@ -95,20 +95,18 @@ namespace GameFlow.Tests
         }
 
         [UnityTest]
-        public IEnumerator Fade_Show_Show_StraightWay()
+        public IEnumerator _2_Fade_Show_Show_StraightWay()
         {
-            var controller = Initialization(out _);
-            yield return null;
             var time = Time.time;
             float time1;
             float time2;
-            var fade = (FadeLoading)controller.LoadingOn(1).OnCompleted(() =>
+            var fade = (FadeLoading)loadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time1 = Time.time - time;
                 Assert.IsTrue(time1 < 0.32f, time1.ToString("0.0000"));
             }).SetTime(0.5f);
             yield return new WaitForSeconds(0.3f);
-            controller.LoadingOn(1).OnCompleted(() =>
+            loadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time2 = Time.time - time;
                 Assert.IsTrue(time2 < 0.52f, time2.ToString("0.0000"));
@@ -119,35 +117,33 @@ namespace GameFlow.Tests
         }
 
         [UnityTest]
-        public IEnumerator Fade_Show_Show_Hide_Hide_StraightWay()
+        public IEnumerator _3_Fade_Show_Show_Hide_Hide_StraightWay()
         {
-            var controller = Initialization(out _);
-            yield return null;
             var time = Time.time;
             float time1;
             float time2;
             float time3;
             float time4;
-            var fade = (FadeLoading)controller.LoadingOn(1).OnCompleted(() =>
+            var fade = (FadeLoading)loadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time1 = Time.time - time;
                 Assert.IsTrue(time1 < 0.32f, time1.ToString("0.0000"));
             }).SetTime(0.5f);
             yield return new WaitForSeconds(0.3f);
-            controller.LoadingOn(1).OnCompleted(() =>
+            loadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time2 = Time.time - time;
                 Assert.IsTrue(time2 < 0.52f, time2.ToString("0.0000"));
             }).SetTime(0.5f);
 
-            controller.LoadingOff(1).OnCompleted(() =>
+            loadingController.LoadingOff(1).OnCompleted(() =>
             {
                 time3 = Time.time - time;
                 Assert.IsTrue(time3 < 0.82f, time3.ToString("0.0000"));
             }).SetTime(0.5f);
 
             yield return new WaitForSeconds(0.3f);
-            controller.LoadingOff(1).OnCompleted(() =>
+            loadingController.LoadingOff(1).OnCompleted(() =>
             {
                 time4 = Time.time - time;
                 Assert.IsTrue(time4 < 1.02f, time4.ToString("0.0000"));
@@ -157,13 +153,12 @@ namespace GameFlow.Tests
             Assert.IsTrue(!fade.gameObject.activeSelf);
         }
 
+        private static readonly int[] FadeCounts = { 1, 10, 20 };
 
         [UnityTest]
-        public IEnumerator Fade_20()
+        public IEnumerator _Fade([ValueSource(nameof(FadeCounts))] int fadeTime)
         {
-            var controller = Initialization(out var fade);
-            yield return null;
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < fadeTime; i++)
             {
                 var time1 = Random.Range(0, 0.5f);
                 var time2 = Random.Range(0, 0.5f);
@@ -183,35 +178,35 @@ namespace GameFlow.Tests
                           $"var timeExecute4 = {timeExecute4}f;");
                 var lastIsHide = true;
                 var execute = 0;
-                controller.StartCoroutine(CreateFadeOn(controller, time1, timeExecute1, () =>
+                loadingController.StartCoroutine(CreateFadeOn(loadingController, time1, timeExecute1, () =>
                 {
                     lastIsHide = false;
                     execute++;
                 }));
-                controller.StartCoroutine(CreateFadeOn(controller, time2, timeExecute2, () =>
+                loadingController.StartCoroutine(CreateFadeOn(loadingController, time2, timeExecute2, () =>
                 {
                     lastIsHide = false;
                     execute++;
                 }));
-                controller.StartCoroutine(CreateFadeOff(controller, time3, timeExecute3, () =>
+                loadingController.StartCoroutine(CreateFadeOff(loadingController, time3, timeExecute3, () =>
                 {
                     lastIsHide = true;
                     execute++;
                 }));
-                controller.StartCoroutine(CreateFadeOff(controller, time4, timeExecute4, () =>
+                loadingController.StartCoroutine(CreateFadeOff(loadingController, time4, timeExecute4, () =>
                 {
                     lastIsHide = true;
                     execute++;
                 }));
                 yield return new WaitForSeconds(time1 + time2 + time3 + time4 + 1.5f + timeExecute1 + timeExecute2 + timeExecute3 + timeExecute4);
-                Assert.IsTrue(execute == 4, "execute == 4");
+                Assert.AreEqual(execute, 4, "Execute is not 4");
                 if (lastIsHide)
                 {
-                    fade.LoadingIsHide();
+                    fadeLoading.LoadingIsHide();
                 }
                 else
                 {
-                    fade.LoadingIsShow();
+                    fadeLoading.LoadingIsShow();
                 }
             }
         }
