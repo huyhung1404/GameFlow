@@ -21,6 +21,7 @@ namespace GameFlow
 
         protected override void OnShow()
         {
+            ExecuteCallback();
             progressSlider.value = 0;
             currentProgress = targetProgress = 0;
             canvasGroup.alpha = 1;

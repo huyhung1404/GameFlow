@@ -60,11 +60,11 @@ namespace GameFlow.Tests
             progress.UpdateProgress(0.3f);
             yield return new WaitForSeconds(0.2f);
             progress.UpdateProgress(0.6f);
-            Assert.IsTrue(progress.gameObject.activeSelf);
+            Assert.IsGameObjectEnable(progress);
             yield return new WaitForSeconds(0.2f);
             progress.UpdateProgress(1f);
             yield return new WaitForSeconds(0.3f);
-            Assert.IsTrue(!progress.gameObject.activeSelf);
+            Assert.IsGameObjectDisable(progress);
         }
 
         [UnityTest]
@@ -214,6 +214,97 @@ namespace GameFlow.Tests
         {
             yield return new WaitForSeconds(time);
             controller.LoadingOff(1).OnCompleted(onCompleted).SetTime(timeExecute);
+        }
+
+        [UnityTest]
+        public IEnumerator _4_Progress_Loading_Hide_Time()
+        {
+            var onCompleted = false;
+            var progress = (ProgressLoading)loadingController.LoadingOn(2)
+                .OnCompleted(() => onCompleted = true)
+                .SetTime(0.15f);
+            yield return null;
+            progress.UpdateProgress(0.5f);
+            loadingController.LoadingOff(2);
+            yield return new WaitForSeconds(0.1f);
+            Assert.IsGameObjectEnable(progress);
+            yield return new WaitForSeconds(0.6f);
+            Assert.IsGameObjectDisable(progress);
+            Assert.IsTrue(onCompleted);
+            yield return new WaitForSeconds(0.1f);
+            loadingController.LoadingOff(2);
+        }
+
+        [UnityTest]
+        public IEnumerator _5_Progress_Loading_Loading_Time()
+        {
+            var onCompleted = false;
+            var onCompleted2 = false;
+            var progress = (ProgressLoading)loadingController.LoadingOn(2)
+                .OnCompleted(() => onCompleted = true)
+                .SetTime(0.15f);
+            yield return null;
+            progress.UpdateProgress(0.5f);
+            yield return null;
+            loadingController.LoadingOn(2)
+                .OnCompleted(() => onCompleted2 = true)
+                .SetTime(0.15f);
+
+            yield return null;
+            progress.UpdateProgress(1f);
+            yield return null;
+
+            yield return new WaitForSeconds(0.1f);
+            Assert.IsGameObjectEnable(progress);
+            yield return new WaitForSeconds(0.6f);
+            Assert.IsGameObjectDisable(progress);
+            Assert.IsTrue(onCompleted);
+            Assert.IsTrue(onCompleted2);
+        }
+
+        [UnityTest]
+        public IEnumerator _6_Progress_Loading_Loading_No_Callback()
+        {
+            var onCompleted = false;
+
+            var progress = (ProgressLoading)loadingController.LoadingOn(2)
+                .OnCompleted(() => onCompleted = true)
+                .SetTime(0.15f);
+
+            yield return null;
+            progress.UpdateProgress(0.5f);
+            yield return null;
+
+            loadingController.LoadingOn(2);
+
+            yield return null;
+            progress.UpdateProgress(1f);
+            yield return null;
+
+            yield return new WaitForSeconds(0.1f);
+            Assert.IsGameObjectEnable(progress);
+            yield return new WaitForSeconds(0.6f);
+            Assert.IsGameObjectDisable(progress);
+            Assert.IsTrue(onCompleted);
+        }
+
+        [UnityTest]
+        public IEnumerator _7_Progress_Hide_With_Callback()
+        {
+            var onCompleted = false;
+            var onCompleted2 = false;
+            var progress = (ProgressLoading)loadingController.LoadingOn(2)
+                .OnCompleted(() => onCompleted = true)
+                .SetTime(0.15f);
+            yield return null;
+            progress.UpdateProgress(0.5f);
+            loadingController.LoadingOff(2).OnCompleted(() => onCompleted2 = true);
+            yield return new WaitForSeconds(0.1f);
+            Assert.IsGameObjectEnable(progress);
+            yield return new WaitForSeconds(0.6f);
+            Assert.IsGameObjectDisable(progress);
+            Assert.IsTrue(onCompleted);
+            Assert.IsTrue(onCompleted2);
         }
     }
 }
