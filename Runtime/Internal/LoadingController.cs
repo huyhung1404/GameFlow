@@ -15,11 +15,11 @@ namespace GameFlow.Internal
 
         public void RegisterControllers(params BaseLoadingTypeController[] registerControllers)
         {
-            totalController += registerControllers.Length;
-            var mergedArray = new BaseLoadingTypeController[totalController];
+            var mergedArray = new BaseLoadingTypeController[totalController + registerControllers.Length];
             controllers.CopyTo(mergedArray, 0);
             registerControllers.CopyTo(mergedArray, totalController);
             controllers = mergedArray;
+            totalController = controllers.Length;
         }
 
         internal bool IsShow()
@@ -34,14 +34,14 @@ namespace GameFlow.Internal
 
         internal BaseLoadingTypeController LoadingOn(int i)
         {
-            if (i < controllers.Length) return controllers[i].On();
+            if (i < totalController) return controllers[i].On();
             ErrorHandle.LogError($"Loading controller not exits id {i}");
             return null;
         }
 
         internal BaseLoadingTypeController LoadingOff(int i)
         {
-            if (i < controllers.Length) return controllers[i].Off();
+            if (i < totalController) return controllers[i].Off();
             ErrorHandle.LogError($"Loading controller not exits id {i}");
             return null;
         }

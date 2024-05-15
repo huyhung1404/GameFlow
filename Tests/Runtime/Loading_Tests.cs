@@ -31,7 +31,7 @@ namespace GameFlow.Tests
 
             progressLoading = loadingController.CreateChildMono<ProgressLoading>()
                 .AddCanvasGroup(0)
-                .CreateChildMono<ProgressLoading, Slider>(slider => progressLoading.progressSlider = slider)
+                .CreateChildMono<ProgressLoading, Slider>((loading, slider) => loading.progressSlider = slider)
                 .Disable();
 
             loadingController.RegisterControllers(displayLoading, fadeLoading, progressLoading);

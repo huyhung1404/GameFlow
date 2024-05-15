@@ -16,9 +16,9 @@ namespace GameFlow.Tests
             return Object.Instantiate(new GameObject(), parent.transform).AddComponent<T1>();
         }
 
-        public static T1 CreateChildMono<T1, T2>(this T1 parent, Action<T2> callback) where T1 : MonoBehaviour where T2 : MonoBehaviour
+        public static T1 CreateChildMono<T1, T2>(this T1 parent, Action<T1, T2> callback) where T1 : MonoBehaviour where T2 : MonoBehaviour
         {
-            callback.Invoke(Object.Instantiate(new GameObject(), parent.transform).AddComponent<T2>());
+            callback.Invoke(parent, Object.Instantiate(new GameObject(), parent.transform).AddComponent<T2>());
             return parent;
         }
 
@@ -30,7 +30,9 @@ namespace GameFlow.Tests
 
         public static T AddCanvasGroup<T>(this T mono, float alpha) where T : MonoBehaviour
         {
-            mono.gameObject.AddComponent<CanvasGroup>().alpha = Mathf.Clamp01(alpha);
+            var canvasGroup = mono.gameObject.GetComponent<CanvasGroup>();
+            if (canvasGroup == null) canvasGroup = mono.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = Mathf.Clamp01(alpha);
             return mono;
         }
     }
