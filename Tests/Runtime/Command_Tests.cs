@@ -22,7 +22,7 @@ namespace GameFlow.Tests
             internal override void Execute()
             {
                 isExecute = true;
-                FlowController.instance.StartCoroutine(IERelease());
+                GameFlowRuntimeController.instance.StartCoroutine(IERelease());
             }
 
             private IEnumerator IERelease()
@@ -43,7 +43,7 @@ namespace GameFlow.Tests
                 this.data = data;
                 this.listAdd = listAdd;
                 this.listExecute = listExecute;
-                FlowController.instance.StartCoroutine(IEDelay());
+                GameFlowRuntimeController.instance.StartCoroutine(IEDelay());
             }
 
             internal override void Execute()
@@ -55,7 +55,7 @@ namespace GameFlow.Tests
             private IEnumerator IEDelay()
             {
                 yield return DelayFrame(data.delayFrame);
-                FlowController.instance.AddCommand(this);
+                GameFlowRuntimeController.instance.AddCommand(this);
                 listAdd.Add(this);
             }
         }
@@ -83,7 +83,7 @@ namespace GameFlow.Tests
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            var controller = Builder.CreateMono<FlowController>();
+            var controller = Builder.CreateMono<GameFlowRuntimeController>();
             controller.loadingController = controller.CreateChildMono<LoadingController>();
             yield return null;
         }
@@ -92,10 +92,10 @@ namespace GameFlow.Tests
         public IEnumerator Single_Add_Execute_Command()
         {
             var command = new AutoReleaseCommand(Random.Range(1, 15));
-            FlowController.instance.AddCommand(command);
+            GameFlowRuntimeController.instance.AddCommand(command);
             yield return DelayFrame(16);
             Assert.IsTrue(command.isExecute);
-            FlowController.CommandsIsEmpty();
+            GameFlowRuntimeController.CommandsIsEmpty();
         }
 
         [UnityTest,]
@@ -148,7 +148,7 @@ namespace GameFlow.Tests
             Assert.IsTrue(listAdd[1] == listExecute[1]);
             Assert.IsTrue(listAdd[2] == listExecute[2]);
             Assert.IsTrue(listAdd[3] == listExecute[3]);
-            FlowController.CommandsIsEmpty();
+            GameFlowRuntimeController.CommandsIsEmpty();
         }
     }
 }

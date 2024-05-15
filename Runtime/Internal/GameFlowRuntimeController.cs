@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace GameFlow.Internal
 {
-    internal class FlowController : MonoBehaviour
+    internal class GameFlowRuntimeController : MonoBehaviour
     {
-        internal static FlowController instance;
+        internal static GameFlowRuntimeController instance;
         internal static bool isActive;
 
         [SerializeField] internal LoadingController loadingController;
