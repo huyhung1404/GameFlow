@@ -1,8 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/GameFlowManagerEditor.uss?fileID=7433441132597879392&amp;guid=94ba401c7ace54244a7776fb7cda0ef7&amp;type=3#GameFlowManagerEditor" />
-    <ui:VisualElement name="generate_manager" class="display_none">
-        <ui:Label text="Generate" display-tooltip-when-elided="true" />
-    </ui:VisualElement>
     <ui:VisualElement name="manager_content">
         <ui:Label text="Manager" display-tooltip-when-elided="true" />
     </ui:VisualElement>

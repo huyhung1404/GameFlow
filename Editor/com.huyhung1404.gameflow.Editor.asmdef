@@ -2,7 +2,9 @@
     "name": "com.huyhung1404.gameflow.Editor",
     "rootNamespace": "GameFlow.Editor",
     "references": [
-        "com.huyhung1404.gameflow"
+        "com.huyhung1404.gameflow",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor"
     ],
     "includePlatforms": [
         "Editor"

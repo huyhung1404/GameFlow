@@ -1,7 +1,3 @@
-.display_flex {
-    display: flex;
-}
-
 .display_none {
     display: none;
 }
