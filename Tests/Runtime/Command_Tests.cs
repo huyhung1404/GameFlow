@@ -80,17 +80,17 @@ namespace GameFlow.Tests
             }
         }
 
-        private static void InitController()
+        [UnitySetUp]
+        public IEnumerator SetUp()
         {
-            var o = Object.Instantiate(new GameObject()).AddComponent<FlowController>();
-            o.loadingController = Object.Instantiate(new GameObject()).AddComponent<LoadingController>();
+            var controller = Builder.CreateMono<FlowController>();
+            controller.loadingController = controller.CreateChildMono<LoadingController>();
+            yield return null;
         }
 
         [UnityTest]
         public IEnumerator Single_Add_Execute_Command()
         {
-            InitController();
-            yield return null;
             var command = new AutoReleaseCommand(Random.Range(1, 15));
             FlowController.instance.AddCommand(command);
             yield return DelayFrame(16);
@@ -101,8 +101,6 @@ namespace GameFlow.Tests
         [UnityTest,]
         public IEnumerator Multi_Add_Execute_Command()
         {
-            InitController();
-            yield return null;
             yield return MultiExecuteOrder(
                 new CommandData(0, 0),
                 new CommandData(0, 0),
@@ -143,10 +141,7 @@ namespace GameFlow.Tests
                 commandData4.delayFrame + commandData4.executeFrame +
                 10);
 
-            Assert.IsTrue(command1.isExecute);
-            Assert.IsTrue(command2.isExecute);
-            Assert.IsTrue(command3.isExecute);
-            Assert.IsTrue(command4.isExecute);
+            Assert.IsTrue(command1.isExecute && command2.isExecute && command3.isExecute && command4.isExecute);
             Assert.IsTrue(listAdd.Count == 4);
             Assert.IsTrue(listExecute.Count == 4);
             Assert.IsTrue(listAdd[0] == listExecute[0]);
