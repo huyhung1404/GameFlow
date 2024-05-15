@@ -8,6 +8,7 @@ namespace GameFlow.Editor
         [MenuItem("GameFlow/Game Flow Manager")]
         public static void OpenManager()
         {
+            GameFlowManagerEditorWindow.OpenWindow();
         }
 
         [MenuItem("GameFlow/Documentation")]
