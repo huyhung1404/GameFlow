@@ -1,3 +1,4 @@
+using System;
 using GameFlow.Editor;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
@@ -67,9 +68,16 @@ public class GameFlowManagerEditorWindow : EditorWindow
     {
         if (GameFlowManagerObject.Instance != null)
         {
-            if (rootVisualElement == null) return;
-            rootVisualElement.Clear();
-            CreateGUI();
+            try
+            {
+                rootVisualElement.Clear();
+                CreateGUI();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
             return;
         }
 

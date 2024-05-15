@@ -1,7 +1,8 @@
-﻿using GameFlow.Internal;
+﻿using System.IO;
+using GameFlow.Internal;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Windows;
+using Directory = UnityEngine.Windows.Directory;
 
 namespace GameFlow.Editor
 {
@@ -11,6 +12,23 @@ namespace GameFlow.Editor
         public const string kDefaultConfigAssetName = "GameFlowManager";
         public const string kDefaultConfigFolder = "Assets/GameFlow";
         public const string kPath = kDefaultConfigFolder + "/" + kDefaultConfigAssetName + ".asset";
+
+        private const string kTemplateAsmdef = @"{
+                    ""name"": ""GameFlowElements"",
+                    ""rootNamespace"": ""GameFlow"",
+                    ""references"": [
+                    ""com.huyhung1404.gameflow""
+                        ],
+                    ""includePlatforms"": [],
+                    ""excludePlatforms"": [],
+                    ""allowUnsafeCode"": false,
+                    ""overrideReferences"": false,
+                    ""precompiledReferences"": [],
+                    ""autoReferenced"": true,
+                    ""defineConstraints"": [],
+                    ""versionDefines"": [],
+                    ""noEngineReferences"": false
+                }";
 
         internal static GameFlowManager Instance
         {
@@ -37,6 +55,16 @@ namespace GameFlow.Editor
         internal static void CreateScripts()
         {
             Directory.CreateDirectory(kDefaultConfigFolder + "/ElementScripts");
+            var filePath = Path.Combine(Application.dataPath, "GameFlow/ElementScripts/GameFlowElements.asmdef");
+
+            try
+            {
+                File.WriteAllText(filePath, kTemplateAsmdef);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Error writing to file: " + e.Message);
+            }
         }
 
         internal static void CreateMemberElements()
