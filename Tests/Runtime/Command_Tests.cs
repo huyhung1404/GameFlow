@@ -13,16 +13,18 @@ namespace GameFlow.Tests
         {
             internal bool isExecute;
             private readonly int executeFrame;
+            private readonly MonoBehaviour mono;
 
-            public AutoReleaseCommand(int executeFrame)
+            public AutoReleaseCommand(int executeFrame, MonoBehaviour mono)
             {
+                this.mono = mono;
                 this.executeFrame = executeFrame;
             }
 
             internal override void Execute()
             {
                 isExecute = true;
-                GameFlowRuntimeController.instance.StartCoroutine(IERelease());
+                mono.StartCoroutine(IERelease());
             }
 
             private IEnumerator IERelease()
@@ -38,12 +40,12 @@ namespace GameFlow.Tests
             private readonly List<DelayCommand> listAdd;
             private readonly List<DelayCommand> listExecute;
 
-            public DelayCommand(CommandData data, List<DelayCommand> listAdd, List<DelayCommand> listExecute) : base(data.executeFrame)
+            public DelayCommand(CommandData data, List<DelayCommand> listAdd, List<DelayCommand> listExecute, MonoBehaviour mono) : base(data.executeFrame, mono)
             {
                 this.data = data;
                 this.listAdd = listAdd;
                 this.listExecute = listExecute;
-                GameFlowRuntimeController.instance.StartCoroutine(IEDelay());
+                mono.StartCoroutine(IEDelay());
             }
 
             internal override void Execute()
@@ -55,7 +57,7 @@ namespace GameFlow.Tests
             private IEnumerator IEDelay()
             {
                 yield return DelayFrame(data.delayFrame);
-                GameFlowRuntimeController.instance.AddCommand(this);
+                GameFlowRuntimeController.AddCommand(this);
                 listAdd.Add(this);
             }
         }
@@ -80,19 +82,24 @@ namespace GameFlow.Tests
             }
         }
 
+        private GameFlowRuntimeController controller;
+
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            var controller = Builder.CreateMono<GameFlowRuntimeController>();
-            controller.loadingController = controller.CreateChildMono<LoadingController>();
-            yield return null;
+            controller = Builder.CreateMono<GameFlowRuntimeController>();
+            controller.CreateChildMono<LoadingController>();
+            while (!GameFlowRuntimeController.isActive)
+            {
+                yield return null;
+            }
         }
 
         [UnityTest]
         public IEnumerator Single_Add_Execute_Command()
         {
-            var command = new AutoReleaseCommand(Random.Range(1, 15));
-            GameFlowRuntimeController.instance.AddCommand(command);
+            var command = new AutoReleaseCommand(Random.Range(1, 15), controller);
+            GameFlowRuntimeController.AddCommand(command);
             yield return DelayFrame(16);
             Assert.IsTrue(command.isExecute);
             GameFlowRuntimeController.CommandsIsEmpty();
@@ -117,7 +124,7 @@ namespace GameFlow.Tests
             }
         }
 
-        private static IEnumerator MultiExecuteOrder(
+        private IEnumerator MultiExecuteOrder(
             CommandData commandData1,
             CommandData commandData2,
             CommandData commandData3,
@@ -130,10 +137,10 @@ namespace GameFlow.Tests
                       $"[{commandData4.executeFrame} - {commandData4.delayFrame}]");
             var listAdd = new List<DelayCommand>();
             var listExecute = new List<DelayCommand>();
-            var command1 = new DelayCommand(commandData1, listAdd, listExecute);
-            var command2 = new DelayCommand(commandData2, listAdd, listExecute);
-            var command3 = new DelayCommand(commandData3, listAdd, listExecute);
-            var command4 = new DelayCommand(commandData4, listAdd, listExecute);
+            var command1 = new DelayCommand(commandData1, listAdd, listExecute, controller);
+            var command2 = new DelayCommand(commandData2, listAdd, listExecute, controller);
+            var command3 = new DelayCommand(commandData3, listAdd, listExecute, controller);
+            var command4 = new DelayCommand(commandData4, listAdd, listExecute, controller);
             yield return DelayFrame(
                 commandData1.delayFrame + commandData1.executeFrame +
                 commandData2.delayFrame + commandData2.executeFrame +

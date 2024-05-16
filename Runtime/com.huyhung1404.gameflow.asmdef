@@ -2,7 +2,8 @@
     "name": "com.huyhung1404.gameflow",
     "rootNamespace": "GameFlow",
     "references": [
-        "Unity.Addressables"
+        "Unity.Addressables",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

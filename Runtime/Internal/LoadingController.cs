@@ -5,11 +5,18 @@ namespace GameFlow.Internal
 {
     internal class LoadingController : MonoBehaviour
     {
+        private static LoadingController instance;
         [SerializeField] private BaseLoadingTypeController[] controllers = Array.Empty<BaseLoadingTypeController>();
-        private int totalController;
+        private static int totalController;
 
         private void Awake()
         {
+            if (instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             totalController = controllers.Length;
         }
 
@@ -22,11 +29,11 @@ namespace GameFlow.Internal
             totalController = controllers.Length;
         }
 
-        internal bool IsShow()
+        internal static bool IsShow()
         {
             for (var i = 0; i < totalController; i++)
             {
-                if (controllers[i].isShow) return true;
+                if (instance.controllers[i].isShow) return true;
             }
 
             return false;

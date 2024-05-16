@@ -23,5 +23,10 @@ namespace GameFlow.Internal
         {
             UnityEngine.Assertions.Assert.IsTrue(!o.gameObject.activeSelf, message);
         }
+
+        public static void IsNotNull<T>(T value, string message = null) where T : Object
+        {
+            UnityEngine.Assertions.Assert.IsNotNull(value, message);
+        }
     }
 }

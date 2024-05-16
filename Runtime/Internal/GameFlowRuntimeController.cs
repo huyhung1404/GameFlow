@@ -1,14 +1,26 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace GameFlow.Internal
 {
     internal class GameFlowRuntimeController : MonoBehaviour
     {
-        internal static GameFlowRuntimeController instance;
+        private const string kGameFlowManagerPath = "Assets/GameFlow/GameFlowManager.asset";
+        private static GameFlowRuntimeController instance;
+#if UNITY_EDITOR
+        internal static bool isActive { get; private set; }
+#else
         internal static bool isActive;
+#endif
 
-        [SerializeField] internal LoadingController loadingController;
+#if UNITY_EDITOR
+        internal GameFlowManager gameFlowManager { get; private set; }
+#else
+        internal GameFlowManager gameFlowManager;
+#endif
 
         private bool isLock;
 
@@ -26,12 +38,37 @@ namespace GameFlow.Internal
         private void Initialization()
         {
             instance = this;
-            isActive = true;
             DontDestroyOnLoad(this);
+            LoadManager(3);
+        }
+
+        private void LoadManager(int timeTryGetManager)
+        {
+            if (timeTryGetManager <= 0) return;
+            Addressables.LoadAssetAsync<GameFlowManager>(kGameFlowManagerPath).Completed += operationHandle =>
+            {
+                if (operationHandle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    gameFlowManager = operationHandle.Result;
+                    isActive = true;
+                    return;
+                }
+
+                ErrorHandle.LogError($"[{timeTryGetManager}] Load Game Flow Manager fail at path {kGameFlowManagerPath}");
+                Addressables.Release(operationHandle);
+                StartCoroutine(IELoadManager(timeTryGetManager - 1));
+            };
+        }
+
+        private IEnumerator IELoadManager(int timeTryGetManager)
+        {
+            yield return new WaitForSeconds(1);
+            LoadManager(timeTryGetManager);
         }
 
         private void Update()
         {
+            if (!isActive) return;
             if (isLock) return;
             if (!CommandHandle()) return;
             KeyBackHandle();
@@ -42,9 +79,15 @@ namespace GameFlow.Internal
         private readonly Queue<Command> commands = new Queue<Command>(5);
         private Command current;
 
-        internal void AddCommand(Command command)
+        internal static void AddCommand(Command command)
         {
-            commands.Enqueue(command);
+            if (!isActive)
+            {
+                ErrorHandle.LogError($"Runtime Controller is not active: [Controller: {instance}] [GameFlowManager :{instance?.gameFlowManager}]");
+                return;
+            }
+
+            instance.commands.Enqueue(command);
         }
 
         /// <summary>
@@ -67,7 +110,7 @@ namespace GameFlow.Internal
 
         internal static void CommandsIsEmpty()
         {
-            Assert.IsTrue(instance != null);
+            Assert.IsNotNull(instance);
             Assert.IsTrue(instance.commands.Count == 0, "commands.Count != 0");
             Assert.IsTrue(instance.current == null, instance.current?.ToString());
         }
@@ -82,7 +125,7 @@ namespace GameFlow.Internal
         {
             if (disableKeyBack) return;
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
-            if (loadingController.IsShow()) return;
+            if (LoadingController.IsShow()) return;
             //TODO: Handle Key Back
         }
 
