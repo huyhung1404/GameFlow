@@ -2,8 +2,7 @@
 
 namespace GameFlow.Internal
 {
-    internal class GameFlowManager : ScriptableObject
+    internal sealed class GameFlowManager : ScriptableObject
     {
-        public int test;
     }
 }
