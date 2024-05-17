@@ -1,0 +1,6 @@
+namespace GameFlow
+{
+    public class %NAME%Element : %BASE_CLASS_NAME%
+    {
+    }
+}

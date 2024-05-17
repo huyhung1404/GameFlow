@@ -52,6 +52,7 @@ namespace GameFlow.Editor
             CopyFromPackage("TemplateGameFlowElement", "Templates", ".unity", ".unity");
             CopyFromPackage("TemplateUserInterfaceFlowElement", "Templates", ".prefab", ".prefab");
             CopyFromPackage("TemplateUserInterfaceFlowElement", "Templates", ".unity", ".unity");
+            CopyFromPackage("TemplateScripts", "Templates", ".txt", ".txt");
         }
 
         public static void CopyFromPackage(string fileName, string projectFolder, string packageExtension, string projectExtension)
