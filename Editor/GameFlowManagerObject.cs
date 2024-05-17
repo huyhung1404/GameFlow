@@ -13,23 +13,6 @@ namespace GameFlow.Editor
         public const string kDefaultConfigFolder = "Assets/GameFlow";
         public const string kPath = kDefaultConfigFolder + "/" + kDefaultConfigAssetName + ".asset";
 
-        private const string kTemplateAsmdef = @"{
-                    ""name"": ""GameFlowElements"",
-                    ""rootNamespace"": ""GameFlow"",
-                    ""references"": [
-                    ""com.huyhung1404.gameflow""
-                        ],
-                    ""includePlatforms"": [],
-                    ""excludePlatforms"": [],
-                    ""allowUnsafeCode"": false,
-                    ""overrideReferences"": false,
-                    ""precompiledReferences"": [],
-                    ""autoReferenced"": true,
-                    ""defineConstraints"": [],
-                    ""versionDefines"": [],
-                    ""noEngineReferences"": false
-                }";
-
         internal static GameFlowManager Instance
         {
             get
@@ -48,6 +31,7 @@ namespace GameFlow.Editor
             AddressableUtility.AddAddressableGroup(kPath, true);
             CreateScripts();
             CreateMemberElements();
+            CreateTemplates();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
@@ -55,21 +39,38 @@ namespace GameFlow.Editor
         internal static void CreateScripts()
         {
             Directory.CreateDirectory(kDefaultConfigFolder + "/ElementScripts");
-            var filePath = Path.Combine(Application.dataPath, "GameFlow/ElementScripts/GameFlowElements.asmdef");
-
-            try
-            {
-                File.WriteAllText(filePath, kTemplateAsmdef);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError("Error writing to file: " + e.Message);
-            }
+            CopyFromPackage("GameFlowElements", "ElementScripts", ".txt", ".asmdef");
         }
 
         internal static void CreateMemberElements()
         {
             Directory.CreateDirectory(kDefaultConfigFolder + "/Elements");
+        }
+
+        internal static void CreateTemplates()
+        {
+            Directory.CreateDirectory(kDefaultConfigFolder + "/Templates");
+            CopyFromPackage("TemplateGameFlowElement", "Templates", ".prefab", ".prefab");
+            CopyFromPackage("TemplateGameFlowElement", "Templates", ".unity", ".unity");
+            CopyFromPackage("TemplateUserInterfaceFlowElement", "Templates", ".prefab", ".prefab");
+            CopyFromPackage("TemplateUserInterfaceFlowElement", "Templates", ".unity", ".unity");
+        }
+
+        public static void CopyFromPackage(string fileName, string projectFolder, string packageExtension, string projectExtension)
+        {
+            var packagePath = "Packages/com.huyhung1404.gameflow/Templates/" + fileName + packageExtension;
+            var projectPath = kDefaultConfigFolder + "/" + projectFolder + "/" + fileName + projectExtension;
+
+            var projectDir = Path.GetDirectoryName(projectPath);
+            if (!Directory.Exists(projectDir))
+            {
+                Directory.CreateDirectory(projectDir);
+            }
+
+            if (File.Exists(packagePath))
+            {
+                File.Copy(packagePath, projectPath, true);
+            }
         }
     }
 }
