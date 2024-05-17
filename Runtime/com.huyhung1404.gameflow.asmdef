@@ -3,8 +3,7 @@
     "rootNamespace": "GameFlow",
     "references": [
         "Unity.Addressables",
-        "Unity.ResourceManager",
-        "UnityEngine.UI"
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
