@@ -9,13 +9,15 @@ using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
 {
+    public delegate void Generate(bool isUserInterface, bool isScene, string templatePath, string elementName);
+
     public class GenerateElementPopupWindow : PopupWindowContent
     {
         private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GenerateElementPopupWindow.uxml";
         private const string kNamePattern = "^[a-zA-Z0-9]+$";
 
         private readonly bool isUserInterface;
-        private readonly Action onClose;
+        private readonly Generate generateAction;
         private readonly Regex nameRegex;
         private readonly List<Type> elementsInProject;
         private readonly List<string> prefabTemplatePath;
@@ -31,16 +33,18 @@ namespace GameFlow.Editor
         private RadioButton prefabRadio;
         private DropdownField template;
 
-        public GenerateElementPopupWindow(bool isUserInterface, Action onClose)
+        public GenerateElementPopupWindow(bool isUserInterface, Generate generate)
         {
             this.isUserInterface = isUserInterface;
-            this.onClose = onClose;
+            generateAction = generate;
             nameRegex = new Regex(kNamePattern);
             elementsInProject = GetDerivedTypes(typeof(GameFlowElement));
             isScene = true;
-            prefabTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", isUserInterface ? "UserInterfaceFlowElements" : "GameFlowElements", ".prefab",
+            prefabTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow",
+                isUserInterface ? GameFlowManagerObject.kDefaultUserInterfaceFlowElementsFolderName : GameFlowManagerObject.kDefaultGameFlowElementsFolderName, ".prefab",
                 out prefabTemplateChoices);
-            sceneTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", isUserInterface ? "UserInterfaceFlowElements" : "GameFlowElements", ".unity",
+            sceneTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow",
+                isUserInterface ? GameFlowManagerObject.kDefaultUserInterfaceFlowElementsFolderName : GameFlowManagerObject.kDefaultGameFlowElementsFolderName, ".unity",
                 out sceneTemplateChoices);
         }
 
@@ -77,7 +81,13 @@ namespace GameFlow.Editor
 
         private void OnLogGUI()
         {
-            if (errorName) EditorGUILayout.HelpBox("Element name is exits", MessageType.Error);
+            if (errorName)
+            {
+                EditorGUILayout.HelpBox("Element name is exits", MessageType.Error);
+                return;
+            }
+
+            if ((isScene ? sceneTemplateChoices : prefabTemplateChoices).Count == 0) EditorGUILayout.HelpBox("Element template is not exits", MessageType.Error);
         }
 
         private void NameChange(ChangeEvent<string> evt)
@@ -106,18 +116,6 @@ namespace GameFlow.Editor
             textField.value = evt.previousValue;
             errorName = false;
             elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-        }
-
-        public override void OnClose()
-        {
-            try
-            {
-                onClose?.Invoke();
-            }
-            catch (Exception)
-            {
-                //
-            }
         }
 
         public static List<Type> GetDerivedTypes(Type baseType)
@@ -191,10 +189,14 @@ namespace GameFlow.Editor
             template.choices = isScene ? sceneTemplateChoices : prefabTemplateChoices;
             template.index = 0;
         }
-        
+
         private void GenerateButton(ClickEvent evt)
         {
-            
+            var templateList = isScene ? sceneTemplatePath : prefabTemplatePath;
+            if (templateList.Count == 0) return;
+            var templatePath = templateList[template.index];
+            editorWindow.Close();
+            generateAction.Invoke(isUserInterface, isScene, templatePath, textField.value);
         }
     }
 }

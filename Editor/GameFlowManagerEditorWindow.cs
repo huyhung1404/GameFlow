@@ -3,12 +3,27 @@ using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
 {
     public class GameFlowManagerEditorWindow : EditorWindow
     {
+        private enum State
+        {
+            IDLE,
+            GENERATING,
+            COMPILING,
+            COMPILING_AGAIN,
+            END
+        }
+
+        private GameFlowManagerEditorDraw managerDraw;
+        private State windowState = State.IDLE;
+        private AssetReference assetReferenceGenerate;
+        private GameObject prefabGenerate;
+
         public static void OpenWindow()
         {
             var window = GetWindow<GameFlowManagerEditorWindow>();
@@ -31,7 +46,82 @@ namespace GameFlow.Editor
                 return;
             }
 
-            _ = new GameFlowManagerEditorDraw(rootVisualElement);
+            managerDraw = new GameFlowManagerEditorDraw(rootVisualElement, GeneratePoint);
+        }
+
+        private void GeneratePoint(bool isUserInterface, bool isScene, string templatePath, string elementName)
+        {
+            var path = "/" + GameFlowManagerObject.kDefaultConfigFolderName +
+                       "/" + GameFlowManagerObject.kDefaultElementsFolderName +
+                       "/" + (isUserInterface
+                           ? GameFlowManagerObject.kDefaultUserInterfaceFlowElementsFolderName
+                           : GameFlowManagerObject.kDefaultGameFlowElementsFolderName) +
+                       "/" + elementName + (isScene ? ".unity" : ".prefab");
+
+            var targetPath = Application.dataPath + path;
+            GenerateElementUtility.CreateTemplateClone(templatePath, targetPath);
+            var unityPath = "Assets" + path;
+            AssetDatabase.ImportAsset(unityPath);
+            if (isScene)
+            {
+                prefabGenerate = AssetDatabase.LoadAssetAtPath<GameObject>(unityPath);
+            }
+            else
+            {
+                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(targetPath);
+            }
+
+            assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true);
+            windowState = State.GENERATING;
+        }
+
+        private void OnGUI()
+        {
+            switch (windowState)
+            {
+                default:
+                case State.IDLE:
+                    break;
+                case State.GENERATING:
+                    if (EditorApplication.isCompiling)
+                    {
+                        windowState = State.COMPILING;
+                    }
+
+                    break;
+                case State.COMPILING:
+                    if (EditorApplication.isCompiling)
+                    {
+                        EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.33f);
+                    }
+                    else
+                    {
+                        EditorUtility.ClearProgressBar();
+                        // CreateScriptableObject();
+                        windowState = State.COMPILING_AGAIN;
+                    }
+
+                    break;
+                case State.COMPILING_AGAIN:
+                    if (EditorApplication.isCompiling)
+                    {
+                        EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.66f);
+                    }
+                    else
+                    {
+                        EditorUtility.ClearProgressBar();
+                        // SetUpAsset();
+                        windowState = State.END;
+                    }
+
+                    break;
+                case State.END:
+                    windowState = State.IDLE;
+                    // SaveAsset();
+                    rootVisualElement.Clear();
+                    CreateGUI();
+                    break;
+            }
         }
 
         private void DrawCreateAddressableAssetGUI()

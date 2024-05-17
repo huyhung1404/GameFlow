@@ -11,6 +11,10 @@ namespace GameFlow.Editor
         private static GameFlowManager _instance;
         public const string kDefaultConfigAssetName = "GameFlowManager";
         public const string kDefaultConfigFolder = "Assets/GameFlow";
+        public const string kDefaultConfigFolderName = "GameFlow";
+        public const string kDefaultElementsFolderName = "Elements";
+        public const string kDefaultGameFlowElementsFolderName = "GameFlowElements";
+        public const string kDefaultUserInterfaceFlowElementsFolderName = "UserInterfaceFlowElements";
         public const string kPath = kDefaultConfigFolder + "/" + kDefaultConfigAssetName + ".asset";
 
         internal static GameFlowManager Instance
