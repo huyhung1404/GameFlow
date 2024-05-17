@@ -7,11 +7,12 @@
             <ui:VisualElement name="element_type" style="flex-direction: row; justify-content: space-between; align-items: center;">
                 <ui:Label text="Element Type" display-tooltip-when-elided="true" style="margin-right: 2px; padding-top: 0; margin-left: 3px; padding-bottom: 0;" />
                 <ui:VisualElement style="flex-direction: row; justify-content: space-between; width: 55%; padding-right: 5px;">
-                    <ui:RadioButton name="scene_radio" text="Scene" value="false" style="justify-content: center; padding-top: 2px;" />
+                    <ui:RadioButton name="scene_radio" text="Scene" value="true" style="justify-content: center; padding-top: 2px;" />
                     <ui:RadioButton name="prefab_radio" text="Prefab" style="padding-top: 2px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:DropdownField label="Template" index="-1" choices="System.Collections.Generic.List`1[System.String]" name="template" />
+            <ui:Button text="Generate" display-tooltip-when-elided="true" name="generate_button" />
         </ui:VisualElement>
         <ui:IMGUIContainer name="log" />
     </ui:VisualElement>

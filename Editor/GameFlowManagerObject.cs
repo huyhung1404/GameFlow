@@ -30,7 +30,6 @@ namespace GameFlow.Editor
             AssetDatabase.CreateAsset(manager, kPath);
             AddressableUtility.AddAddressableGroup(kPath, true);
             CreateScripts();
-            CreateMemberElements();
             CreateTemplates();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -40,11 +39,6 @@ namespace GameFlow.Editor
         {
             Directory.CreateDirectory(kDefaultConfigFolder + "/ElementScripts");
             CopyFromPackage("GameFlowElements", "ElementScripts", ".txt", ".asmdef");
-        }
-
-        internal static void CreateMemberElements()
-        {
-            Directory.CreateDirectory(kDefaultConfigFolder + "/Elements");
         }
 
         internal static void CreateTemplates()

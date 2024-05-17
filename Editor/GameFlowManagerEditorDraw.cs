@@ -22,18 +22,18 @@ namespace GameFlow.Editor
         private void RegisterGenerateButton()
         {
             var addButton = root.Q<Button>("add_button");
-            addButton.clicked += () =>
+            addButton.RegisterCallback<ClickEvent>(_ =>
             {
                 AssetDatabase.Refresh();
                 PopupWindow.Show(addButton.worldBound, new GenerateElementPopupWindow(false, RefreshList));
-            };
+            });
 
             var addInterfaceButton = root.Q<Button>("add_interface_button");
-            addInterfaceButton.clicked += () =>
+            addInterfaceButton.RegisterCallback<ClickEvent>(_ =>
             {
                 AssetDatabase.Refresh();
                 PopupWindow.Show(addInterfaceButton.worldBound, new GenerateElementPopupWindow(true, RefreshList));
-            };
+            });
         }
 
         private void RefreshList()
