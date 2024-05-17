@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/GameFlowManagerEditor.uss?fileID=7433441132597879392&amp;guid=94ba401c7ace54244a7776fb7cda0ef7&amp;type=3#GameFlowManagerEditor" />
+    <ui:VisualElement name="container" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="title" class="title" style="-unity-text-align: upper-center; margin-bottom: 5px;" />
+        <ui:TextField picking-mode="Ignore" label="Element Name" name="element_name" />
+        <ui:VisualElement name="element_type" class="display_none" style="flex-direction: row; justify-content: space-between; align-items: center;">
+            <ui:Label text="Element Type" display-tooltip-when-elided="true" style="margin-right: 2px; padding-top: 0; margin-left: 3px; padding-bottom: 0;" />
+            <ui:VisualElement style="flex-direction: row; justify-content: space-between; width: 55%; padding-right: 5px;">
+                <ui:RadioButton name="scene_radio" text="Scene" style="justify-content: center; padding-top: 2px;" />
+                <ui:RadioButton name="prefab_radio" text="Prefab" style="padding-top: 2px;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:DropdownField label="Template" index="-1" choices="System.Collections.Generic.List`1[System.String]" name="template" class="display_none" />
+        <ui:IMGUIContainer name="log" />
+    </ui:VisualElement>
+</ui:UXML>

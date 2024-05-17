@@ -9,8 +9,6 @@ namespace GameFlow.Editor
 {
     public class GameFlowManagerEditorWindow : EditorWindow
     {
-        private const string UXML_PATH = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowManagerEditor.uxml";
-
         public static void OpenWindow()
         {
             var window = GetWindow<GameFlowManagerEditorWindow>();
@@ -21,8 +19,6 @@ namespace GameFlow.Editor
 
         public void CreateGUI()
         {
-            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(UXML_PATH);
-            VisualElement labelFromUXML = visualTree.Instantiate();
             if (AddressableAssetSettingsDefaultObject.Settings == null)
             {
                 rootVisualElement.Add(new IMGUIContainer(DrawCreateAddressableAssetGUI));
@@ -35,7 +31,7 @@ namespace GameFlow.Editor
                 return;
             }
 
-            rootVisualElement.Add(labelFromUXML);
+            _ = new GameFlowManagerEditorDraw(rootVisualElement);
         }
 
         private void DrawCreateAddressableAssetGUI()
