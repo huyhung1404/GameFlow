@@ -5,12 +5,12 @@ namespace GameFlow.Tests
 {
     public class Event_Tests
     {
-        public class EventTest1 : BaseGameFlowElement
+        public class EventTest1 : GameFlowElement
         {
             public static int timeRun;
         }
 
-        public class EventTest2 : BaseGameFlowElement
+        public class EventTest2 : GameFlowElement
         {
             public static int timeRun;
         }
