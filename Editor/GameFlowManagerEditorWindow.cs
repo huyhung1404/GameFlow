@@ -51,16 +51,12 @@ namespace GameFlow.Editor
 
         private void GeneratePoint(bool isUserInterface, bool isScene, string templatePath, string elementName)
         {
-            var path = "/" + GameFlowManagerObject.kDefaultConfigFolderName +
-                       "/" + GameFlowManagerObject.kDefaultElementsFolderName +
-                       "/" + (isUserInterface
-                           ? GameFlowManagerObject.kDefaultUserInterfaceFlowElementsFolderName
-                           : GameFlowManagerObject.kDefaultGameFlowElementsFolderName) +
-                       "/" + elementName + (isScene ? ".unity" : ".prefab");
+            var unityPath = isUserInterface
+                ? PackagePath.AssetsUserInterfaceElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab")
+                : PackagePath.AssetsElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab");
 
-            var targetPath = Application.dataPath + path;
-            GenerateElementUtility.CreateTemplateClone(templatePath, targetPath);
-            var unityPath = "Assets" + path;
+            GenerateElementUtility.CreateTemplateClone(templatePath, unityPath);
+
             AssetDatabase.ImportAsset(unityPath);
             if (isScene)
             {
@@ -68,7 +64,7 @@ namespace GameFlow.Editor
             }
             else
             {
-                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(targetPath);
+                UnityEditor.SceneManagement.EditorSceneManager.OpenScene(unityPath);
             }
 
             assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true);

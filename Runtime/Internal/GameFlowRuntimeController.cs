@@ -8,7 +8,6 @@ namespace GameFlow.Internal
 {
     internal class GameFlowRuntimeController : MonoBehaviour
     {
-        private const string kGameFlowManagerPath = "Assets/GameFlow/GameFlowManager.asset";
         private static GameFlowRuntimeController instance;
 #if UNITY_EDITOR
         internal static bool isActive { get; private set; }
@@ -45,7 +44,7 @@ namespace GameFlow.Internal
         private void LoadManager(int timeTryGetManager)
         {
             if (timeTryGetManager <= 0) return;
-            Addressables.LoadAssetAsync<GameFlowManager>(kGameFlowManagerPath).Completed += operationHandle =>
+            Addressables.LoadAssetAsync<GameFlowManager>(PackagePath.ManagerPath()).Completed += operationHandle =>
             {
                 if (operationHandle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -54,7 +53,7 @@ namespace GameFlow.Internal
                     return;
                 }
 
-                ErrorHandle.LogError($"[{timeTryGetManager}] Load Game Flow Manager fail at path {kGameFlowManagerPath}");
+                ErrorHandle.LogError($"[{timeTryGetManager}] Load Game Flow Manager fail at path {PackagePath.ManagerPath()}");
                 Addressables.Release(operationHandle);
                 StartCoroutine(IELoadManager(timeTryGetManager - 1));
             };

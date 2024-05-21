@@ -9,20 +9,13 @@ namespace GameFlow.Editor
     public static class GameFlowManagerObject
     {
         private static GameFlowManager _instance;
-        public const string kDefaultConfigAssetName = "GameFlowManager";
-        public const string kDefaultConfigFolder = "Assets/GameFlow";
-        public const string kDefaultConfigFolderName = "GameFlow";
-        public const string kDefaultElementsFolderName = "Elements";
-        public const string kDefaultGameFlowElementsFolderName = "GameFlowElements";
-        public const string kDefaultUserInterfaceFlowElementsFolderName = "UserInterfaceFlowElements";
-        public const string kPath = kDefaultConfigFolder + "/" + kDefaultConfigAssetName + ".asset";
 
         internal static GameFlowManager Instance
         {
             get
             {
                 if (_instance != null) return _instance;
-                _instance = AssetDatabase.LoadAssetAtPath<GameFlowManager>(kPath);
+                _instance = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
                 return _instance;
             }
         }
@@ -30,24 +23,24 @@ namespace GameFlow.Editor
         internal static void CreateDefaultInstance()
         {
             var manager = ScriptableObject.CreateInstance<GameFlowManager>();
-            Directory.CreateDirectory(kDefaultConfigFolder);
-            AssetDatabase.CreateAsset(manager, kPath);
-            AddressableUtility.AddAddressableGroup(kPath, true);
+            Directory.CreateDirectory(PackagePath.ProjectFolderPath());
+            AssetDatabase.CreateAsset(manager, PackagePath.ManagerPath());
+            AddressableUtility.AddAddressableGroup(PackagePath.ManagerPath(), true);
             CreateScripts();
             CreateTemplates();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
 
-        internal static void CreateScripts()
+        private static void CreateScripts()
         {
-            Directory.CreateDirectory(kDefaultConfigFolder + "/ElementScripts");
-            CopyFromPackage("GameFlowElements", "ElementScripts", ".txt", ".asmdef");
+            Directory.CreateDirectory(PackagePath.ScriptsGenerateFolderPath());
+            CopyFromPackage("GameFlowElements", PackagePath.kScriptFolderName, ".txt", ".asmdef");
         }
 
-        internal static void CreateTemplates()
+        private static void CreateTemplates()
         {
-            Directory.CreateDirectory(kDefaultConfigFolder + "/Templates");
+            Directory.CreateDirectory(PackagePath.ProjectTemplatesPath());
             CopyFromPackage("TemplateGameFlowElement", "Templates", ".prefab", ".prefab");
             CopyFromPackage("TemplateGameFlowElement", "Templates", ".unity", ".unity");
             CopyFromPackage("TemplateUserInterfaceFlowElement", "Templates", ".prefab", ".prefab");
@@ -55,10 +48,10 @@ namespace GameFlow.Editor
             CopyFromPackage("TemplateScripts", "Templates", ".txt", ".txt");
         }
 
-        public static void CopyFromPackage(string fileName, string projectFolder, string packageExtension, string projectExtension)
+        private static void CopyFromPackage(string fileName, string projectFolder, string packageExtension, string projectExtension)
         {
-            var packagePath = "Packages/com.huyhung1404.gameflow/Templates/" + fileName + packageExtension;
-            var projectPath = kDefaultConfigFolder + "/" + projectFolder + "/" + fileName + projectExtension;
+            var packagePath = PackagePath.PackageTemplatesPath() + "/" + fileName + packageExtension;
+            var projectPath = PackagePath.ProjectFolderPath() + "/" + projectFolder + "/" + fileName + projectExtension;
 
             var projectDir = Path.GetDirectoryName(projectPath);
             if (!Directory.Exists(projectDir))

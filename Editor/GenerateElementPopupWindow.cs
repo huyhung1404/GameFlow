@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using GameFlow.Internal;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -40,11 +41,9 @@ namespace GameFlow.Editor
             nameRegex = new Regex(kNamePattern);
             elementsInProject = GetDerivedTypes(typeof(GameFlowElement));
             isScene = true;
-            prefabTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow",
-                isUserInterface ? GameFlowManagerObject.kDefaultUserInterfaceFlowElementsFolderName : GameFlowManagerObject.kDefaultGameFlowElementsFolderName, ".prefab",
+            prefabTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", ".prefab",
                 out prefabTemplateChoices);
-            sceneTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow",
-                isUserInterface ? GameFlowManagerObject.kDefaultUserInterfaceFlowElementsFolderName : GameFlowManagerObject.kDefaultGameFlowElementsFolderName, ".unity",
+            sceneTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", ".unity",
                 out sceneTemplateChoices);
         }
 
@@ -131,12 +130,12 @@ namespace GameFlow.Editor
             return derivedTypes;
         }
 
-        private static List<string> SearchTemplate(string templatePattern, string folder, string extension, out List<string> choices)
+        private List<string> SearchTemplate(string templatePattern, string extension, out List<string> choices)
         {
             var path = new List<string>();
             try
             {
-                path.AddRange(Directory.GetFiles(Application.dataPath + "/GameFlow/Templates", templatePattern + "*" + extension, SearchOption.AllDirectories));
+                path.AddRange(Directory.GetFiles(PackagePath.ProjectTemplatesPath(PackagePath.PathType.FullPath), templatePattern + "*" + extension, SearchOption.AllDirectories));
             }
             catch (Exception)
             {
@@ -145,7 +144,9 @@ namespace GameFlow.Editor
 
             try
             {
-                path.AddRange(Directory.GetFiles(Application.dataPath + "/GameFlow/Elements/" + folder, "*" + extension, SearchOption.AllDirectories));
+                path.AddRange(Directory.GetFiles(isUserInterface 
+                    ? PackagePath.AssetsUserInterfaceElementsFolderPath(PackagePath.PathType.FullPath) 
+                    : PackagePath.AssetsElementsFolderPath(PackagePath.PathType.FullPath), "*" + extension, SearchOption.AllDirectories));
             }
             catch (Exception)
             {
