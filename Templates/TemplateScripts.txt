@@ -1,6 +1,6 @@
 namespace GameFlow
 {
-    public class %NAME%Element : %BASE_CLASS_NAME%
+    public class %NAME% : %BASE_CLASS_NAME%
     {
     }
 }

@@ -25,6 +25,7 @@ namespace GameFlow.Editor
         private AssetReference assetReferenceGenerate;
         private string scriptGeneratePath;
         private GameObject prefabGenerate;
+        private string elementNameGenerate;
 
         public static void OpenWindow()
         {
@@ -59,6 +60,7 @@ namespace GameFlow.Editor
 
             try
             {
+                elementNameGenerate = elementName;
                 GenerateAsset(isScene, templatePath, unityPath);
                 GenerateScripts(elementName);
                 windowState = State.GENERATING;
@@ -91,11 +93,11 @@ namespace GameFlow.Editor
 
         private void GenerateScripts(string elementName)
         {
-            scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + elementName + ".cs";
+            scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + elementName + "Element.cs";
             var templateText = File.ReadAllText(PackagePath.ProjectTemplateScriptPath(PackagePath.PathType.FullPath));
-            templateText = templateText.Replace("%NAME%", elementName);
+            templateText = templateText.Replace("%NAME%", elementName + "Element");
             templateText = templateText.Replace("%BASE_CLASS_NAME%", nameof(GameFlowElement));
-            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + elementName + ".cs", templateText);
+            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + elementName + "Element.cs", templateText);
             AssetDatabase.ImportAsset(scriptGeneratePath);
         }
 
@@ -121,7 +123,15 @@ namespace GameFlow.Editor
                     else
                     {
                         EditorUtility.ClearProgressBar();
-                        // SetUpAsset();
+                        try
+                        {
+                            GenerateElementInstance();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
+
                         windowState = State.END;
                     }
 
@@ -133,6 +143,45 @@ namespace GameFlow.Editor
                     CreateGUI();
                     break;
             }
+        }
+
+        private void GenerateElementInstance()
+        {
+            var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
+            var type = GetAssemblyType(elementNameGenerate + "Element");
+            if (type == null) throw new Exception("Type generate not exits");
+            var instance = (GameFlowElement)Activator.CreateInstance(type);
+            instance.includeInBuild = true;
+            instance.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
+            instance.reference = assetReferenceGenerate;
+            manager.elementCollection.GenerateElement(instance);
+            EditorUtility.SetDirty(manager);
+        }
+
+        private static Type GetAssemblyType(string typeName)
+        {
+            var type = Type.GetType(typeName);
+            if (TypeIsMatch(type)) return type;
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                type = a.GetType(typeName);
+                if (TypeIsMatch(type)) return type;
+            }
+
+            return null;
+        }
+
+        private static bool TypeIsMatch(Type type)
+        {
+            if (type == null) return false;
+            var parent = type.BaseType;
+            while (parent != null)
+            {
+                type = parent;
+                parent = type.BaseType;
+            }
+
+            return type == typeof(GameFlowManager);
         }
 
         private void SaveGenerateAssets()
@@ -214,6 +263,7 @@ namespace GameFlow.Editor
     {
         public override void OnInspectorGUI()
         {
+            DrawDefaultInspector();
             GUILayout.Space(10);
             if (GUILayout.Button("Open Editor Window"))
             {
