@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
@@ -16,7 +17,6 @@ namespace GameFlow.Editor
             IDLE,
             GENERATING,
             COMPILING,
-            COMPILING_AGAIN,
             END
         }
 
@@ -73,6 +73,7 @@ namespace GameFlow.Editor
 
         private void GenerateAsset(bool isScene, string templatePath, string unityPath)
         {
+            prefabGenerate = null;
             GenerateElementUtility.CreateTemplateClone(templatePath, unityPath);
 
             AssetDatabase.ImportAsset(unityPath);
@@ -115,20 +116,7 @@ namespace GameFlow.Editor
                 case State.COMPILING:
                     if (EditorApplication.isCompiling)
                     {
-                        EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.33f);
-                    }
-                    else
-                    {
-                        EditorUtility.ClearProgressBar();
-                        // CreateScriptableObject();
-                        windowState = State.COMPILING_AGAIN;
-                    }
-
-                    break;
-                case State.COMPILING_AGAIN:
-                    if (EditorApplication.isCompiling)
-                    {
-                        EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.66f);
+                        EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.5f);
                     }
                     else
                     {
@@ -140,11 +128,23 @@ namespace GameFlow.Editor
                     break;
                 case State.END:
                     windowState = State.IDLE;
-                    // SaveAsset();
+                    SaveGenerateAssets();
                     rootVisualElement.Clear();
                     CreateGUI();
                     break;
             }
+        }
+
+        private void SaveGenerateAssets()
+        {
+            if (prefabGenerate != null)
+            {
+                Selection.activeObject = prefabGenerate;
+                return;
+            }
+
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes();
         }
 
         private void DrawCreateAddressableAssetGUI()
