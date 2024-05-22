@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
@@ -22,6 +23,7 @@ namespace GameFlow.Editor
         private GameFlowManagerEditorDraw managerDraw;
         private State windowState = State.IDLE;
         private AssetReference assetReferenceGenerate;
+        private string scriptGeneratePath;
         private GameObject prefabGenerate;
 
         public static void OpenWindow()
@@ -46,19 +48,35 @@ namespace GameFlow.Editor
                 return;
             }
 
-            managerDraw = new GameFlowManagerEditorDraw(rootVisualElement, GeneratePoint);
+            managerDraw = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
         }
 
-        private void GeneratePoint(bool isUserInterface, bool isScene, string templatePath, string elementName)
+        private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName)
         {
             var unityPath = isUserInterface
                 ? PackagePath.AssetsUserInterfaceElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab")
                 : PackagePath.AssetsElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab");
 
+            try
+            {
+                GenerateAsset(isScene, templatePath, unityPath);
+                GenerateScripts(elementName);
+                windowState = State.GENERATING;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                windowState = State.IDLE;
+                throw;
+            }
+        }
+
+        private void GenerateAsset(bool isScene, string templatePath, string unityPath)
+        {
             GenerateElementUtility.CreateTemplateClone(templatePath, unityPath);
 
             AssetDatabase.ImportAsset(unityPath);
-            if (isScene)
+            if (!isScene)
             {
                 prefabGenerate = AssetDatabase.LoadAssetAtPath<GameObject>(unityPath);
             }
@@ -68,7 +86,16 @@ namespace GameFlow.Editor
             }
 
             assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true);
-            windowState = State.GENERATING;
+        }
+
+        private void GenerateScripts(string elementName)
+        {
+            scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + elementName + ".cs";
+            var templateText = File.ReadAllText(PackagePath.ProjectTemplateScriptPath(PackagePath.PathType.FullPath));
+            templateText = templateText.Replace("%NAME%", elementName);
+            templateText = templateText.Replace("%BASE_CLASS_NAME%", nameof(GameFlowElement));
+            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + elementName + ".cs", templateText);
+            AssetDatabase.ImportAsset(scriptGeneratePath);
         }
 
         private void OnGUI()

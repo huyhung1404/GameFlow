@@ -42,6 +42,11 @@ namespace GameFlow.Internal
             return ProjectFolderPath(type) + "/Templates";
         }
 
+        internal static string ProjectTemplateScriptPath(PathType type = PathType.UnityPath)
+        {
+            return ProjectTemplatesPath(type) + "/TemplateScripts.txt";
+        }
+
         private static string AssetsFolderPath(PathType type = PathType.UnityPath)
         {
             return ProjectFolderPath(type) + "/" + kAssetsFolderName;
