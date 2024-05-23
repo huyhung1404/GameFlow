@@ -12,6 +12,8 @@ namespace GameFlow.Editor
 {
     public class GameFlowManagerEditorWindow : EditorWindow
     {
+        public const string kScriptsElementNameFormat = "{0}Element";
+
         private enum State
         {
             IDLE,
@@ -20,7 +22,6 @@ namespace GameFlow.Editor
             END
         }
 
-        private GameFlowManagerEditorDraw managerDraw;
         private State windowState = State.IDLE;
         private AssetReference assetReferenceGenerate;
         private string scriptGeneratePath;
@@ -49,7 +50,7 @@ namespace GameFlow.Editor
                 return;
             }
 
-            managerDraw = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
+            _ = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
         }
 
         private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName)
@@ -93,11 +94,11 @@ namespace GameFlow.Editor
 
         private void GenerateScripts(string elementName)
         {
-            scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + elementName + "Element.cs";
+            scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs";
             var templateText = File.ReadAllText(PackagePath.ProjectTemplateScriptPath(PackagePath.PathType.FullPath));
-            templateText = templateText.Replace("%NAME%", elementName + "Element");
+            templateText = templateText.Replace("%NAME%", string.Format(kScriptsElementNameFormat, elementName));
             templateText = templateText.Replace("%BASE_CLASS_NAME%", nameof(GameFlowElement));
-            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + elementName + "Element.cs", templateText);
+            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs", templateText);
             AssetDatabase.ImportAsset(scriptGeneratePath);
         }
 
@@ -148,7 +149,7 @@ namespace GameFlow.Editor
         private void GenerateElementInstance()
         {
             var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
-            var type = GetAssemblyType(elementNameGenerate + "Element");
+            var type = GetAssemblyType(string.Format(kScriptsElementNameFormat, elementNameGenerate));
             if (type == null) throw new Exception("Type generate not exits");
             var instance = (GameFlowElement)Activator.CreateInstance(type);
             instance.includeInBuild = true;

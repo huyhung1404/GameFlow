@@ -100,7 +100,8 @@ namespace GameFlow.Editor
 
             if (nameRegex.IsMatch(evt.newValue))
             {
-                if (elementsInProject.FindIndex(item => item.Name == evt.newValue) >= 0)
+                var scriptsName = string.Format(GameFlowManagerEditorWindow.kScriptsElementNameFormat, evt.newValue);
+                if (elementsInProject.FindIndex(type => type.Name == scriptsName) >= 0)
                 {
                     elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
                     errorName = true;
@@ -144,8 +145,8 @@ namespace GameFlow.Editor
 
             try
             {
-                path.AddRange(Directory.GetFiles(isUserInterface 
-                    ? PackagePath.AssetsUserInterfaceElementsFolderPath(PackagePath.PathType.FullPath) 
+                path.AddRange(Directory.GetFiles(isUserInterface
+                    ? PackagePath.AssetsUserInterfaceElementsFolderPath(PackagePath.PathType.FullPath)
                     : PackagePath.AssetsElementsFolderPath(PackagePath.PathType.FullPath), "*" + extension, SearchOption.AllDirectories));
             }
             catch (Exception)
