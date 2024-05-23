@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
@@ -13,6 +14,7 @@ namespace GameFlow.Editor
     public class GameFlowManagerEditorWindow : EditorWindow
     {
         public const string kScriptsElementNameFormat = "{0}Element";
+        private const string kScriptsNameSpace = nameof(GameFlow);
 
         private enum State
         {
@@ -63,7 +65,7 @@ namespace GameFlow.Editor
             {
                 elementNameGenerate = elementName;
                 GenerateAsset(isScene, templatePath, unityPath);
-                GenerateScripts(elementName);
+                GenerateScripts(elementName, isUserInterface);
                 windowState = State.GENERATING;
             }
             catch (Exception e)
@@ -92,12 +94,13 @@ namespace GameFlow.Editor
             assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true);
         }
 
-        private void GenerateScripts(string elementName)
+        private void GenerateScripts(string elementName, bool isUserInterface)
         {
             scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs";
             var templateText = File.ReadAllText(PackagePath.ProjectTemplateScriptPath(PackagePath.PathType.FullPath));
+            templateText = templateText.Replace("%NAMESPACE%", kScriptsNameSpace);
             templateText = templateText.Replace("%NAME%", string.Format(kScriptsElementNameFormat, elementName));
-            templateText = templateText.Replace("%BASE_CLASS_NAME%", nameof(GameFlowElement));
+            templateText = templateText.Replace("%BASE_CLASS_NAME%", isUserInterface ? nameof(UserInterfaceFlowElement) : nameof(GameFlowElement));
             File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs", templateText);
             AssetDatabase.ImportAsset(scriptGeneratePath);
         }
@@ -161,15 +164,8 @@ namespace GameFlow.Editor
 
         private static Type GetAssemblyType(string typeName)
         {
-            var type = Type.GetType(typeName);
-            if (TypeIsMatch(type)) return type;
-            foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                type = a.GetType(typeName);
-                if (TypeIsMatch(type)) return type;
-            }
-
-            return null;
+            typeName = kScriptsNameSpace + "." + typeName;
+            return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetType(typeName)).FirstOrDefault(TypeIsMatch);
         }
 
         private static bool TypeIsMatch(Type type)
@@ -179,10 +175,11 @@ namespace GameFlow.Editor
             while (parent != null)
             {
                 type = parent;
+                if (type == typeof(GameFlowElement)) return true;
                 parent = type.BaseType;
             }
 
-            return type == typeof(GameFlowManager);
+            return false;
         }
 
         private void SaveGenerateAssets()
