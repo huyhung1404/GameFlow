@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
 {
-    public delegate void Generate(bool isUserInterface, bool isScene, string templatePath, string elementName);
+    public delegate void Generate(bool isUserInterface, bool isScene, string templatePath, string elementName, string id);
 
     public class GenerateElementPopupWindow : PopupWindowContent
     {
@@ -25,14 +25,21 @@ namespace GameFlow.Editor
         private readonly List<string> prefabTemplateChoices;
         private readonly List<string> sceneTemplatePath;
         private readonly List<string> sceneTemplateChoices;
+        private readonly GameFlowManager manager;
 
         private TextField textField;
-        private bool errorName;
+        private TextField idField;
+        private bool exitsElement;
         private VisualElement elementTypeView;
+        private VisualElement instanceIdView;
         private bool isScene;
         private RadioButton sceneRadio;
         private RadioButton prefabRadio;
         private DropdownField template;
+        private float generateSizePopup;
+        private float idSizePopup;
+        private float logSizePopup;
+        private bool fileNameIsExits;
 
         public GenerateElementPopupWindow(bool isUserInterface, Generate generate)
         {
@@ -45,11 +52,12 @@ namespace GameFlow.Editor
                 out prefabTemplateChoices);
             sceneTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", ".unity",
                 out sceneTemplateChoices);
+            manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
         }
 
         public override Vector2 GetWindowSize()
         {
-            return new Vector2(400, 125);
+            return new Vector2(400, 60 + generateSizePopup + logSizePopup + idSizePopup);
         }
 
         public override void OnGUI(Rect rect)
@@ -64,13 +72,21 @@ namespace GameFlow.Editor
             editorWindow.rootVisualElement.Q<IMGUIContainer>("log").onGUIHandler += OnLogGUI;
             textField = editorWindow.rootVisualElement.Q<TextField>("element_name");
             textField.RegisterCallback<ChangeEvent<string>>(NameChange);
+
+            idField = editorWindow.rootVisualElement.Q<TextField>("instance_id");
+            idField.RegisterCallback<ChangeEvent<string>>(IDChange);
+
             elementTypeView = editorWindow.rootVisualElement.Q<VisualElement>("template_view");
+            instanceIdView = editorWindow.rootVisualElement.Q<VisualElement>("instance_id_view");
+            idSizePopup = generateSizePopup = 0;
             elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
             template = editorWindow.rootVisualElement.Q<DropdownField>("template");
             template.choices = isScene ? sceneTemplateChoices : prefabTemplateChoices;
             template.index = 0;
             editorWindow.rootVisualElement.Q<Button>("generate_button").RegisterCallback<ClickEvent>(GenerateButton);
             HandleTemplateView();
+            fileNameIsExits = false;
         }
 
         private void DrawTitle()
@@ -80,42 +96,99 @@ namespace GameFlow.Editor
 
         private void OnLogGUI()
         {
-            if (errorName)
+            logSizePopup = 0;
+            if (fileNameIsExits)
             {
-                EditorGUILayout.HelpBox("Element name is exits", MessageType.Error);
-                return;
+                logSizePopup += 40;
+                EditorGUILayout.HelpBox("Element name is exits.", MessageType.Error);
             }
-
-            if ((isScene ? sceneTemplateChoices : prefabTemplateChoices).Count == 0) EditorGUILayout.HelpBox("Element template is not exits", MessageType.Error);
+            
+            if ((isScene ? sceneTemplateChoices : prefabTemplateChoices).Count == 0)
+            {
+                logSizePopup += 40;
+                EditorGUILayout.HelpBox("Element template is not exits.", MessageType.Error);
+            }
         }
 
         private void NameChange(ChangeEvent<string> evt)
         {
-            if (string.IsNullOrEmpty(evt.newValue))
+            string newValue;
+            string previousValue;
+            if (evt == null)
             {
-                elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                errorName = false;
+                newValue = textField.value;
+                previousValue = textField.value;
+            }
+            else
+            {
+                newValue = evt.newValue;
+                previousValue = evt.previousValue;
+            }
+
+            if (string.IsNullOrEmpty(newValue))
+            {
+                DisableAllView();
                 return;
             }
 
-            if (nameRegex.IsMatch(evt.newValue))
+            if (nameRegex.IsMatch(newValue))
             {
-                var scriptsName = string.Format(GameFlowManagerEditorWindow.kScriptsElementNameFormat, evt.newValue);
-                if (elementsInProject.FindIndex(type => type.Name == scriptsName) >= 0)
+                var scriptsName = string.Format(GameFlowManagerEditorWindow.kScriptsElementNameFormat, newValue);
+                var type = elementsInProject.Find(type => type.Name == scriptsName);
+                exitsElement = type != null;
+                if (exitsElement)
                 {
-                    elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                    errorName = true;
+                    if ((isUserInterface && type?.BaseType == typeof(UserInterfaceFlowElement))
+                        || (!isUserInterface && type?.BaseType == typeof(GameFlowElement)))
+                    {
+                        instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+                        idSizePopup = 45;
+                        if (!string.IsNullOrEmpty(idField.value) && manager.elementCollection.GetElement(type, idField.value) == null)
+                        {
+                            elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+                            generateSizePopup = 60;
+                        }
+                        else
+                        {
+                            elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                            generateSizePopup = 0;
+                        }
+
+                        fileNameIsExits = false;
+                        return;
+                    }
+
+                    DisableAllView();
+                    fileNameIsExits = true;
                     return;
                 }
 
+                fileNameIsExits = false;
                 elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                errorName = false;
+                instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                idField.value = null;
+                generateSizePopup = 60;
+                idSizePopup = 0;
                 return;
             }
 
-            textField.value = evt.previousValue;
-            errorName = false;
+            DisableAllView();
+            textField.value = previousValue;
+        }
+
+        private void DisableAllView()
+        {
+            exitsElement = false;
+            fileNameIsExits = false;
+            idField.value = null;
+            generateSizePopup = idSizePopup = 0;
             elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+        }
+
+        private void IDChange(ChangeEvent<string> evt)
+        {
+            NameChange(null);
         }
 
         public static List<Type> GetDerivedTypes(Type baseType)
@@ -198,7 +271,7 @@ namespace GameFlow.Editor
             if (templateList.Count == 0) return;
             var templatePath = templateList[template.index];
             editorWindow.Close();
-            generateAction.Invoke(isUserInterface, isScene, templatePath, textField.value);
+            generateAction.Invoke(isUserInterface, isScene, templatePath, textField.value, exitsElement ? idField.value : null);
         }
     }
 }

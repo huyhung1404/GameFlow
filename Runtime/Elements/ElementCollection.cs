@@ -41,6 +41,22 @@ namespace GameFlow
             return null;
         }
 
+        internal GameFlowElement GetElement(Type type, string id)
+        {
+            for (var i = 0; i < elementCount; i++)
+            {
+                if (type != types[i]) continue;
+                var element = elements[i];
+                if (!string.Equals(element.instanceID, id)) continue;
+#if !UNITY_EDITOR
+                if (!element.includeInBuild) return null;
+#endif
+                return element;
+            }
+
+            return null;
+        }
+
         internal void GenerateElement(GameFlowElement element)
         {
             var listElements = elements.ToList();

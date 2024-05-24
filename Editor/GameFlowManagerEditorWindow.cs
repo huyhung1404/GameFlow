@@ -29,6 +29,7 @@ namespace GameFlow.Editor
         private string scriptGeneratePath;
         private GameObject prefabGenerate;
         private string elementNameGenerate;
+        private string idGenerate;
 
         public static void OpenWindow()
         {
@@ -55,17 +56,19 @@ namespace GameFlow.Editor
             _ = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
         }
 
-        private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName)
+        private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName, string id)
         {
+            var pathName = id == null ? elementName : elementName + "_" + id;
             var unityPath = isUserInterface
-                ? PackagePath.AssetsUserInterfaceElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab")
-                : PackagePath.AssetsElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab");
+                ? PackagePath.AssetsUserInterfaceElementsFolderPath() + "/" + pathName + (isScene ? ".unity" : ".prefab")
+                : PackagePath.AssetsElementsFolderPath() + "/" + pathName + (isScene ? ".unity" : ".prefab");
 
             try
             {
                 elementNameGenerate = elementName;
+                idGenerate = id;
                 GenerateAsset(isScene, templatePath, unityPath);
-                GenerateScripts(elementName, isUserInterface);
+                if (id == null) GenerateScripts(elementName, isUserInterface);
                 windowState = State.GENERATING;
             }
             catch (Exception e)
@@ -158,6 +161,7 @@ namespace GameFlow.Editor
             instance.includeInBuild = true;
             instance.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
             instance.reference = assetReferenceGenerate;
+            if (idGenerate != null) instance.instanceID = idGenerate;
             manager.elementCollection.GenerateElement(instance);
             EditorUtility.SetDirty(manager);
         }

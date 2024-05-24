@@ -3,6 +3,11 @@
     <ui:VisualElement name="container" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
         <ui:Label text="Label" display-tooltip-when-elided="true" name="title" class="title" style="-unity-text-align: upper-center; margin-bottom: 5px;" />
         <ui:TextField picking-mode="Ignore" label="Element Name" name="element_name" />
+        <ui:VisualElement name="instance_id_view" class="panel" style="margin-top: 2px; margin-bottom: 2px; display: flex;">
+            <ui:Label text="Elements type is exits, create new instance with ID :" display-tooltip-when-elided="true" style="font-size: 10px; -unity-font-style: bold; white-space: normal; padding-left: 3px;" />
+            <ui:TextField picking-mode="Ignore" name="instance_id" />
+        </ui:VisualElement>
+        <ui:IMGUIContainer name="log" style="padding-left: 2px; padding-right: 2px; padding-top: 2px; padding-bottom: 2px;" />
         <ui:VisualElement name="template_view">
             <ui:VisualElement name="element_type" style="flex-direction: row; justify-content: space-between; align-items: center;">
                 <ui:Label text="Element Type" display-tooltip-when-elided="true" style="margin-right: 2px; padding-top: 0; margin-left: 3px; padding-bottom: 0;" />
@@ -14,6 +19,5 @@
             <ui:DropdownField label="Template" index="-1" choices="System.Collections.Generic.List`1[System.String]" name="template" />
             <ui:Button text="Generate" display-tooltip-when-elided="true" name="generate_button" />
         </ui:VisualElement>
-        <ui:IMGUIContainer name="log" />
     </ui:VisualElement>
 </ui:UXML>
