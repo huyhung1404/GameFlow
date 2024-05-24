@@ -1,5 +1,4 @@
 ﻿using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
 using PopupWindow = UnityEditor.PopupWindow;
 
@@ -24,18 +23,18 @@ namespace GameFlow.Editor
 
         private void RegisterGenerateButton()
         {
-            var addButton = root.Q<Button>("add_button");
-            addButton.RegisterCallback<ClickEvent>(_ =>
+            var generateButton = root.Q<Button>("generate_button");
+            generateButton.RegisterCallback<ClickEvent>(_ =>
             {
                 AssetDatabase.Refresh();
-                PopupWindow.Show(addButton.worldBound, new GenerateElementPopupWindow(false, generateAction));
+                PopupWindow.Show(generateButton.worldBound, new GenerateElementPopupWindow(false, generateAction));
             });
 
-            var addInterfaceButton = root.Q<Button>("add_interface_button");
-            addInterfaceButton.RegisterCallback<ClickEvent>(_ =>
+            var generateInterfaceButton = root.Q<Button>("generate_interface_button");
+            generateInterfaceButton.RegisterCallback<ClickEvent>(_ =>
             {
                 AssetDatabase.Refresh();
-                PopupWindow.Show(addInterfaceButton.worldBound, new GenerateElementPopupWindow(true, generateAction));
+                PopupWindow.Show(generateInterfaceButton.worldBound, new GenerateElementPopupWindow(true, generateAction));
             });
         }
     }
