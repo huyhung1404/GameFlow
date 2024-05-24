@@ -68,8 +68,14 @@ namespace GameFlow.Editor
                 elementNameGenerate = elementName;
                 idGenerate = id;
                 GenerateAsset(isScene, templatePath, unityPath);
-                if (id == null) GenerateScripts(elementName, isUserInterface);
-                windowState = State.GENERATING;
+                if (id == null)
+                {
+                    GenerateScripts(elementName, isUserInterface);
+                    windowState = State.GENERATING;
+                    return;
+                }
+
+                windowState = State.COMPILING;
             }
             catch (Exception e)
             {
