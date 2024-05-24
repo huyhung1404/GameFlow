@@ -33,19 +33,18 @@
     margin-bottom: 2px;
 }
 
-#sub_element_title Toggle VisualElement Label {
+#sub_element_title > Toggle > VisualElement > Label {
     font-size: 12px;
     -unity-font-style: bold;
 }
 
-#sub_element_title #unity-content {
+#sub_element_title > #unity-content {
     font-size: 12px;
     -unity-font-style: bold;
-    border-left-color: rgba(128, 128, 128, 0.25);
-    border-right-color: rgba(128, 128, 128, 0.25);
-    border-top-color: rgba(128, 128, 128, 0.25);
-    border-bottom-color: rgba(128, 128, 128, 0.25);
-    background-color: rgba(128, 128, 128, 0.2);
+    border-left-color: rgba(128, 128, 128, 0.92);
+    border-right-color: rgba(128, 128, 128, 0.92);
+    border-top-color: rgba(128, 128, 128, 0.92);
+    border-bottom-color: rgba(128, 128, 128, 0.92);
     padding-left: 7px;
     padding-right: 2px;
     padding-top: 2px;
@@ -60,4 +59,23 @@
     border-bottom-left-radius: 2px;
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
+}
+
+#container > Toggle > VisualElement > Label {
+    -unity-font-style: bold;
+    font-size: 11px;
+    -unity-text-align: middle-left;
+    padding-left: 5px;
+}
+
+#container > Toggle {
+    margin-left: 0;
+}
+
+#container > Toggle > VisualElement > #unity-checkmark {
+    display: flex;
+    position: absolute;
+    right: -7px;
+    left: auto;
+    top: 1px;
 }
