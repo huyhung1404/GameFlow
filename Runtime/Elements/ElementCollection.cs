@@ -7,7 +7,7 @@ namespace GameFlow
     [Serializable]
     internal class ElementCollection : ISerializationCallbackReceiver
     {
-        [SerializeField] private GameFlowElement[] elements;
+        [SerializeReference] private GameFlowElement[] elements;
         private Type[] types;
         private int elementCount;
 
@@ -22,7 +22,7 @@ namespace GameFlow
             types = new Type[elementCount];
             for (var i = 0; i < elementCount; i++)
             {
-                types[i] = elements[i].GetType();
+                types[i] = elements[i]?.GetType();
             }
         }
 

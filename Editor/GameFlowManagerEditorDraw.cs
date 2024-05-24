@@ -18,8 +18,18 @@ namespace GameFlow.Editor
             VisualElement labelFromUXML = visualTree.Instantiate();
             rootVisualElement.Add(labelFromUXML);
             root = rootVisualElement;
+            RegisterAddButton();
             RegisterGenerateButton();
         }
+
+        private void RegisterAddButton()
+        {
+            var addButton = root.Q<Button>("add_button");
+            addButton.RegisterCallback<ClickEvent>(_ => { PopupWindow.Show(addButton.worldBound, new AddElementPopupWindow(false, ResetView)); });
+            var addInterfaceButton = root.Q<Button>("add_interface_button");
+            addInterfaceButton.RegisterCallback<ClickEvent>(_ => { PopupWindow.Show(addInterfaceButton.worldBound, new AddElementPopupWindow(true, ResetView)); });
+        }
+
 
         private void RegisterGenerateButton()
         {
@@ -36,6 +46,11 @@ namespace GameFlow.Editor
                 AssetDatabase.Refresh();
                 PopupWindow.Show(generateInterfaceButton.worldBound, new GenerateElementPopupWindow(true, generateAction));
             });
+        }
+
+        private void ResetView()
+        {
+            //TODO: Reset View
         }
     }
 }

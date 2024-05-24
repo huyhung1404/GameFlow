@@ -170,6 +170,8 @@ namespace GameFlow.Editor
             if (idGenerate != null) instance.instanceID = idGenerate;
             manager.elementCollection.GenerateElement(instance);
             EditorUtility.SetDirty(manager);
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
         }
 
         private static Type GetAssemblyType(string typeName)
@@ -271,7 +273,6 @@ namespace GameFlow.Editor
     {
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
             GUILayout.Space(10);
             if (GUILayout.Button("Open Editor Window"))
             {

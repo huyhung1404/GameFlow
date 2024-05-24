@@ -15,7 +15,7 @@ namespace GameFlow.Editor
     public class GenerateElementPopupWindow : PopupWindowContent
     {
         private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GenerateElementPopupWindow.uxml";
-        private const string kNamePattern = "^[a-zA-Z0-9]+$";
+        private const string kNamePattern = "^[a-zA-Z0-9_]+$";
 
         private readonly bool isUserInterface;
         private readonly Generate generateAction;
@@ -102,7 +102,7 @@ namespace GameFlow.Editor
                 logSizePopup += 40;
                 EditorGUILayout.HelpBox("Element name is exits.", MessageType.Error);
             }
-            
+
             if ((isScene ? sceneTemplateChoices : prefabTemplateChoices).Count == 0)
             {
                 logSizePopup += 40;
@@ -188,7 +188,13 @@ namespace GameFlow.Editor
 
         private void IDChange(ChangeEvent<string> evt)
         {
-            NameChange(null);
+            if (string.IsNullOrEmpty(evt.newValue) || nameRegex.IsMatch(evt.newValue))
+            {
+                NameChange(null);
+                return;
+            }
+
+            idField.value = evt.previousValue;
         }
 
         public static List<Type> GetDerivedTypes(Type baseType)
