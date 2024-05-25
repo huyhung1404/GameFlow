@@ -3,7 +3,7 @@
 }
 
 .panel {
-    background-color: rgba(128, 128, 128, 0.2);
+    background-color: rgba(128, 128, 128, 0.15);
     border-left-width: 1px;
     border-right-width: 1px;
     border-top-width: 1px;
