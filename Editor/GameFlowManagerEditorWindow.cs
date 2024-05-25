@@ -257,9 +257,27 @@ namespace GameFlow.Editor
     [CustomEditor(typeof(GameFlowManager))]
     internal class GameFlowManagerEditor : UnityEditor.Editor
     {
+        private const string kMenuItemPath = "CONTEXT/GameFlowManager/Draw Default Inspector";
+        private const string kPrefsKey = "com.huyhung1404.gameflow_drawDefautInspectorManager";
+        private static bool drawDefaultInspector;
+
+        private void OnEnable()
+        {
+            drawDefaultInspector = EditorPrefs.GetBool(kPrefsKey, false);
+            Menu.SetChecked(kMenuItemPath, drawDefaultInspector);
+        }
+
+        [MenuItem(kMenuItemPath)]
+        public static void Enable_DrawDefaultInspector()
+        {
+            drawDefaultInspector = !drawDefaultInspector;
+            EditorPrefs.SetBool(kPrefsKey, drawDefaultInspector);
+            Menu.SetChecked(kMenuItemPath, drawDefaultInspector);
+        }
+
         public override void OnInspectorGUI()
         {
-            DrawDefaultInspector();
+            if (drawDefaultInspector) DrawDefaultInspector();
             GUILayout.Space(10);
             if (GUILayout.Button("Open Editor Window"))
             {

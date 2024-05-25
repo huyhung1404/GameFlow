@@ -105,17 +105,6 @@ namespace GameFlow.Editor
             userInterfaceFlowCountTitle.text = SetCountTitle(userInterfaceFlowProperties.Count);
         }
 
-        private string SetCountTitle(int count)
-        {
-            var countText = count switch
-            {
-                0 => KNoElementText,
-                _ => string.Format(KHasElementTextFormat, count)
-            };
-
-            return string.IsNullOrEmpty(searchField.value) ? countText : $"[ Key: <b>{searchField.value}</b> ]  {countText}";
-        }
-
         private void UpdateData()
         {
             gameFlowProperties.Clear();
@@ -174,6 +163,22 @@ namespace GameFlow.Editor
             }
 
             return null;
+        }
+
+        private string SetCountTitle(int count)
+        {
+            var countText = count switch
+            {
+                0 => KNoElementText,
+                _ => string.Format(KHasElementTextFormat, count)
+            };
+
+            return string.IsNullOrEmpty(searchField.value) ? countText : $"[ Key: <b>{searchField.value}</b> ]  {countText}";
+        }
+
+        private void FillData(List<ElementProperty> properties, List<GameFlowVisualElement> elements, VisualElement container)
+        {
+            
         }
     }
 }
