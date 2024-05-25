@@ -15,7 +15,8 @@ namespace GameFlow.Editor
         private SerializedProperty instanceID;
         private SerializedProperty reference;
         private bool active;
-        private EnumField releaseModeElement;
+        private readonly EnumField releaseModeElement;
+        private readonly Toggle fullSceneElement;
 
         public ItemGameFlowContentElement()
         {
@@ -23,6 +24,7 @@ namespace GameFlow.Editor
             root.Q<IMGUIContainer>("title_gui").onGUIHandler = DrawTitleGUI;
             root.Q<Button>("remove_button").RegisterCallback<ClickEvent>(OnClickRemove);
             releaseModeElement = root.Q<EnumField>("release_mode");
+            fullSceneElement = root.Q<Toggle>("full_scene");
             Add(root);
         }
 
@@ -50,6 +52,17 @@ namespace GameFlow.Editor
             instanceID = serializedProperty.FindPropertyRelative("instanceID");
             reference = serializedProperty.FindPropertyRelative("reference");
             releaseModeElement.BindProperty(serializedProperty.FindPropertyRelative("releaseMode"));
+            if (isUserInterface)
+            {
+                fullSceneElement.BindProperty(serializedProperty.FindPropertyRelative("fullScene"));
+                fullSceneElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+            }
+            else
+            {
+                fullSceneElement.Unbind();
+                fullSceneElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            }
+
             active = true;
         }
 

@@ -80,5 +80,10 @@
     top: 1px;
 }
 
-#full_scene > VisualElement > #unity-checkmark {
+Toggle#full_scene > VisualElement > VisualElement#unity-checkmark {
+    position: relative;
+    left: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
 }
