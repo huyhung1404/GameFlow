@@ -24,6 +24,7 @@ namespace GameFlow.Editor
             END
         }
 
+        private GameFlowManagerEditorDraw editorDraw;
         private State windowState = State.IDLE;
         private AssetReference assetReferenceGenerate;
         private string scriptGeneratePath;
@@ -53,7 +54,7 @@ namespace GameFlow.Editor
                 return;
             }
 
-            _ = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
+            editorDraw = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
         }
 
         private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName, string id)
@@ -152,8 +153,7 @@ namespace GameFlow.Editor
                 case State.END:
                     windowState = State.IDLE;
                     SaveGenerateAssets();
-                    rootVisualElement.Clear();
-                    CreateGUI();
+                    editorDraw.UpdateView();
                     break;
             }
         }
@@ -177,21 +177,7 @@ namespace GameFlow.Editor
         private static Type GetAssemblyType(string typeName)
         {
             typeName = kScriptsNameSpace + "." + typeName;
-            return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetType(typeName)).FirstOrDefault(TypeIsMatch);
-        }
-
-        private static bool TypeIsMatch(Type type)
-        {
-            if (type == null) return false;
-            var parent = type.BaseType;
-            while (parent != null)
-            {
-                type = parent;
-                if (type == typeof(GameFlowElement)) return true;
-                parent = type.BaseType;
-            }
-
-            return false;
+            return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetType(typeName)).FirstOrDefault(type => type.IsSubclassOf(typeof(GameFlowElement)));
         }
 
         private void SaveGenerateAssets()
@@ -273,6 +259,7 @@ namespace GameFlow.Editor
     {
         public override void OnInspectorGUI()
         {
+            DrawDefaultInspector();
             GUILayout.Space(10);
             if (GUILayout.Button("Open Editor Window"))
             {

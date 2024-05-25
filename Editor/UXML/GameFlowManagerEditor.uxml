@@ -5,16 +5,11 @@
         <ui:VisualElement name="elements" class="panel" style="border-left-color: rgba(128, 128, 128, 0.25); border-right-color: rgba(128, 128, 128, 0.25); border-top-color: rgba(128, 128, 128, 0.25); border-bottom-color: rgba(128, 128, 128, 0.25); background-color: rgba(128, 128, 128, 0.2); padding-top: 10px; padding-bottom: 10px;">
             <ui:Foldout text="Game Flow Element" name="sub_element_title" view-data-key="game_flow_element_title" value="true">
                 <ui:Label text="No elements were found in the manager." display-tooltip-when-elided="true" name="game_flow_content" style="-unity-font-style: normal; font-size: 10px; white-space: normal;" />
-                <ui:VisualElement name="game_flow_container">
-                    <GameFlow.Editor.GameFlowVisualElement />
-                    <GameFlow.Editor.GameFlowVisualElement />
-                </ui:VisualElement>
+                <ui:VisualElement name="game_flow_container" />
             </ui:Foldout>
             <ui:Foldout text="User Interface Flow Element" name="sub_element_title" view-data-key="ui_flow_element_title" style="margin-top: 10px;">
                 <ui:Label text="No elements were found in the manager." display-tooltip-when-elided="true" name="ui_flow_content" style="-unity-font-style: normal; font-size: 10px; white-space: normal;" />
-                <ui:VisualElement name="ui_flow_container">
-                    <GameFlow.Editor.GameFlowVisualElement />
-                </ui:VisualElement>
+                <ui:VisualElement name="ui_flow_container" />
             </ui:Foldout>
         </ui:VisualElement>
         <ui:Label text="Import Element" display-tooltip-when-elided="true" name="generate_title" class="title" />

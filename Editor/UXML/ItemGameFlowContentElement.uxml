@@ -5,5 +5,4 @@
         <ui:Button text="Remove" display-tooltip-when-elided="true" name="remove_button" />
     </ui:Foldout>
     <ui:IMGUIContainer name="title_gui" style="position: absolute; left: 5px; top: 3px; height: 19px; right: 25px;" />
-    <ui:Toggle name="include_in_build" style="position: absolute; left: 1px; top: 4px; height: 15px; display: none;" />
 </ui:UXML>

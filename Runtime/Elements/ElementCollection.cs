@@ -73,5 +73,22 @@ namespace GameFlow
             elements = listElements.ToArray();
             OnAfterDeserialize();
         }
+
+        internal bool VerifyData()
+        {
+            if (elements == null) return false;
+            var isChange = false;
+            var listElements = elements.ToList();
+            for (var i = listElements.Count - 1; i >= 0; i--)
+            {
+                if (listElements[i] != null) continue;
+                listElements.RemoveAt(i);
+                isChange = true;
+            }
+
+            elements = listElements.ToArray();
+            OnAfterDeserialize();
+            return isChange;
+        }
     }
 }
