@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using GameFlow.Internal;
 using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 using PopupWindow = UnityEditor.PopupWindow;
 
@@ -12,6 +14,7 @@ namespace GameFlow.Editor
     {
         public SerializedProperty property;
         public Type type;
+        public SerializedProperty instanceID;
     }
 
     public class GameFlowManagerEditorDraw
@@ -33,6 +36,7 @@ namespace GameFlow.Editor
         private Label userInterfaceFlowCountTitle;
         private VisualElement gameFlowContainer;
         private VisualElement userInterfaceContainer;
+        private ToolbarSearchField searchField;
 
         public GameFlowManagerEditorDraw(VisualElement rootVisualElement, Generate generate)
         {
@@ -64,6 +68,8 @@ namespace GameFlow.Editor
             userInterfaceFlowCountTitle = root.Q<Label>("ui_flow_content");
             gameFlowContainer = root.Q<VisualElement>("game_flow_container");
             userInterfaceContainer = root.Q<VisualElement>("ui_flow_container");
+            searchField = root.Q<ToolbarSearchField>("search_field");
+            searchField.RegisterValueChangedCallback(_ => UpdateView());
         }
 
         private void RegisterAddButton()
@@ -99,13 +105,15 @@ namespace GameFlow.Editor
             userInterfaceFlowCountTitle.text = SetCountTitle(userInterfaceFlowProperties.Count);
         }
 
-        private static string SetCountTitle(int count)
+        private string SetCountTitle(int count)
         {
-            return count switch
+            var countText = count switch
             {
                 0 => KNoElementText,
                 _ => string.Format(KHasElementTextFormat, count)
             };
+
+            return string.IsNullOrEmpty(searchField.value) ? countText : $"[ Key: <b>{searchField.value}</b> ]  {countText}";
         }
 
         private void UpdateData()
@@ -115,11 +123,22 @@ namespace GameFlow.Editor
             var property = serializedObject?.FindProperty("elementCollection").FindPropertyRelative("elements");
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             if (property == null || property.arraySize == 0) return;
+            var searchKey = searchField.value;
+            var hasSearchKey = !string.IsNullOrEmpty(searchKey);
             for (var i = 0; i < property.arraySize; i++)
             {
                 var elementProperty = property.GetArrayElementAtIndex(i);
                 var type = GetAssemblyType(assembly, elementProperty.managedReferenceFullTypename);
                 var isUserInterface = type.IsSubclassOf(typeof(UserInterfaceFlowElement));
+                var instanceIDProperty = elementProperty.FindPropertyRelative("instanceID");
+                if (hasSearchKey)
+                {
+                    if (!type.Name.Contains(searchKey)
+                        && (instanceIDProperty == null
+                            || (instanceIDProperty.stringValue != null
+                                && !instanceIDProperty.stringValue.Contains(searchKey)))) continue;
+                }
+
                 var element = new ElementProperty
                 {
                     type = type,
