@@ -18,7 +18,7 @@ namespace GameFlow.Editor
     {
         private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowManagerEditor.uxml";
         private const string KNoElementText = "No elements were found in the manager.";
-        private const string KHasElementTextFormat = "Element count: <b>{0}</b>";
+        private const string KHasElementTextFormat = "Element count:  <b>{0}</b>";
 
         private readonly VisualElement root;
         private readonly Generate generateAction;
