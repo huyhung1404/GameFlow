@@ -12,9 +12,7 @@ namespace GameFlow.Editor
 {
     public class ElementProperty
     {
-        public SerializedProperty property;
-        public Type type;
-        public SerializedProperty instanceID;
+        public List<SerializedProperty> properties;
     }
 
     public class GameFlowManagerEditorDraw
@@ -26,11 +24,10 @@ namespace GameFlow.Editor
         private readonly VisualElement root;
         private readonly Generate generateAction;
         private readonly SerializedObject serializedObject;
-        private readonly GameFlowManager manager;
         private readonly List<GameFlowVisualElement> gameFlowElements;
-        private readonly List<ElementProperty> gameFlowProperties;
+        private readonly Dictionary<Type, ElementProperty> gameFlowProperties;
         private readonly List<GameFlowVisualElement> userInterfaceFlowElements;
-        private readonly List<ElementProperty> userInterfaceFlowProperties;
+        private readonly Dictionary<Type, ElementProperty> userInterfaceFlowProperties;
 
         private Label gameFlowCountTitle;
         private Label userInterfaceFlowCountTitle;
@@ -45,7 +42,7 @@ namespace GameFlow.Editor
             VisualElement labelFromUXML = visualTree.Instantiate();
             rootVisualElement.Add(labelFromUXML);
             root = rootVisualElement;
-            manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
+            var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
             if (manager.elementCollection.VerifyData())
             {
                 EditorUtility.SetDirty(manager);
@@ -54,8 +51,8 @@ namespace GameFlow.Editor
             serializedObject = new SerializedObject(manager);
             gameFlowElements = new List<GameFlowVisualElement>();
             userInterfaceFlowElements = new List<GameFlowVisualElement>();
-            gameFlowProperties = new List<ElementProperty>();
-            userInterfaceFlowProperties = new List<ElementProperty>();
+            gameFlowProperties = new Dictionary<Type, ElementProperty>();
+            userInterfaceFlowProperties = new Dictionary<Type, ElementProperty>();
             Register();
             RegisterAddButton();
             RegisterGenerateButton();
@@ -103,6 +100,8 @@ namespace GameFlow.Editor
             UpdateData();
             gameFlowCountTitle.text = SetCountTitle(gameFlowProperties.Count);
             userInterfaceFlowCountTitle.text = SetCountTitle(userInterfaceFlowProperties.Count);
+            FillData(false, gameFlowProperties, gameFlowElements, gameFlowContainer);
+            FillData(true, userInterfaceFlowProperties, userInterfaceFlowElements, userInterfaceContainer);
         }
 
         private void UpdateData()
@@ -128,21 +127,22 @@ namespace GameFlow.Editor
                                 && !instanceIDProperty.stringValue.Contains(searchKey)))) continue;
                 }
 
-                var element = new ElementProperty
-                {
-                    type = type,
-                    property = elementProperty
-                };
-
-                if (!isUserInterface)
-                {
-                    gameFlowProperties.Add(element);
-                }
-                else
-                {
-                    userInterfaceFlowProperties.Add(element);
-                }
+                AddDictionaryProperty(type, elementProperty, !isUserInterface ? gameFlowProperties : userInterfaceFlowProperties);
             }
+        }
+
+        private static void AddDictionaryProperty(Type type, SerializedProperty serializedProperty, IDictionary<Type, ElementProperty> dictionary)
+        {
+            if (dictionary.TryGetValue(type, out var element))
+            {
+                element.properties.Add(serializedProperty);
+                return;
+            }
+
+            dictionary.Add(type, new ElementProperty
+            {
+                properties = new List<SerializedProperty> { serializedProperty }
+            });
         }
 
         private static Type GetAssemblyType(IEnumerable<Assembly> assemblies, string typeName)
@@ -176,9 +176,28 @@ namespace GameFlow.Editor
             return string.IsNullOrEmpty(searchField.value) ? countText : $"[ Key: <b>{searchField.value}</b> ]  {countText}";
         }
 
-        private void FillData(List<ElementProperty> properties, List<GameFlowVisualElement> elements, VisualElement container)
+        private void FillData(bool isUserInterface, Dictionary<Type, ElementProperty> properties, List<GameFlowVisualElement> elements, VisualElement container)
         {
-            
+            var index = 0;
+            foreach (var keyValue in properties)
+            {
+                if (index >= elements.Count)
+                {
+                    var visual = new GameFlowVisualElement();
+                    container.hierarchy.Add(visual);
+                    elements.Add(visual);
+                }
+
+                var visualElement = elements[index];
+                visualElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+                visualElement.UpdateGraphic(isUserInterface, keyValue.Key, keyValue.Value);
+                index++;
+            }
+
+            for (; index < elements.Count; index++)
+            {
+                elements[index].style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            }
         }
     }
 }

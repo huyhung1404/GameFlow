@@ -79,3 +79,6 @@
     left: auto;
     top: 1px;
 }
+
+#full_scene > VisualElement > #unity-checkmark {
+}
