@@ -26,6 +26,11 @@ namespace GameFlow
             }
         }
 
+        internal GameFlowElement GetIndex(int index)
+        {
+            return index >= elements.Length ? null : elements[index];
+        }
+
         internal GameFlowElement GetElement(Type type)
         {
             for (var i = 0; i < elementCount; i++)

@@ -1,6 +1,10 @@
 ﻿using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using GameFlow.Internal;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace GameFlow.Editor
 {
@@ -26,32 +30,24 @@ namespace GameFlow.Editor
                 File.Copy(templatePath, targetPath, true);
             }
         }
-        
-        public static T GetValue<T>(this SerializedProperty property)
+
+        public static AssetReference GetAssetReferenceValue(this SerializedProperty property)
         {
-            object obj = property.serializedObject.targetObject;
-            string[] fieldNames = property.propertyPath.Split('.');
-
-            foreach (string fieldName in fieldNames)
-            {
-                obj = GetFieldValue(obj, fieldName);
-                if (obj == null)
-                    return default(T);
-            }
-
-            return (T)obj;
+            var manager = (GameFlowManager)property.serializedObject.targetObject;
+            var index = ExtractArrayIndex(property.propertyPath);
+            return index == null ? null : manager.elementCollection.GetIndex(index.Value)?.reference;
         }
 
-        private static object GetFieldValue(object obj, string fieldName)
+        private static int? ExtractArrayIndex(string input)
         {
-            if (obj == null)
-                return null;
+            const string pattern = @"Array.data\[(\d+)\].reference";
+            var match = Regex.Match(input, pattern);
+            if (match.Success)
+            {
+                return int.Parse(match.Groups[1].Value);
+            }
 
-            FieldInfo field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            if (field == null)
-                return null;
-
-            return field.GetValue(obj);
+            return null;
         }
     }
 }

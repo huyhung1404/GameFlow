@@ -43,7 +43,7 @@ namespace GameFlow.Editor
             includeInBuild.boolValue = EditorGUI.Toggle(new Rect(0, 0, 20, 20), GUIContent.none, includeInBuild.boolValue);
             if (includeInBuild.boolValue != lastValue)
             {
-                var referenceValue = reference.GetValue<AssetReference>();
+                var referenceValue = reference.GetAssetReferenceValue();
                 if (referenceValue == null)
                 {
                     includeInBuild.boolValue = lastValue;
