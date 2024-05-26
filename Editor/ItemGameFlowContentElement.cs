@@ -9,17 +9,18 @@ namespace GameFlow.Editor
 {
     public class ItemGameFlowContentElement : VisualElement
     {
+        public static bool IsDrawGUI;
         private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/ItemGameFlowContentElement.uxml";
         private SerializedObject serializedObject;
         private SerializedProperty serializedProperty;
         private SerializedProperty includeInBuild;
         private SerializedProperty instanceID;
         private SerializedProperty reference;
-        private bool active;
         private readonly EnumField releaseModeElement;
         private readonly Toggle fullSceneElement;
         private Action<int> removeAtIndex;
         private bool showDialog;
+        private bool isActive;
 
         public ItemGameFlowContentElement()
         {
@@ -44,7 +45,7 @@ namespace GameFlow.Editor
 
         private void DrawTitleGUI()
         {
-            if (!active) return;
+            if (!IsDrawGUI || !isActive) return;
             var guiWidth = EditorGUIUtility.currentViewWidth;
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
@@ -66,13 +67,10 @@ namespace GameFlow.Editor
             var idWidth = Mathf.Max(30, guiWidth / 4);
             instanceID.stringValue = EditorGUI.TextField(new Rect(22, 1, idWidth, 18), GUIContent.none, instanceID.stringValue);
             EditorGUI.PropertyField(new Rect(30 + idWidth, 1, Mathf.Max(45, guiWidth - idWidth - 125), 18), reference, GUIContent.none);
-            if (showDialog)
-            {
-                ShowConfirmationDialog();
-                showDialog = false;
-            }
-
             if (EditorGUI.EndChangeCheck()) serializedObject.ApplyModifiedProperties();
+            if (!showDialog) return;
+            ShowConfirmationDialog();
+            showDialog = false;
         }
 
         private void ShowConfirmationDialog()
@@ -87,9 +85,9 @@ namespace GameFlow.Editor
             );
 
             if (!confirm) return;
+            IsDrawGUI = false;
+            isActive = false;
             removeAtIndex?.Invoke(index.Value);
-            active = false;
-            serializedObject.ApplyModifiedProperties();
         }
 
         public void UpdateGraphic(bool isUserInterface, Type type, SerializedProperty serialized, Action<int> removeAt)
@@ -112,7 +110,12 @@ namespace GameFlow.Editor
                 fullSceneElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
             }
 
-            active = true;
+            isActive = true;
+        }
+
+        public void HideGraphic()
+        {
+            isActive = false;
         }
 
         public new class UxmlFactory : UxmlFactory<ItemGameFlowContentElement, UxmlTraits>

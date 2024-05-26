@@ -97,15 +97,18 @@ namespace GameFlow.Editor
 
         internal void UpdateView()
         {
+            ItemGameFlowContentElement.IsDrawGUI = false;
             UpdateData();
             gameFlowCountTitle.text = SetCountTitle(gameFlowProperties.Count);
             userInterfaceFlowCountTitle.text = SetCountTitle(userInterfaceFlowProperties.Count);
             FillData(false, gameFlowProperties, gameFlowElements, gameFlowContainer);
             FillData(true, userInterfaceFlowProperties, userInterfaceFlowElements, userInterfaceContainer);
+            ItemGameFlowContentElement.IsDrawGUI = true;
         }
 
         private void UpdateData()
         {
+            serializedObject.Update();
             gameFlowProperties.Clear();
             userInterfaceFlowProperties.Clear();
             var property = serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements");
@@ -205,6 +208,7 @@ namespace GameFlow.Editor
             try
             {
                 serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements").DeleteArrayElementAtIndex(index);
+                serializedObject?.ApplyModifiedProperties();
                 UpdateView();
             }
             catch (Exception e)

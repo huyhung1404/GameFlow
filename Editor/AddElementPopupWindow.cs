@@ -135,7 +135,6 @@ namespace GameFlow.Editor
         {
             GenerateScripts();
             editorWindow.Close();
-            resetView?.Invoke();
         }
 
         private void GenerateScripts()
@@ -143,11 +142,12 @@ namespace GameFlow.Editor
             var instance = (GameFlowElement)Activator.CreateInstance(elementsInProject[scripts.index]);
             instance.includeInBuild = true;
             instance.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
-            if (string.IsNullOrEmpty(idField.value)) instance.instanceID = idField.value;
+            if (!string.IsNullOrEmpty(idField.value)) instance.instanceID = idField.value;
             manager.elementCollection.GenerateElement(instance);
             EditorUtility.SetDirty(manager);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
+            resetView?.Invoke();
         }
     }
 }

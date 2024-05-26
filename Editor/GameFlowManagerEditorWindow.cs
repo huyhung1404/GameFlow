@@ -143,7 +143,7 @@ namespace GameFlow.Editor
                         }
                         catch (Exception e)
                         {
-                            Debug.LogError(e);
+                            Debug.LogException(e);
                         }
 
                         windowState = State.END;
@@ -177,7 +177,7 @@ namespace GameFlow.Editor
         private static Type GetAssemblyType(string typeName)
         {
             typeName = kScriptsNameSpace + "." + typeName;
-            return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetType(typeName)).FirstOrDefault(type => type.IsSubclassOf(typeof(GameFlowElement)));
+            return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly?.GetType(typeName)).FirstOrDefault(type => type != null && type.IsSubclassOf(typeof(GameFlowElement)));
         }
 
         private void SaveGenerateAssets()

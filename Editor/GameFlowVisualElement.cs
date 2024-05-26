@@ -39,6 +39,7 @@ namespace GameFlow.Editor
 
             for (; index < elements.Count; index++)
             {
+                elements[index].HideGraphic();
                 elements[index].style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
             }
         }
