@@ -19,7 +19,7 @@ namespace GameFlow.Editor
             Add(root);
         }
 
-        public void UpdateGraphic(bool isUserInterface, Type type, ElementProperty elementProperty)
+        public void UpdateGraphic(bool isUserInterface, Type type, ElementProperty elementProperty, Action<int> removeAt)
         {
             container.text = $"{type.Name}.cs";
             var index = 0;
@@ -34,7 +34,7 @@ namespace GameFlow.Editor
 
                 var visualElement = elements[index];
                 visualElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                visualElement.UpdateGraphic(isUserInterface, type, elementProperty.properties[index]);
+                visualElement.UpdateGraphic(isUserInterface, type, elementProperty.properties[index], removeAt);
             }
 
             for (; index < elements.Count; index++)

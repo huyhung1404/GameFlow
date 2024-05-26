@@ -34,14 +34,14 @@ namespace GameFlow.Editor
         public static AssetReference GetAssetReferenceValue(this SerializedProperty property)
         {
             var manager = (GameFlowManager)property.serializedObject.targetObject;
-            var index = ExtractArrayIndex(property.propertyPath);
+            var index = ExtractArrayIndex(property);
             return index == null ? null : manager.elementCollection.GetIndex(index.Value)?.reference;
         }
 
-        private static int? ExtractArrayIndex(string input)
+        public static int? ExtractArrayIndex(this SerializedProperty property)
         {
-            const string pattern = @"Array.data\[(\d+)\].reference";
-            var match = Regex.Match(input, pattern);
+            const string pattern = @"Array.data\[(\d+)\]";
+            var match = Regex.Match(property.propertyPath, pattern);
             if (match.Success)
             {
                 return int.Parse(match.Groups[1].Value);

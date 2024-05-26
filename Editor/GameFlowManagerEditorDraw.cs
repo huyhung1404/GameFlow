@@ -108,7 +108,7 @@ namespace GameFlow.Editor
         {
             gameFlowProperties.Clear();
             userInterfaceFlowProperties.Clear();
-            var property = serializedObject?.FindProperty("elementCollection").FindPropertyRelative("elements");
+            var property = serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements");
             var assembly = AppDomain.CurrentDomain.GetAssemblies();
             if (property == null || property.arraySize == 0) return;
             var searchKey = searchField.value;
@@ -118,7 +118,7 @@ namespace GameFlow.Editor
                 var elementProperty = property.GetArrayElementAtIndex(i);
                 var type = GetAssemblyType(assembly, elementProperty.managedReferenceFullTypename);
                 var isUserInterface = type.IsSubclassOf(typeof(UserInterfaceFlowElement));
-                var instanceIDProperty = elementProperty.FindPropertyRelative("instanceID");
+                var instanceIDProperty = elementProperty.FindPropertyRelative(nameof(GameFlowElement.instanceID));
                 if (hasSearchKey)
                 {
                     if (!type.Name.Contains(searchKey)
@@ -190,13 +190,26 @@ namespace GameFlow.Editor
 
                 var visualElement = elements[index];
                 visualElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                visualElement.UpdateGraphic(isUserInterface, keyValue.Key, keyValue.Value);
+                visualElement.UpdateGraphic(isUserInterface, keyValue.Key, keyValue.Value, RemoveAt);
                 index++;
             }
 
             for (; index < elements.Count; index++)
             {
                 elements[index].style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            }
+        }
+
+        private void RemoveAt(int index)
+        {
+            try
+            {
+                serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements").DeleteArrayElementAtIndex(index);
+                UpdateView();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
         }
     }
