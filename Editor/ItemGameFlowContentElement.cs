@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
@@ -38,7 +39,21 @@ namespace GameFlow.Editor
             var guiWidth = EditorGUIUtility.currentViewWidth;
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
+            var lastValue = includeInBuild.boolValue;
             includeInBuild.boolValue = EditorGUI.Toggle(new Rect(0, 0, 20, 20), GUIContent.none, includeInBuild.boolValue);
+            if (includeInBuild.boolValue != lastValue)
+            {
+                var referenceValue = reference.GetValue<AssetReference>();
+                if (referenceValue == null)
+                {
+                    includeInBuild.boolValue = lastValue;
+                }
+                else
+                {
+                    AddressableUtility.AddAddressableGroupGUID(referenceValue.AssetGUID, !lastValue);
+                }
+            }
+
             var idWidth = Mathf.Max(30, guiWidth / 4);
             instanceID.stringValue = EditorGUI.TextField(new Rect(22, 1, idWidth, 18), GUIContent.none, instanceID.stringValue);
             EditorGUI.PropertyField(new Rect(30 + idWidth, 1, Mathf.Max(45, guiWidth - idWidth - 125), 18), reference, GUIContent.none);

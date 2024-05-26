@@ -89,7 +89,7 @@ namespace GameFlow.Editor
         private void GenerateAsset(bool isScene, string templatePath, string unityPath)
         {
             prefabGenerate = null;
-            GenerateElementUtility.CreateTemplateClone(templatePath, unityPath);
+            EditorElementUtility.CreateTemplateClone(templatePath, unityPath);
 
             AssetDatabase.ImportAsset(unityPath);
             if (!isScene)

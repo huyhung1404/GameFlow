@@ -10,9 +10,15 @@ namespace GameFlow.Editor
     internal static class AddressableUtility
     {
         private const string kGroupName = "GameFlow";
-        private const string kExcludeGroupName = "GameFlow_ExclueFromBuild";
+        private const string kExcludeGroupName = "GameFlow_ExcludeFromBuild";
 
         internal static AssetReference AddAddressableGroup(string assetPath, bool includeInBuild)
+        {
+            var guid = AssetDatabase.AssetPathToGUID(assetPath);
+            return AddAddressableGroupGUID(guid, includeInBuild);
+        }
+
+        internal static AssetReference AddAddressableGroupGUID(string guid, bool includeInBuild)
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             var groupName = includeInBuild ? kGroupName : kExcludeGroupName;
@@ -26,7 +32,6 @@ namespace GameFlow.Editor
                 bundledAssetGroupSchema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
             }
 
-            var guid = AssetDatabase.AssetPathToGUID(assetPath);
             var e = settings.CreateOrMoveEntry(guid, group, false, false);
             var entriesAdded = new List<AddressableAssetEntry> { e };
             group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
