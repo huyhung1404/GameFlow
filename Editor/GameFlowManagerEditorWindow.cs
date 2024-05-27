@@ -34,10 +34,16 @@ namespace GameFlow.Editor
 
         public static void OpenWindow()
         {
+            EditorViewDataKey.OnEnable();
             var window = GetWindow<GameFlowManagerEditorWindow>();
             window.titleContent = new GUIContent("Game Flow Manager");
             window.minSize = new Vector2(430, 250);
             window.Show();
+        }
+
+        private void OnDisable()
+        {
+            EditorViewDataKey.OnDisable();
         }
 
         public void CreateGUI()

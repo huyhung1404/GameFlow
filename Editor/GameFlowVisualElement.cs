@@ -22,6 +22,7 @@ namespace GameFlow.Editor
         public void UpdateGraphic(bool isUserInterface, Type type, ElementProperty elementProperty, Action<int> removeAt)
         {
             container.text = $"{type.Name}.cs";
+            container.BindToViewDataKey(container.text);
             var index = 0;
             for (; index < elementProperty.properties.Count; index++)
             {

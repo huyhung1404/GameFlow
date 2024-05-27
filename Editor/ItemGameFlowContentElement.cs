@@ -21,10 +21,12 @@ namespace GameFlow.Editor
         private Action<int> removeAtIndex;
         private bool showDialog;
         private bool isActive;
+        private readonly Foldout container;
 
         public ItemGameFlowContentElement()
         {
             var root = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(kUxmlPath).CloneTree();
+            container = root.Q<Foldout>("container");
             root.Q<IMGUIContainer>("title_gui").onGUIHandler = DrawTitleGUI;
             root.Q<Button>("remove_button").RegisterCallback<ClickEvent>(OnClickRemove);
             releaseModeElement = root.Q<EnumField>("release_mode");
@@ -95,6 +97,7 @@ namespace GameFlow.Editor
             serializedProperty = serialized;
             removeAtIndex = removeAt;
             serializedObject = serializedProperty.serializedObject;
+            container.BindToViewDataKey(serializedProperty.propertyPath, false);
             includeInBuild = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.includeInBuild));
             instanceID = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.instanceID));
             reference = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.reference));

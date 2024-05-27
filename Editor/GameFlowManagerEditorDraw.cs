@@ -61,6 +61,11 @@ namespace GameFlow.Editor
 
         private void Register()
         {
+            foreach (var foldout in root.Query<Foldout>("sub_element_title").ToList())
+            {
+                foldout?.BindToViewDataKey($"title_{foldout.text}");
+            }
+
             gameFlowCountTitle = root.Q<Label>("game_flow_content");
             userInterfaceFlowCountTitle = root.Q<Label>("ui_flow_content");
             gameFlowContainer = root.Q<VisualElement>("game_flow_container");
