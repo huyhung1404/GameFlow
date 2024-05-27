@@ -18,11 +18,31 @@ namespace GameFlow.Editor
             return AddAddressableGroupGUID(guid, includeInBuild);
         }
 
+        internal static AssetReferenceElement AddAddressableGroup(string assetPath, bool includeInBuild, bool isScene)
+        {
+            var guid = AssetDatabase.AssetPathToGUID(assetPath);
+            return AddAddressableGroupGUID(guid, includeInBuild, isScene);
+        }
+
         internal static AssetReference AddAddressableGroupGUID(string guid, bool includeInBuild)
+        {
+            return !SetGroup(guid, includeInBuild) ? null : new AssetReference(guid);
+        }
+
+        private static AssetReferenceElement AddAddressableGroupGUID(string guid, bool includeInBuild, bool isScene)
+        {
+            if (!SetGroup(guid, includeInBuild)) return null;
+            return new AssetReferenceElement(guid)
+            {
+                isScene = isScene
+            };
+        }
+
+        private static bool SetGroup(string guid, bool includeInBuild)
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
             var groupName = includeInBuild ? kGroupName : kExcludeGroupName;
-            if (!settings) return null;
+            if (!settings) return false;
             var group = settings.FindGroup(groupName);
             if (!group)
             {
@@ -36,7 +56,7 @@ namespace GameFlow.Editor
             var entriesAdded = new List<AddressableAssetEntry> { e };
             group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true);
-            return new AssetReference(guid);
+            return true;
         }
     }
 }

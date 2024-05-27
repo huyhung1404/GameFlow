@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace GameFlow
 {
@@ -9,7 +8,7 @@ namespace GameFlow
     {
         [SerializeField] internal string instanceID;
         [SerializeField] internal bool includeInBuild = true;
-        [SerializeField] internal AssetReference reference;
+        [SerializeField] internal AssetReferenceElement reference;
         [SerializeField] internal ElementReleaseMode releaseMode;
     }
 }

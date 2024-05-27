@@ -5,7 +5,6 @@ using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -26,7 +25,7 @@ namespace GameFlow.Editor
 
         private GameFlowManagerEditorDraw editorDraw;
         private State windowState = State.IDLE;
-        private AssetReference assetReferenceGenerate;
+        private AssetReferenceElement assetReferenceGenerate;
         private string scriptGeneratePath;
         private GameObject prefabGenerate;
         private string elementNameGenerate;
@@ -107,7 +106,7 @@ namespace GameFlow.Editor
                 UnityEditor.SceneManagement.EditorSceneManager.OpenScene(unityPath);
             }
 
-            assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true);
+            assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true, isScene);
         }
 
         private void GenerateScripts(string elementName, bool isUserInterface)

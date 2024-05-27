@@ -11,6 +11,8 @@ namespace GameFlow
     [Serializable]
     public class AssetReferenceElement : AssetReferenceT<Object>
     {
+        [SerializeField] internal bool isScene;
+
         public AssetReferenceElement(string guid) : base(guid)
         {
         }
@@ -33,5 +35,21 @@ namespace GameFlow
             return false;
 #endif
         }
+
+#if UNITY_EDITOR
+        public override bool SetEditorAsset(Object value)
+        {
+            if (!base.SetEditorAsset(value)) return false;
+            isScene = value is SceneAsset;
+            return true;
+        }
+
+        public override bool SetEditorSubObject(Object value)
+        {
+            if (!base.SetEditorSubObject(value)) return false;
+            isScene = value is SceneAsset;
+            return true;
+        }
+#endif
     }
 }
