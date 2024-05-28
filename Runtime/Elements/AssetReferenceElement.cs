@@ -11,10 +11,16 @@ namespace GameFlow
     [Serializable]
     public class AssetReferenceElement : AssetReferenceT<Object>
     {
-        [SerializeField] internal bool isScene;
+        [SerializeField] private bool isScene;
 
         public AssetReferenceElement(string guid) : base(guid)
         {
+            isScene = false;
+        }
+
+        public AssetReferenceElement(string guid, bool isScene) : base(guid)
+        {
+            this.isScene = isScene;
         }
 
         public override bool ValidateAsset(Object obj)

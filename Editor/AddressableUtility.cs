@@ -31,11 +31,7 @@ namespace GameFlow.Editor
 
         private static AssetReferenceElement AddAddressableGroupGUID(string guid, bool includeInBuild, bool isScene)
         {
-            if (!SetGroup(guid, includeInBuild)) return null;
-            return new AssetReferenceElement(guid)
-            {
-                isScene = isScene
-            };
+            return !SetGroup(guid, includeInBuild) ? null : new AssetReferenceElement(guid, isScene);
         }
 
         private static bool SetGroup(string guid, bool includeInBuild)
