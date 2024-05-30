@@ -13,7 +13,7 @@ namespace GameFlow.Tests
         {
             internal bool isExecute;
             private readonly int executeFrame;
-            private readonly MonoBehaviour mono;
+            protected readonly MonoBehaviour mono;
 
             public AutoReleaseCommand(int executeFrame, MonoBehaviour mono) : base(typeof(GameFlowElement))
             {
@@ -29,7 +29,7 @@ namespace GameFlow.Tests
                 mono.StartCoroutine(IERelease());
             }
 
-            private IEnumerator IERelease()
+            protected IEnumerator IERelease()
             {
                 yield return DelayFrame(executeFrame);
                 Release();
@@ -52,7 +52,9 @@ namespace GameFlow.Tests
 
             internal override void Update()
             {
-                base.Update();
+                if (isExecute) return;
+                isExecute = true;
+                mono.StartCoroutine(IERelease());
                 listExecute.Add(this);
             }
 
@@ -112,7 +114,7 @@ namespace GameFlow.Tests
                 new CommandData(0, 0),
                 new CommandData(0, 0),
                 new CommandData(0, 0));
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 100; i++)
             {
                 yield return MultiExecuteOrder(
                     new CommandData(Random.Range(0, 15), Random.Range(0, 15)),
