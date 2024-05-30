@@ -17,12 +17,14 @@ namespace GameFlow.Tests
 
             public AutoReleaseCommand(int executeFrame, MonoBehaviour mono) : base(typeof(GameFlowElement))
             {
+                isExecute = false;
                 this.mono = mono;
                 this.executeFrame = executeFrame;
             }
 
             internal override void Update()
             {
+                if (isExecute) return;
                 isExecute = true;
                 mono.StartCoroutine(IERelease());
             }
@@ -97,7 +99,7 @@ namespace GameFlow.Tests
         {
             var command = new AutoReleaseCommand(Random.Range(1, 15), controller);
             command.Build();
-            yield return DelayFrame(16);
+            yield return DelayFrame(30);
             Assert.IsTrue(command.isExecute);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
@@ -143,15 +145,15 @@ namespace GameFlow.Tests
                 commandData2.delayFrame + commandData2.executeFrame +
                 commandData3.delayFrame + commandData3.executeFrame +
                 commandData4.delayFrame + commandData4.executeFrame +
-                10);
+                30);
 
-            Assert.IsTrue(command1.isExecute && command2.isExecute && command3.isExecute && command4.isExecute);
-            Assert.IsTrue(listAdd.Count == 4);
-            Assert.IsTrue(listExecute.Count == 4);
-            Assert.IsTrue(listAdd[0] == listExecute[0]);
-            Assert.IsTrue(listAdd[1] == listExecute[1]);
-            Assert.IsTrue(listAdd[2] == listExecute[2]);
-            Assert.IsTrue(listAdd[3] == listExecute[3]);
+            Assert.IsTrue(command1.isExecute && command2.isExecute && command3.isExecute && command4.isExecute, "execute is false");
+            Assert.IsTrue(listAdd.Count == 4, "listAdd.Count == 4");
+            Assert.IsTrue(listExecute.Count == 4, "listExecute.Count = " + listExecute.Count);
+            Assert.IsTrue(listAdd[0] == listExecute[0], "listAdd[0] == listExecute[0]");
+            Assert.IsTrue(listAdd[1] == listExecute[1], "listAdd[1] == listExecute[1]");
+            Assert.IsTrue(listAdd[2] == listExecute[2], "listAdd[2] == listExecute[2]");
+            Assert.IsTrue(listAdd[3] == listExecute[3], "listAdd[3] == listExecute[3]");
             GameFlowRuntimeController.CommandsIsEmpty();
         }
     }

@@ -18,7 +18,7 @@ namespace GameFlow.Internal
             }
 
             totalController = controllers.Length;
-            DontDestroyOnLoad(this);
+            if (transform.parent == null) DontDestroyOnLoad(this);
         }
 
         public void RegisterControllers(params BaseLoadingTypeController[] registerControllers)
