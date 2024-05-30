@@ -15,7 +15,7 @@ namespace GameFlow.Tests
             private readonly int executeFrame;
             private readonly MonoBehaviour mono;
 
-            public AutoReleaseCommand(int executeFrame, MonoBehaviour mono)
+            public AutoReleaseCommand(int executeFrame, MonoBehaviour mono) : base(typeof(GameFlowElement))
             {
                 this.mono = mono;
                 this.executeFrame = executeFrame;
