@@ -62,6 +62,18 @@ namespace GameFlow
             return null;
         }
 
+        internal bool TryGetElement(Type type, string id, out GameFlowElement element)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                element = GetElement(type);
+                return element != null;
+            }
+
+            element = GetElement(type, id);
+            return element != null;
+        }
+
         internal void GenerateElement(GameFlowElement element)
         {
             var listElements = elements.ToList();

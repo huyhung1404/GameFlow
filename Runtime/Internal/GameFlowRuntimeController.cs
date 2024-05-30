@@ -10,9 +10,13 @@ namespace GameFlow.Internal
     {
         private static GameFlowRuntimeController instance;
         private bool isActive;
-        private GameFlowManager gameFlowManager;
-
+        private GameFlowManager manager;
         private bool isLock;
+
+        public static ElementCollection GetElements()
+        {
+            return instance.manager.elementCollection;
+        }
 
         private void Awake()
         {
@@ -39,7 +43,7 @@ namespace GameFlow.Internal
             {
                 if (operationHandle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    gameFlowManager = operationHandle.Result;
+                    manager = operationHandle.Result;
                     isActive = true;
                     return;
                 }

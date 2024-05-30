@@ -2,9 +2,9 @@ namespace GameFlow
 {
     public static class GameCommand
     {
-        public static AddCommand Add<T>() where T : GameFlowElement
+        public static AddCommand Add<T>(string id = null) where T : GameFlowElement
         {
-            return new AddCommand(typeof(T));
+            return new AddCommand(typeof(T), id);
         }
 
         public static LoadCommand Load<T>() where T : UserInterfaceFlowElement
