@@ -23,7 +23,10 @@ namespace GameFlow
             isRelease = true;
         }
 
-        internal abstract void Execute();
+        /// <summary>
+        /// Call every frame
+        /// </summary>
+        internal abstract void Update();
 
         public void Build()
         {

@@ -9,17 +9,8 @@ namespace GameFlow.Internal
     internal class GameFlowRuntimeController : MonoBehaviour
     {
         private static GameFlowRuntimeController instance;
-#if UNITY_EDITOR
-        internal static bool isActive { get; private set; }
-#else
-        internal static bool isActive;
-#endif
-
-#if UNITY_EDITOR
-        internal GameFlowManager gameFlowManager { get; private set; }
-#else
-        internal GameFlowManager gameFlowManager;
-#endif
+        private bool isActive;
+        private GameFlowManager gameFlowManager;
 
         private bool isLock;
 
@@ -75,42 +66,37 @@ namespace GameFlow.Internal
 
         #region Command Handle
 
-        private readonly Queue<Command> commands = new Queue<Command>(5);
+        private static readonly Queue<Command> commands = new Queue<Command>(5);
         private Command current;
 
         internal static void AddCommand(Command command)
         {
-            if (!isActive)
-            {
-                ErrorHandle.LogError($"Runtime Controller is not active: [Controller: {instance}] [GameFlowManager :{instance?.gameFlowManager}]");
-                return;
-            }
-
-            instance.commands.Enqueue(command);
+            commands.Enqueue(command);
         }
 
         /// <summary>
         /// Handle command
         /// </summary>
-        /// <returns>True if can handle key back action</returns>
+        /// <returns>True is can handle key back action</returns>
         private bool CommandHandle()
         {
             if (current != null)
             {
+                current.Update();
                 if (!current.isRelease) return false;
                 current = null;
             }
 
             if (commands.Count == 0) return true;
             current = commands.Dequeue();
-            current.Execute();
+            current.Update();
             return false;
         }
 
         internal static void CommandsIsEmpty()
         {
             Assert.IsNotNull(instance);
-            Assert.IsTrue(instance.commands.Count == 0, "commands.Count != 0");
+            Assert.IsTrue(commands.Count == 0, "commands.Count != 0");
             Assert.IsTrue(instance.current == null, instance.current?.ToString());
         }
 

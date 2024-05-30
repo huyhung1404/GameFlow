@@ -21,7 +21,7 @@ namespace GameFlow.Tests
                 this.executeFrame = executeFrame;
             }
 
-            internal override void Execute()
+            internal override void Update()
             {
                 isExecute = true;
                 mono.StartCoroutine(IERelease());
@@ -48,16 +48,16 @@ namespace GameFlow.Tests
                 mono.StartCoroutine(IEDelay());
             }
 
-            internal override void Execute()
+            internal override void Update()
             {
-                base.Execute();
+                base.Update();
                 listExecute.Add(this);
             }
 
             private IEnumerator IEDelay()
             {
                 yield return DelayFrame(data.delayFrame);
-                GameFlowRuntimeController.AddCommand(this);
+                Build();
                 listAdd.Add(this);
             }
         }
@@ -89,17 +89,14 @@ namespace GameFlow.Tests
         {
             controller = Builder.CreateMono<GameFlowRuntimeController>();
             controller.CreateChildMono<LoadingController>();
-            while (!GameFlowRuntimeController.isActive)
-            {
-                yield return null;
-            }
+            yield return null;
         }
 
         [UnityTest]
         public IEnumerator Single_Add_Execute_Command()
         {
             var command = new AutoReleaseCommand(Random.Range(1, 15), controller);
-            GameFlowRuntimeController.AddCommand(command);
+            command.Build();
             yield return DelayFrame(16);
             Assert.IsTrue(command.isExecute);
             GameFlowRuntimeController.CommandsIsEmpty();

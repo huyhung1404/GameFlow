@@ -8,7 +8,7 @@ namespace GameFlow
         {
         }
 
-        internal override void Execute()
+        internal override void Update()
         {
         }
     }
