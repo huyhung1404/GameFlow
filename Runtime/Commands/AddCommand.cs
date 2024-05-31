@@ -92,7 +92,7 @@ namespace GameFlow
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     element.runtimeInstance = handle.Result;
-                    OnLoadResult(handle.Result);
+                    ActiveElement();
                     return;
                 }
 
@@ -120,6 +120,9 @@ namespace GameFlow
 
         private void ActiveElement()
         {
+            element.runtimeInstance.SetActive(true);
+
+            OnLoadResult(element.runtimeInstance);
         }
 
         private void OnLoadResult(object result)
