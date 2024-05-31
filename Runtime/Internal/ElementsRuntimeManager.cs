@@ -1,0 +1,19 @@
+﻿using System.Collections.Generic;
+
+namespace GameFlow.Internal
+{
+    internal static class ElementsRuntimeManager
+    {
+        private static readonly List<GameFlowElement> elementsRuntime;
+
+        static ElementsRuntimeManager()
+        {
+            elementsRuntime = new List<GameFlowElement>();
+        }
+
+        internal static void AddElement(GameFlowElement element)
+        {
+            elementsRuntime.Add(element);
+        }
+    }
+}

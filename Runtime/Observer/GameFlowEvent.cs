@@ -12,16 +12,33 @@ namespace GameFlow
             GetEventPool<T>().onActive += onActive;
         }
 
+        public static void Listen<T>(OnClose onClose) where T : GameFlowElement
+        {
+            GetEventPool<T>().onClose += onClose;
+        }
+
         public static void RemoveListener<T>(OnActive onActive) where T : GameFlowElement
         {
             if (!events.TryGetValue(typeof(T), out var eventPool)) return;
             eventPool.onActive -= onActive;
         }
 
+        public static void RemoveListener<T>(OnClose onClose) where T : GameFlowElement
+        {
+            if (!events.TryGetValue(typeof(T), out var eventPool)) return;
+            eventPool.onClose -= onClose;
+        }
+
         internal static void OnActive(Type type, object data)
         {
             if (!events.TryGetValue(type, out var eventPool)) return;
             eventPool.onActive?.Invoke(data);
+        }
+
+        internal static void OnClose(Type type, bool closeIgnoreAnimation)
+        {
+            if (!events.TryGetValue(type, out var eventPool)) return;
+            eventPool.onClose?.Invoke(closeIgnoreAnimation);
         }
 
         public static void Release<T>() where T : GameFlowElement

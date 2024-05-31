@@ -25,11 +25,11 @@ namespace GameFlow.Tests
         [Test]
         public void _0_Simple_Callback()
         {
-            GameFlowEvent.Listen<EventTest1>(Test1);
+            GameFlowEvent.Listen<EventTest1>(onActive: Test1);
             GameFlowEvent.OnActive(typeof(EventTest1), null);
             GameFlowEvent.OnActive(typeof(EventTest1), null);
             Assert.IsTrue(EventTest1.timeRun == 2);
-            GameFlowEvent.RemoveListener<EventTest1>(Test1);
+            GameFlowEvent.RemoveListener<EventTest1>(onActive: Test1);
             GameFlowEvent.OnActive(typeof(EventTest1), null);
             Assert.IsTrue(EventTest1.timeRun == 2);
         }
@@ -37,13 +37,13 @@ namespace GameFlow.Tests
         [Test]
         public void _1_Simple_Callback()
         {
-            GameFlowEvent.Listen<EventTest1>(Test1);
+            GameFlowEvent.Listen<EventTest1>(onActive: Test1);
             GameFlowEvent.OnActive(typeof(EventTest1), null);
             GameFlowEvent.OnActive(typeof(EventTest2), null);
             Assert.IsTrue(EventTest1.timeRun == 1);
             Assert.IsTrue(EventTest2.timeRun == 0);
-            GameFlowEvent.Listen<EventTest2>(Test2);
-            GameFlowEvent.RemoveListener<EventTest1>(Test1);
+            GameFlowEvent.Listen<EventTest2>(onActive: Test2);
+            GameFlowEvent.RemoveListener<EventTest1>(onActive: Test1);
             GameFlowEvent.OnActive(typeof(EventTest1), null);
             GameFlowEvent.OnActive(typeof(EventTest2), null);
             Assert.IsTrue(EventTest1.timeRun == 1);
@@ -53,8 +53,8 @@ namespace GameFlow.Tests
         [Test]
         public void _2_Duplicate_2_Action()
         {
-            GameFlowEvent.Listen<EventTest1>(Test1);
-            GameFlowEvent.Listen<EventTest1>(Test2);
+            GameFlowEvent.Listen<EventTest1>(onActive: Test1);
+            GameFlowEvent.Listen<EventTest1>(onActive: Test2);
             GameFlowEvent.OnActive(typeof(EventTest1), null);
             Assert.IsTrue(EventTest1.timeRun == 1);
             Assert.IsTrue(EventTest2.timeRun == 1);

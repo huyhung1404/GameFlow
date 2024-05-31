@@ -1,10 +1,15 @@
+using System;
+
 namespace GameFlow
 {
     public static class GameCommand
     {
+        private static readonly Type uiElementType = typeof(UserInterfaceFlowElement);
+
         public static AddCommand Add<T>(string id = null) where T : GameFlowElement
         {
-            return new AddCommand(typeof(T), id);
+            var type = typeof(T);
+            return type.IsSubclassOf(uiElementType) ? new AddUserInterfaceCommand(type, id) : new AddCommand(type, id);
         }
 
         public static LoadCommand Load<T>() where T : UserInterfaceFlowElement

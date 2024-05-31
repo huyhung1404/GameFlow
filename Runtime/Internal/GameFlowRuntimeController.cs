@@ -8,17 +8,20 @@ namespace GameFlow.Internal
 {
     internal class GameFlowRuntimeController : MonoBehaviour
     {
+        private static readonly Queue<Command> commands = new Queue<Command>(5);
         private static GameFlowRuntimeController instance;
-        private bool isActive;
         private GameFlowManager manager;
+        private Command current;
+        private bool isActive;
         private bool isLock;
+        private bool disableKeyBack;
 
-        public static ElementCollection GetElements()
+        internal static ElementCollection GetElements()
         {
             return instance.manager.elementCollection;
         }
 
-        public static Transform PrefabElementContainer()
+        internal static Transform PrefabElementContainer()
         {
             return instance.transform;
         }
@@ -73,11 +76,6 @@ namespace GameFlow.Internal
             KeyBackHandle();
         }
 
-        #region Command Handle
-
-        private static readonly Queue<Command> commands = new Queue<Command>(5);
-        private Command current;
-
         internal static void AddCommand(Command command)
         {
             commands.Enqueue(command);
@@ -109,12 +107,6 @@ namespace GameFlow.Internal
             Assert.IsTrue(instance.current == null, instance.current?.ToString());
         }
 
-        #endregion
-
-        #region Key Back Handle
-
-        private bool disableKeyBack;
-
         private void KeyBackHandle()
         {
             if (disableKeyBack) return;
@@ -122,8 +114,6 @@ namespace GameFlow.Internal
             if (LoadingController.IsShow()) return;
             //TODO: Handle Key Back
         }
-
-        #endregion
 
         private void OnDestroy()
         {

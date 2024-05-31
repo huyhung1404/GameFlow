@@ -116,12 +116,13 @@ namespace GameFlow
 
         private void CloseElement()
         {
+            element.runtimeInstance.SetActive(false);
         }
 
         private void ActiveElement()
         {
             element.runtimeInstance.SetActive(true);
-
+            ElementsRuntimeManager.AddElement(element);
             OnLoadResult(element.runtimeInstance);
         }
 
