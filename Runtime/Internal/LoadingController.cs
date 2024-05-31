@@ -5,7 +5,12 @@ namespace GameFlow.Internal
 {
     internal class LoadingController : MonoBehaviour
     {
-        private static LoadingController instance;
+#if UNITY_EDITOR
+        internal static LoadingController instance { get; set; }
+#else
+        internal static LoadingController instance;
+#endif
+
         [SerializeField] private BaseLoadingTypeController[] controllers = Array.Empty<BaseLoadingTypeController>();
         private static int totalController;
 
@@ -17,6 +22,7 @@ namespace GameFlow.Internal
                 return;
             }
 
+            instance = this;
             totalController = controllers.Length;
             if (transform.parent == null) DontDestroyOnLoad(this);
         }

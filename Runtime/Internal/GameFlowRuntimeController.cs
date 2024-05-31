@@ -18,6 +18,11 @@ namespace GameFlow.Internal
             return instance.manager.elementCollection;
         }
 
+        public static Transform PrefabElementContainer()
+        {
+            return instance.transform;
+        }
+
         private void Awake()
         {
             if (instance != null)

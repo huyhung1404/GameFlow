@@ -11,7 +11,7 @@ namespace GameFlow
         internal bool isRelease;
 #endif
 
-        protected Type elementType;
+        protected readonly Type elementType;
 
         protected Command(Type elementType)
         {

@@ -18,6 +18,7 @@ namespace GameFlow.Editor
         private SerializedProperty reference;
         private readonly EnumField releaseModeElement;
         private readonly Toggle fullSceneElement;
+        private readonly Toggle canReActive;
         private Action<int> removeAtIndex;
         private bool showDialog;
         private bool isActive;
@@ -31,6 +32,7 @@ namespace GameFlow.Editor
             root.Q<Button>("remove_button").RegisterCallback<ClickEvent>(OnClickRemove);
             releaseModeElement = root.Q<EnumField>("release_mode");
             fullSceneElement = root.Q<Toggle>("full_scene");
+            canReActive = root.Q<Toggle>("canReActive");
             Add(root);
         }
 
@@ -68,7 +70,7 @@ namespace GameFlow.Editor
 
             var idWidth = Mathf.Max(30, guiWidth / 4);
             instanceID.stringValue = EditorGUI.TextField(new Rect(22, 1, idWidth, 18), GUIContent.none, instanceID.stringValue);
-            EditorGUI.PropertyField(new Rect(30 + idWidth, 1, Mathf.Max(45, guiWidth - idWidth - 125), 18), reference, GUIContent.none);
+            EditorGUI.PropertyField(new Rect(30 + idWidth, 1, Mathf.Max(45, guiWidth - idWidth - 135), 18), reference, GUIContent.none);
             if (EditorGUI.EndChangeCheck()) serializedObject.ApplyModifiedProperties();
             if (!showDialog) return;
             ShowConfirmationDialog();
@@ -102,6 +104,7 @@ namespace GameFlow.Editor
             instanceID = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.instanceID));
             reference = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.reference));
             releaseModeElement.BindProperty(serializedProperty.FindPropertyRelative(nameof(GameFlowElement.releaseMode)));
+            canReActive.BindProperty(serializedProperty.FindPropertyRelative(nameof(GameFlowElement.canReActive)));
             if (isUserInterface)
             {
                 fullSceneElement.BindProperty(serializedProperty.FindPropertyRelative(nameof(UserInterfaceFlowElement.fullScene)));

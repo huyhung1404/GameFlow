@@ -12,6 +12,11 @@ namespace GameFlow.Internal
             Debug.LogErrorFormat(LOG_FORMAT, content);
         }
 
+        public static void LogWarning(string content)
+        {
+            Debug.LogWarningFormat(LOG_FORMAT, content);
+        }
+
         public static void LogException(Exception e, string content)
         {
             Debug.LogError(content);
