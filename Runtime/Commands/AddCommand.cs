@@ -1,5 +1,6 @@
 ﻿using System;
 using GameFlow.Internal;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -49,8 +50,12 @@ namespace GameFlow
         {
             if (baseElement != null) return true;
             var collection = GameFlowRuntimeController.GetElements();
-            if (collection.TryGetElement(elementType, id, out var element)) return true;
-            baseElement = element;
+            if (collection.TryGetElement(elementType, id, out var element))
+            {
+                baseElement = element;
+                return true;
+            }
+
             ErrorHandle.LogError($"Element type {elementType.Name} not exits");
             OnLoadResult(null);
             return false;

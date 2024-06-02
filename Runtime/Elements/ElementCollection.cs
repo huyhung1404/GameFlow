@@ -11,6 +11,11 @@ namespace GameFlow
         private Type[] types;
         private int elementCount;
 
+        public int count
+        {
+            get => elementCount;
+        }
+
         public void OnBeforeSerialize()
         {
         }

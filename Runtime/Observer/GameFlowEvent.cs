@@ -4,7 +4,7 @@ namespace GameFlow
 {
     public static class GameFlowEvent
     {
-        private static readonly EventCollection events = new EventCollection();
+        internal static EventCollection events = new EventCollection();
 
         public static void Listen<T>(OnActive onActive, string id = null) where T : GameFlowElement
         {
