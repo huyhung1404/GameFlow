@@ -26,11 +26,11 @@ namespace GameFlow.Tests
         public void _0_Simple_Callback()
         {
             GameFlowEvent.Listen<TestScript___EventCallback1>(onActive: Test1);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null, null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null, null);
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 2);
             GameFlowEvent.RemoveListener<TestScript___EventCallback1>(onActive: Test1);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null, null);
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 2);
         }
 
@@ -38,14 +38,14 @@ namespace GameFlow.Tests
         public void _1_Simple_Callback()
         {
             GameFlowEvent.Listen<TestScript___EventCallback1>(onActive: Test1);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback2), null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null, null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback2), null, null);
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 1);
             Assert.IsTrue(TestScript___EventCallback2.timeRun == 0);
             GameFlowEvent.Listen<TestScript___EventCallback2>(onActive: Test2);
             GameFlowEvent.RemoveListener<TestScript___EventCallback1>(onActive: Test1);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback2), null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null, null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback2), null, null);
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 1);
             Assert.IsTrue(TestScript___EventCallback2.timeRun == 1);
         }
@@ -55,7 +55,7 @@ namespace GameFlow.Tests
         {
             GameFlowEvent.Listen<TestScript___EventCallback1>(onActive: Test1);
             GameFlowEvent.Listen<TestScript___EventCallback1>(onActive: Test2);
-            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null);
+            GameFlowEvent.OnActive(typeof(TestScript___EventCallback1), null, null);
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 1);
             Assert.IsTrue(TestScript___EventCallback2.timeRun == 1);
         }

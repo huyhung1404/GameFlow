@@ -8,10 +8,11 @@ namespace GameFlow
     public abstract class AddCommand : Command
     {
         private bool isExecute;
-        private readonly string id;
+        protected readonly string id;
         internal int loadingId;
         internal bool isPreload;
         internal OnCommandCompleted onCompleted;
+        internal object sendData;
         protected abstract GameFlowElement baseElement { get; set; }
 
         internal AddCommand(Type elementType, string id) : base(elementType)
@@ -80,7 +81,7 @@ namespace GameFlow
 
                 if (baseElement.runtimeInstance.activeSelf)
                 {
-                    ReActiveElement();
+                    IsCanReActiveElement();
                     return;
                 }
 
@@ -102,7 +103,7 @@ namespace GameFlow
             };
         }
 
-        private void ReActiveElement()
+        private void IsCanReActiveElement()
         {
             if (!baseElement.canReActive)
             {
@@ -111,11 +112,10 @@ namespace GameFlow
                 return;
             }
 
-            CloseElement();
-            ActiveElement();
+            ReActiveElement();
         }
 
-        protected abstract void CloseElement();
+        protected abstract void ReActiveElement();
         protected abstract void ActiveElement();
 
         protected void OnLoadResult(object result)

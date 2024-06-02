@@ -48,5 +48,11 @@ namespace GameFlow
             command.onCompleted = onCommandCompleted;
             return command;
         }
+
+        public static AddCommand SendData(this AddCommand command, object data)
+        {
+            command.sendData = data;
+            return command;
+        }
     }
 }

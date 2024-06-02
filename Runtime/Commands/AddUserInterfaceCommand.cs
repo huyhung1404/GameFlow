@@ -16,7 +16,7 @@ namespace GameFlow
         {
         }
 
-        protected override void CloseElement()
+        protected override void ReActiveElement()
         {
         }
 
