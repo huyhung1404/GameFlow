@@ -11,6 +11,6 @@ namespace GameFlow
         [SerializeField] internal bool includeInBuild = true;
         [SerializeField] internal AssetReferenceElement reference;
         [SerializeField] internal ElementReleaseMode releaseMode;
-        [SerializeField] internal bool canReActive;
+        [SerializeField] internal bool canReActive = true;
     }
 }

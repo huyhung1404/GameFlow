@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
 {
-    public class GameFlowManagerEditorWindow : EditorWindow
+    public class GameFlowManagerEditorWindow : EditorWindow, IHasCustomMenu
     {
         public const string kScriptsElementNameFormat = "{0}Element";
         private const string kScriptsNameSpace = nameof(GameFlow);
@@ -256,6 +256,15 @@ namespace GameFlow.Editor
             GUILayout.Label("Click the \"Create\" button to start using Game Flow.");
             GUILayout.Space(50);
             GUILayout.EndHorizontal();
+        }
+
+        public void AddItemsToMenu(GenericMenu menu)
+        {
+            const string kPrefsKey = "com.huyhung1404.gameflow_showTestScripts";
+            menu.AddItem(new GUIContent("Tests Scripts"), EditorPrefs.GetBool(kPrefsKey, false), () =>
+            {
+                EditorPrefs.SetBool(kPrefsKey, !EditorPrefs.GetBool(kPrefsKey, false));
+            });
         }
     }
 

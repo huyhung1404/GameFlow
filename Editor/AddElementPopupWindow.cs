@@ -33,12 +33,13 @@ namespace GameFlow.Editor
             this.isUserInterface = isUserInterface;
             resetView = reset;
             nameRegex = new Regex(kNamePattern);
-            elementsInProject = GetDerivedTypes(this.isUserInterface);
+            const string kPrefsKey = "com.huyhung1404.gameflow_showTestScripts";
+            elementsInProject = GetDerivedTypes(this.isUserInterface, EditorPrefs.GetBool(kPrefsKey, false));
             elementChoices = elementsInProject.Select(type => type.Name).ToList();
             manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
         }
 
-        private static List<Type> GetDerivedTypes(bool isUserInterface)
+        private static List<Type> GetDerivedTypes(bool isUserInterface, bool enableTestsScripts)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             var derivedTypes = new List<Type>();
@@ -46,16 +47,33 @@ namespace GameFlow.Editor
             foreach (var assembly in assemblies)
             {
                 derivedTypes.AddRange(assembly.GetTypes()
-                    .Where(t => t != typeof(UserInterfaceFlowElement)
-                                && t != typeof(GameFlowElement)
-                                && t.IsClass
-                                && !t.IsAbstract
-                                && (isUserInterface
-                                    ? t.IsSubclassOf(typeof(UserInterfaceFlowElement))
-                                    : t.IsSubclassOf(typeof(GameFlowElement)) && !t.IsSubclassOf(typeof(UserInterfaceFlowElement)))));
+                    .Where(t => IsElementChild(t) && IsNotAbstract(t) && IsTestScripts(t) && IsSubClass(t)));
             }
 
             return derivedTypes;
+
+            bool IsElementChild(Type t)
+            {
+                return t != typeof(UserInterfaceFlowElement) && t != typeof(GameFlowElement);
+            }
+
+            bool IsNotAbstract(Type t)
+            {
+                return t.IsClass && !t.IsAbstract;
+            }
+
+            bool IsTestScripts(Type t)
+            {
+                if (enableTestsScripts) return true;
+                return !t.Name.Contains("TestScript___");
+            }
+
+            bool IsSubClass(Type t)
+            {
+                return isUserInterface
+                    ? t.IsSubclassOf(typeof(UserInterfaceFlowElement))
+                    : t.IsSubclassOf(typeof(GameFlowElement)) && !t.IsSubclassOf(typeof(UserInterfaceFlowElement));
+            }
         }
 
         public override Vector2 GetWindowSize()
