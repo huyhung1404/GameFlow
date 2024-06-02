@@ -1,62 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace GameFlow
 {
     public static class GameFlowEvent
     {
-        private static readonly Dictionary<Type, ElementEventPool> events = new Dictionary<Type, ElementEventPool>();
+        private static readonly EventCollection events = new EventCollection();
 
         public static void Listen<T>(OnActive onActive, string id = null) where T : GameFlowElement
         {
-            GetEventPool<T>().onActive += onActive;
+            GetEventPool<T>(id).onActive += onActive;
         }
 
         public static void Listen<T>(OnClose onClose, string id = null) where T : GameFlowElement
         {
-            GetEventPool<T>().onClose += onClose;
+            GetEventPool<T>(id).onClose += onClose;
         }
 
         public static void RemoveListener<T>(OnActive onActive, string id = null) where T : GameFlowElement
         {
-            if (!events.TryGetValue(typeof(T), out var eventPool)) return;
+            if (!events.TryGetValue(typeof(T), id, out var eventPool)) return;
             eventPool.onActive -= onActive;
         }
 
         public static void RemoveListener<T>(OnClose onClose, string id = null) where T : GameFlowElement
         {
-            if (!events.TryGetValue(typeof(T), out var eventPool)) return;
+            if (!events.TryGetValue(typeof(T), id, out var eventPool)) return;
             eventPool.onClose -= onClose;
         }
 
         internal static void OnActive(Type type, string id, object data)
         {
-            if (!events.TryGetValue(type, out var eventPool)) return;
+            if (!events.TryGetValue(type, id, out var eventPool)) return;
             eventPool.onActive?.Invoke(data);
         }
 
         internal static void OnClose(Type type, string id, bool closeIgnoreAnimation)
         {
-            if (!events.TryGetValue(type, out var eventPool)) return;
+            if (!events.TryGetValue(type, id, out var eventPool)) return;
             eventPool.onClose?.Invoke(closeIgnoreAnimation);
         }
 
-        public static void Release<T>() where T : GameFlowElement
+        public static void Release<T>(string id = null) where T : GameFlowElement
         {
-            events.Remove(typeof(T));
+            events.Remove(typeof(T), id);
         }
 
-        private static ElementEventPool GetEventPool<T>() where T : GameFlowElement
+        private static ElementEventPool GetEventPool<T>(string id) where T : GameFlowElement
         {
             var type = typeof(T);
-            if (events.TryGetValue(type, out var eventPool))
-            {
-                return eventPool;
-            }
-
-            eventPool = new ElementEventPool();
-            events.Add(type, eventPool);
-            return eventPool;
+            return events.TryGetValue(type, id, out var eventPool) ? eventPool : events.Add(type, id);
         }
     }
 }
