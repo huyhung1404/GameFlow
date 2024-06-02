@@ -5,14 +5,14 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace GameFlow
 {
-    public class AddCommand : Command
+    public abstract class AddCommand : Command
     {
         private bool isExecute;
         private readonly string id;
-        private GameFlowElement element;
         internal int loadingId;
         internal bool isPreload;
         internal OnCommandCompleted onCompleted;
+        protected abstract GameFlowElement baseElement { get; set; }
 
         internal AddCommand(Type elementType, string id) : base(elementType)
         {
@@ -31,7 +31,7 @@ namespace GameFlow
             try
             {
                 if (!GetElementsIfNeed()) return true;
-                var reference = element.reference;
+                var reference = baseElement.reference;
                 if (!reference.IsDone) return false;
                 Loading();
                 return true;
@@ -46,9 +46,10 @@ namespace GameFlow
 
         private bool GetElementsIfNeed()
         {
-            if (element != null) return true;
+            if (baseElement != null) return true;
             var collection = GameFlowRuntimeController.GetElements();
-            if (collection.TryGetElement(elementType, id, out element)) return true;
+            if (collection.TryGetElement(elementType, id, out var element)) return true;
+            baseElement = element;
             ErrorHandle.LogError($"Element type {elementType.Name} not exits");
             OnLoadResult(null);
             return false;
@@ -69,7 +70,7 @@ namespace GameFlow
 
         private void AddElement()
         {
-            if (element.runtimeInstance)
+            if (baseElement.runtimeInstance)
             {
                 if (isPreload)
                 {
@@ -77,7 +78,7 @@ namespace GameFlow
                     return;
                 }
 
-                if (element.runtimeInstance.activeSelf)
+                if (baseElement.runtimeInstance.activeSelf)
                 {
                     ReActiveElement();
                     return;
@@ -87,11 +88,11 @@ namespace GameFlow
                 return;
             }
 
-            element.reference.InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer()).Completed += handle =>
+            baseElement.reference.InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer()).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    element.runtimeInstance = handle.Result;
+                    baseElement.runtimeInstance = handle.Result;
                     ActiveElement();
                     return;
                 }
@@ -103,7 +104,7 @@ namespace GameFlow
 
         private void ReActiveElement()
         {
-            if (!element.canReActive)
+            if (!baseElement.canReActive)
             {
                 ErrorHandle.LogWarning("Element already exists, to re active please adjust in manager editor");
                 OnLoadResult(null);
@@ -114,19 +115,10 @@ namespace GameFlow
             ActiveElement();
         }
 
-        private void CloseElement()
-        {
-            element.runtimeInstance.SetActive(false);
-        }
+        protected abstract void CloseElement();
+        protected abstract void ActiveElement();
 
-        private void ActiveElement()
-        {
-            element.runtimeInstance.SetActive(true);
-            ElementsRuntimeManager.AddElement(element);
-            OnLoadResult(element.runtimeInstance);
-        }
-
-        private void OnLoadResult(object result)
+        protected void OnLoadResult(object result)
         {
             onCompleted?.Invoke(result);
             if (loadingId >= 0) LoadingController.instance.LoadingOff(loadingId);

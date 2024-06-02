@@ -9,7 +9,7 @@ namespace GameFlow
         public static AddCommand Add<T>(string id = null) where T : GameFlowElement
         {
             var type = typeof(T);
-            return type.IsSubclassOf(uiElementType) ? new AddUserInterfaceCommand(type, id) : new AddCommand(type, id);
+            return type.IsSubclassOf(uiElementType) ? new AddUserInterfaceCommand(type, id) : new AddGameFlowCommand(type, id);
         }
 
         public static LoadCommand Load<T>() where T : UserInterfaceFlowElement
