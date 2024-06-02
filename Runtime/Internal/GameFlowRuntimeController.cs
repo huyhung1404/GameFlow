@@ -91,6 +91,7 @@ namespace GameFlow.Internal
             {
                 current.Update();
                 if (!current.isRelease) return false;
+                current.OnRelease();
                 current = null;
             }
 

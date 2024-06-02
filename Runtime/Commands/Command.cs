@@ -23,6 +23,10 @@ namespace GameFlow
             isRelease = true;
         }
 
+        internal virtual void OnRelease()
+        {
+        }
+
         /// <summary>
         /// Call every frame
         /// </summary>
