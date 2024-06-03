@@ -3,12 +3,18 @@ using UnityEngine;
 
 namespace GameFlow.Internal
 {
-    public static class ErrorHandle
+    internal static class ErrorHandle
     {
+        internal static bool sendErrorIsLog;
         private const string LOG_FORMAT = "GameFlow: {0}";
 
         public static void LogError(string content)
         {
+            if (sendErrorIsLog)
+            {
+                Debug.LogFormat($"<color=red>{LOG_FORMAT}</color>", content);
+                return;
+            }
             Debug.LogErrorFormat(LOG_FORMAT, content);
         }
 

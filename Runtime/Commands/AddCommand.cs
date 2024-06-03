@@ -13,11 +13,13 @@ namespace GameFlow
         internal bool isPreload;
         internal OnCommandCompleted onCompleted;
         internal object sendData;
+        private bool isLoadingOn;
         protected abstract GameFlowElement baseElement { get; set; }
 
         internal AddCommand(Type elementType, string id) : base(elementType)
         {
             isExecute = false;
+            isLoadingOn = false;
             this.id = id;
         }
 
@@ -70,6 +72,7 @@ namespace GameFlow
                 return;
             }
 
+            isLoadingOn = true;
             loading.OnCompleted(AddElement);
         }
 
@@ -125,7 +128,7 @@ namespace GameFlow
         protected void OnLoadResult(object result)
         {
             onCompleted?.Invoke(result);
-            if (loadingId >= 0) LoadingController.instance.LoadingOff(loadingId);
+            if (loadingId >= 0 && isLoadingOn) LoadingController.instance.LoadingOff(loadingId);
             Release();
         }
     }

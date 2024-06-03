@@ -14,6 +14,10 @@ namespace GameFlow.Tests
         {
         }
 
+        public class TestScript___NoReference : GameFlowElement
+        {
+        }
+
         private LoadingController loadingController;
         private DisplayLoading displayLoading;
         private FadeLoading fadeLoading;
@@ -42,10 +46,10 @@ namespace GameFlow.Tests
         }
 
         [UnityTest]
-        public IEnumerator Single_Add_Execute_Command()
+        public IEnumerator _0_Single_Add_Execute_Command()
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>().OnCompleted((result) => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).OnCompleted((result) => { next = true; }).Build();
             while (!next)
             {
                 yield return null;
@@ -53,10 +57,28 @@ namespace GameFlow.Tests
 
             Assert.IsTrue(PrefabTestMonoBehaviour.onActiveCount == 1);
             Assert.IsTrue(PrefabTestMonoBehaviour.onEnable);
+            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
+            GameFlowRuntimeController.CommandsIsEmpty();
         }
 
         [UnityTest]
-        public IEnumerator Double_Add_Execute_Command()
+        public IEnumerator _1_No_Reference_Add()
+        {
+            ErrorHandle.sendErrorIsLog = true;
+            var next = false;
+            GameCommand.Add<TestScript___NoReference>().OnCompleted((result) => { next = true; }).Build();
+            while (!next)
+            {
+                yield return null;
+            }
+
+            yield return null;
+            GameFlowRuntimeController.CommandsIsEmpty();
+            ErrorHandle.sendErrorIsLog = false;
+        }
+
+        [UnityTest]
+        public IEnumerator _2_Double_Add_Execute_Command()
         {
             var next = false;
             GameCommand.Add<TestScript___ElementAddPrefab>().Build();
@@ -65,11 +87,12 @@ namespace GameFlow.Tests
             {
                 yield return null;
             }
-            
+
             yield return null;
             Assert.IsTrue(PrefabTestMonoBehaviour.onCloseCount == 1, "PrefabTestMonoBehaviour.onCloseCount = " + PrefabTestMonoBehaviour.onCloseCount);
             Assert.IsTrue(PrefabTestMonoBehaviour.onActiveCount == 2, "PrefabTestMonoBehaviour.onActiveCount = " + PrefabTestMonoBehaviour.onActiveCount);
             Assert.IsTrue(PrefabTestMonoBehaviour.onEnable);
+            GameFlowRuntimeController.CommandsIsEmpty();
         }
     }
 }
