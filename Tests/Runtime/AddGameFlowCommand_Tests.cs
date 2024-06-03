@@ -134,5 +134,30 @@ namespace GameFlow.Tests
             Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
+        
+        [UnityTest]
+        public IEnumerator _5_Multi_Add_Execute_Command_WithID_id()
+        {
+            var next = false;
+            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted((result) => { next = true; }).Build();
+            while (!next)
+            {
+                yield return null;
+            }
+            yield return null;
+
+            var mono = PrefabTestMonoBehaviour.GetWithID("");
+            Assert.IsTrue(mono.onActiveCount == 1);
+            Assert.IsTrue(mono.onEnable);
+            
+            var mono2 = PrefabTestMonoBehaviour.GetWithID("id");
+            Assert.IsTrue(mono2.onActiveCount == 2);
+            Assert.IsTrue(mono2.onCloseCount == 1);
+            Assert.IsTrue(mono2.onEnable);
+            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
+            GameFlowRuntimeController.CommandsIsEmpty();
+        }
     }
 }
