@@ -52,6 +52,24 @@ namespace GameFlow.Tests
             }
 
             Assert.IsTrue(PrefabTestMonoBehaviour.onActiveCount == 1);
+            Assert.IsTrue(PrefabTestMonoBehaviour.onEnable);
+        }
+
+        [UnityTest]
+        public IEnumerator Double_Add_Execute_Command()
+        {
+            var next = false;
+            GameCommand.Add<TestScript___ElementAddPrefab>().Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>().OnCompleted((result) => { next = true; }).Build();
+            while (!next)
+            {
+                yield return null;
+            }
+            
+            yield return null;
+            Assert.IsTrue(PrefabTestMonoBehaviour.onCloseCount == 1, "PrefabTestMonoBehaviour.onCloseCount = " + PrefabTestMonoBehaviour.onCloseCount);
+            Assert.IsTrue(PrefabTestMonoBehaviour.onActiveCount == 2, "PrefabTestMonoBehaviour.onActiveCount = " + PrefabTestMonoBehaviour.onActiveCount);
+            Assert.IsTrue(PrefabTestMonoBehaviour.onEnable);
         }
     }
 }

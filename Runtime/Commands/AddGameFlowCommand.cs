@@ -15,7 +15,7 @@ namespace GameFlow
 
         protected override void ReActiveElement()
         {
-            GameFlowEvent.OnClose(elementType, id, true);
+            FlowSubject.Close.RaiseEvent(elementType, id, true);
             baseElement.runtimeInstance.SetActive(false);
             baseElement.runtimeInstance.SetActive(true);
             callbackOnRelease = true;
@@ -33,7 +33,7 @@ namespace GameFlow
         internal override void OnRelease()
         {
             if (!callbackOnRelease) return;
-            GameFlowEvent.OnActive(elementType, id, sendData);
+            FlowSubject.Active.RaiseEvent(elementType, id, sendData);
         }
     }
 }
