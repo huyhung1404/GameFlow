@@ -13,7 +13,6 @@ namespace GameFlow.Tests
         public class TestScript___ElementAddPrefab : GameFlowElement
         {
         }
-
         public class TestScript___NoReference : GameFlowElement
         {
         }
@@ -55,8 +54,9 @@ namespace GameFlow.Tests
                 yield return null;
             }
 
-            Assert.IsTrue(PrefabTestMonoBehaviour.onActiveCount == 1);
-            Assert.IsTrue(PrefabTestMonoBehaviour.onEnable);
+            var mono = PrefabTestMonoBehaviour.GetWithID("");
+            Assert.IsTrue(mono.onActiveCount == 1);
+            Assert.IsTrue(mono.onEnable);
             Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
@@ -89,9 +89,49 @@ namespace GameFlow.Tests
             }
 
             yield return null;
-            Assert.IsTrue(PrefabTestMonoBehaviour.onCloseCount == 1, "PrefabTestMonoBehaviour.onCloseCount = " + PrefabTestMonoBehaviour.onCloseCount);
-            Assert.IsTrue(PrefabTestMonoBehaviour.onActiveCount == 2, "PrefabTestMonoBehaviour.onActiveCount = " + PrefabTestMonoBehaviour.onActiveCount);
-            Assert.IsTrue(PrefabTestMonoBehaviour.onEnable);
+            var mono = PrefabTestMonoBehaviour.GetWithID("");
+            Assert.IsTrue(mono.onCloseCount == 1, "PrefabTestMonoBehaviour.onCloseCount = " + mono.onCloseCount);
+            Assert.IsTrue(mono.onActiveCount == 2, "PrefabTestMonoBehaviour.onActiveCount = " + mono.onActiveCount);
+            Assert.IsTrue(mono.onEnable);
+            GameFlowRuntimeController.CommandsIsEmpty();
+        }
+        
+        [UnityTest]
+        public IEnumerator _3_Single_Add_Execute_Command_WithID_id()
+        {
+            var next = false;
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted((result) => { next = true; }).Build();
+            while (!next)
+            {
+                yield return null;
+            }
+
+            var mono = PrefabTestMonoBehaviour.GetWithID("id");
+            Assert.IsTrue(mono.onActiveCount == 1);
+            Assert.IsTrue(mono.onEnable);
+            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
+            GameFlowRuntimeController.CommandsIsEmpty();
+        }
+        
+        [UnityTest]
+        public IEnumerator _4_Multi_Add_Execute_Command_WithID_id()
+        {
+            var next = false;
+            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted((result) => { next = true; }).Build();
+            while (!next)
+            {
+                yield return null;
+            }
+
+            var mono = PrefabTestMonoBehaviour.GetWithID("");
+            Assert.IsTrue(mono.onActiveCount == 1);
+            Assert.IsTrue(mono.onEnable);
+            
+            var mono2 = PrefabTestMonoBehaviour.GetWithID("id");
+            Assert.IsTrue(mono2.onActiveCount == 1);
+            Assert.IsTrue(mono2.onEnable);
+            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
     }
