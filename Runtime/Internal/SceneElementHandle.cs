@@ -7,7 +7,7 @@ namespace GameFlow.Internal
     {
         internal static GameObject Create()
         {
-            var handle = Instantiate(new GameObject()).AddComponent<SceneElementHandle>();
+            var handle = new GameObject().AddComponent<SceneElementHandle>();
 #if UNITY_EDITOR
             handle.name = "Scene Handle";
 #endif

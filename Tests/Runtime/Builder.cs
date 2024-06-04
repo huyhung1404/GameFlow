@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace GameFlow.Tests
 {
@@ -8,17 +7,21 @@ namespace GameFlow.Tests
     {
         public static T CreateMono<T>() where T : MonoBehaviour
         {
-            return Object.Instantiate(new GameObject()).AddComponent<T>();
+            return new GameObject().AddComponent<T>();
         }
 
         public static T1 CreateChildMono<T1>(this MonoBehaviour parent) where T1 : MonoBehaviour
         {
-            return Object.Instantiate(new GameObject(), parent.transform).AddComponent<T1>();
+            var gameObject = new GameObject();
+            gameObject.transform.SetParent(parent.transform);
+            return gameObject.AddComponent<T1>();
         }
 
         public static T1 CreateChildMono<T1, T2>(this T1 parent, Action<T1, T2> callback) where T1 : MonoBehaviour where T2 : MonoBehaviour
         {
-            callback.Invoke(parent, Object.Instantiate(new GameObject(), parent.transform).AddComponent<T2>());
+            var o = new GameObject();
+            o.transform.SetParent(parent.transform);
+            callback.Invoke(parent, o.AddComponent<T2>());
             return parent;
         }
 
