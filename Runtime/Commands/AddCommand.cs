@@ -1,17 +1,22 @@
 ﻿using System;
 using GameFlow.Internal;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace GameFlow
 {
+    public delegate void OnAddCommandCompleted(GameObject handleObject);
+
     public abstract class AddCommand : Command
     {
         private bool isExecute;
         protected readonly string id;
         internal int loadingId;
         internal bool isPreload;
-        internal OnCommandCompleted onCompleted;
+        internal OnAddCommandCompleted onCompleted;
         internal object sendData;
         private bool isLoadingOn;
         protected abstract GameFlowElement baseElement { get; set; }
@@ -96,6 +101,34 @@ namespace GameFlow
                 return;
             }
 
+            if (baseElement.reference.isScene)
+            {
+                HandleReferenceScene();
+                return;
+            }
+
+            HandleReferencePrefab();
+        }
+
+        private void HandleReferenceScene()
+        {
+            baseElement.reference.LoadSceneAsync(LoadSceneMode.Additive).Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    baseElement.runtimeInstance = SceneElementHandle.Create();
+                    SceneManager.MoveGameObjectToScene(baseElement.runtimeInstance, handle.Result.Scene);
+                    ActiveElement();
+                    return;
+                }
+
+                Addressables.Release(handle);
+                OnLoadResult(null);
+            };
+        }
+
+        private void HandleReferencePrefab()
+        {
             baseElement.reference.InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer()).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
@@ -125,7 +158,7 @@ namespace GameFlow
         protected abstract void ReActiveElement();
         protected abstract void ActiveElement();
 
-        protected void OnLoadResult(object result)
+        protected void OnLoadResult(GameObject result)
         {
             onCompleted?.Invoke(result);
             if (loadingId >= 0 && isLoadingOn) LoadingController.instance.LoadingOff(loadingId);

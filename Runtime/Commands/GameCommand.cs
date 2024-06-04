@@ -43,9 +43,9 @@ namespace GameFlow
             return command;
         }
 
-        public static AddCommand OnCompleted(this AddCommand command, OnCommandCompleted onCommandCompleted)
+        public static AddCommand OnCompleted(this AddCommand command, OnAddCommandCompleted completed)
         {
-            command.onCompleted = onCommandCompleted;
+            command.onCompleted = completed;
             return command;
         }
 

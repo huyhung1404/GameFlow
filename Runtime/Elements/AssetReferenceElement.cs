@@ -11,7 +11,7 @@ namespace GameFlow
     [Serializable]
     public class AssetReferenceElement : AssetReferenceT<Object>
     {
-        [SerializeField] private bool isScene;
+        [SerializeField] internal bool isScene;
 
         public AssetReferenceElement(string guid) : base(guid)
         {

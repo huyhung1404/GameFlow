@@ -3,8 +3,6 @@ using GameFlow.Internal;
 
 namespace GameFlow
 {
-    public delegate void OnCommandCompleted(object result);
-
     public abstract class Command
     {
 #if UNITY_EDITOR
