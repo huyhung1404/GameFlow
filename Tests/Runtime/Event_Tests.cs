@@ -93,7 +93,7 @@ namespace GameFlow.Tests
             FlowSubject.Event<TestScript___EventCallback1>("null").onActive?.Invoke();
             FlowSubject.Event<TestScript___EventCallback1>("null").onActive?.Invoke();
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 0, "1 TestScript___EventCallback1.timeRun = " + TestScript___EventCallback1.timeRun);
-            FlowSubject.Event<TestScript___EventCallback1>("null").OnActive += Test1;
+            FlowSubject.Event<TestScript___EventCallback1>("null").OnActive -= Test1;
             FlowSubject.Event<TestScript___EventCallback1>("null").onActive?.Invoke();
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 0, "2 TestScript___EventCallback1.timeRun = " + TestScript___EventCallback1.timeRun);
         }

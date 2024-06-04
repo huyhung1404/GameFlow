@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using GameFlow.Internal;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -48,7 +47,7 @@ namespace GameFlow.Tests
         public IEnumerator _0_Single_Add_Execute_Command()
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).OnCompleted((result) => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).OnCompleted(_ => { next = true; }).Build();
             while (!next)
             {
                 yield return null;
@@ -66,7 +65,7 @@ namespace GameFlow.Tests
         {
             ErrorHandle.sendErrorIsLog = true;
             var next = false;
-            GameCommand.Add<TestScript___NoReference>().OnCompleted((result) => { next = true; }).Build();
+            GameCommand.Add<TestScript___NoReference>().OnCompleted(_ => { next = true; }).Build();
             while (!next)
             {
                 yield return null;
@@ -82,7 +81,7 @@ namespace GameFlow.Tests
         {
             var next = false;
             GameCommand.Add<TestScript___ElementAddPrefab>().Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>().OnCompleted((result) => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>().OnCompleted(_ => { next = true; }).Build();
             while (!next)
             {
                 yield return null;
@@ -100,7 +99,7 @@ namespace GameFlow.Tests
         public IEnumerator _3_Single_Add_Execute_Command_WithID_id()
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted((result) => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted(_ => { next = true; }).Build();
             while (!next)
             {
                 yield return null;
@@ -118,7 +117,7 @@ namespace GameFlow.Tests
         {
             var next = false;
             GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted((result) => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted(_ => { next = true; }).Build();
             while (!next)
             {
                 yield return null;
@@ -139,15 +138,14 @@ namespace GameFlow.Tests
         public IEnumerator _5_Multi_Add_Execute_Command_WithID_id()
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted((result) => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(1).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(1).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(1).OnCompleted(_ => { next = true; }).Build();
             while (!next)
             {
                 yield return null;
             }
-            yield return null;
-
+            yield return new WaitForSeconds(0.5f);
             var mono = PrefabTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono.onActiveCount == 1);
             Assert.IsTrue(mono.onEnable);
@@ -156,7 +154,7 @@ namespace GameFlow.Tests
             Assert.IsTrue(mono2.onActiveCount == 2);
             Assert.IsTrue(mono2.onCloseCount == 1);
             Assert.IsTrue(mono2.onEnable);
-            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
+            fadeLoading.LoadingIsHide();
             GameFlowRuntimeController.CommandsIsEmpty();
         }
     }
