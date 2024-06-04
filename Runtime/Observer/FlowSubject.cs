@@ -1,60 +1,72 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace GameFlow
 {
     public static class FlowSubject
     {
-        internal static EventCollection events = new EventCollection();
+        internal static List<ElementCallbackEvent> events = new List<ElementCallbackEvent>();
 
-        public static class Active
+        public static ElementCallbackEvent Event<T>(string id = null) where T : GameFlowElement
         {
-            public static void Listen<T>(OnActive onActive, string id = null) where T : GameFlowElement
-            {
-                GetEventPool<T>(id).onActive += onActive;
-            }
-
-            public static void RemoveListener<T>(OnActive onActive, string id = null) where T : GameFlowElement
-            {
-                if (!events.TryGetValue(typeof(T), id, out var eventPool)) return;
-                eventPool.onActive -= onActive;
-            }
-
-            internal static void RaiseEvent(Type type, string id, object data)
-            {
-                if (!events.TryGetValue(type, id, out var eventPool)) return;
-                eventPool.onActive?.Invoke(data);
-            }
+            return GetEventPool<T>(id);
         }
 
-        public static class Close
+        public static ElementCallbackEvent Event(Type type, string id = null)
         {
-            public static void Listen<T>(OnClose onClose, string id = null) where T : GameFlowElement
-            {
-                GetEventPool<T>(id).onClose += onClose;
-            }
-
-            public static void RemoveListener<T>(OnClose onClose, string id = null) where T : GameFlowElement
-            {
-                if (!events.TryGetValue(typeof(T), id, out var eventPool)) return;
-                eventPool.onClose -= onClose;
-            }
-
-            internal static void RaiseEvent(Type type, string id, bool closeIgnoreAnimation)
-            {
-                if (!events.TryGetValue(type, id, out var eventPool)) return;
-                eventPool.onClose?.Invoke(closeIgnoreAnimation);
-            }
+            return GetEventPool(type, id);
         }
 
-        public static void Release<T>(string id = null) where T : GameFlowElement
+        public static void ReleaseEvent<T>(string id = null) where T : GameFlowElement
         {
-            events.Remove(typeof(T), id);
+            Remove(typeof(T), id);
         }
 
-        private static ElementEventPool GetEventPool<T>(string id) where T : GameFlowElement
+        private static ElementCallbackEvent GetEventPool<T>(string id) where T : GameFlowElement
         {
             var type = typeof(T);
-            return events.TryGetValue(type, id, out var eventPool) ? eventPool : events.Add(type, id);
+            return TryGetValue(type, id, out var eventPool) ? eventPool : Add(type, id);
+        }
+
+        private static ElementCallbackEvent GetEventPool(Type type, string id)
+        {
+            return TryGetValue(type, id, out var eventPool) ? eventPool : Add(type, id);
+        }
+
+        private static bool TryGetValue(Type type, string id, out ElementCallbackEvent callbackEvent)
+        {
+            for (var i = events.Count - 1; i >= 0; i--)
+            {
+                if (type != events[i].type || !EventEquals(id, events[i].id)) continue;
+                callbackEvent = events[i];
+                return true;
+            }
+
+            callbackEvent = null;
+            return false;
+        }
+
+        private static bool EventEquals(string s1, string s2)
+        {
+            if (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2)) return true;
+            return string.Equals(s1, s2);
+        }
+
+        private static ElementCallbackEvent Add(Type type, string id)
+        {
+            var elementEvent = new ElementCallbackEvent(type, string.IsNullOrEmpty(id) ? null : id);
+            events.Add(elementEvent);
+            return elementEvent;
+        }
+
+        private static void Remove(Type type, string id)
+        {
+            for (var i = events.Count - 1; i >= 0; i--)
+            {
+                if (type != events[i].type || !EventEquals(id, events[i].id)) continue;
+                events.RemoveAt(i);
+                return;
+            }
         }
     }
 }

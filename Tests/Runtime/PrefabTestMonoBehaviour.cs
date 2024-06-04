@@ -24,11 +24,11 @@ namespace GameFlow.Tests
         private void OnEnable()
         {
             onEnable = true;
-            FlowSubject.Active.Listen<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(OnActive, id);
-            FlowSubject.Close.Listen<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(OnClose, id);
+            FlowSubject.Event<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(id).OnActive += OnActive;
+            FlowSubject.Event<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(id).OnRelease += OnClose;
         }
 
-        private void OnActive(object data)
+        private void OnActive()
         {
             onActiveCount++;
         }
@@ -41,8 +41,8 @@ namespace GameFlow.Tests
         private void OnDisable()
         {
             onEnable = false;
-            FlowSubject.Active.RemoveListener<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(OnActive, id);
-            FlowSubject.Close.RemoveListener<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(OnClose, id);
+            FlowSubject.Event<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(id).OnActive -= OnActive;
+            FlowSubject.Event<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>(id).OnRelease -= OnClose;
         }
     }
 }
