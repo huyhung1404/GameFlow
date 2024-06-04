@@ -2,7 +2,7 @@
 
 namespace GameFlow
 {
-    public sealed class ElementCallbackEvent
+    public class ElementCallbackEvent
     {
         internal readonly Type type;
         internal readonly string id;
@@ -23,5 +23,12 @@ namespace GameFlow
         /// Return true if release immediately
         /// </summary>
         public event Action<bool> OnRelease { add => onRelease += value; remove => onRelease -= value; }
+    }
+
+    public class UIElementCallbackEvent : ElementCallbackEvent
+    {
+        internal UIElementCallbackEvent(Type type, string id) : base(type, id)
+        {
+        }
     }
 }

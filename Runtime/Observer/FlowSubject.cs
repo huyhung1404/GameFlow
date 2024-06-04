@@ -12,6 +12,11 @@ namespace GameFlow
             return GetEventPool<T>(id);
         }
 
+        public static UIElementCallbackEvent UIEvent<T>(string id = null) where T : UserInterfaceFlowElement
+        {
+            return (UIElementCallbackEvent)GetEventPool<T>(id);
+        }
+
         public static ElementCallbackEvent Event(Type type, string id = null)
         {
             return GetEventPool(type, id);
@@ -54,7 +59,9 @@ namespace GameFlow
 
         private static ElementCallbackEvent Add(Type type, string id)
         {
-            var elementEvent = new ElementCallbackEvent(type, string.IsNullOrEmpty(id) ? null : id);
+            var elementEvent = type.IsSubclassOf(GameCommand.UIElementType)
+                ? new UIElementCallbackEvent(type, string.IsNullOrEmpty(id) ? null : id)
+                : new ElementCallbackEvent(type, string.IsNullOrEmpty(id) ? null : id);
             events.Add(elementEvent);
             return elementEvent;
         }

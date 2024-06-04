@@ -113,7 +113,7 @@ namespace GameFlow.Internal
             if (disableKeyBack) return;
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
             if (LoadingController.IsShow()) return;
-            //TODO: Handle Key Back
+            AddCommand(new KeyBackCommand(null));
         }
 
         private void OnDestroy()
