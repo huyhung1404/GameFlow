@@ -62,7 +62,7 @@ namespace GameFlow.Internal
         {
             for (var i = activeData.Length - 1; i >= 0; i--)
             {
-                activeData[i].o.SetActive(false);
+                if (activeData[i].o) activeData[i].o.SetActive(false);
             }
         }
     }
