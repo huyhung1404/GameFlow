@@ -17,9 +17,9 @@ namespace GameFlow
             return new LoadCommand(typeof(T));
         }
 
-        public static ReleaseCommand Release<T>() where T : GameFlowElement
+        public static ReleaseCommand Release<T>(string id = null) where T : GameFlowElement
         {
-            return new ReleaseCommand(typeof(T));
+            return new ReleaseCommand(typeof(T), id);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GameFlow.Internal
 {
@@ -14,6 +15,11 @@ namespace GameFlow.Internal
         internal static void AddElement(GameFlowElement element)
         {
             elementsRuntime.Add(element);
+        }
+
+        internal static void RemoveElement(Type type, string id)
+        {
+                        
         }
     }
 }

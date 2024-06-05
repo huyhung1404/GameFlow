@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GameFlow.Internal;
 using UnityEngine;
 
 namespace GameFlow
@@ -57,7 +58,7 @@ namespace GameFlow
             {
                 if (type != types[i]) continue;
                 var element = elements[i];
-                if (!string.Equals(element.instanceID, id)) continue;
+                if (!Utility.FlowIDEquals(element.instanceID, id)) continue;
 #if !UNITY_EDITOR
                 if (!element.includeInBuild) return null;
 #endif

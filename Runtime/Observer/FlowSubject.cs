@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameFlow.Internal;
 
 namespace GameFlow
 {
@@ -42,19 +43,13 @@ namespace GameFlow
         {
             for (var i = events.Count - 1; i >= 0; i--)
             {
-                if (type != events[i].type || !EventEquals(id, events[i].id)) continue;
+                if (type != events[i].type || !Utility.FlowIDEquals(id, events[i].id)) continue;
                 callbackEvent = events[i];
                 return true;
             }
 
             callbackEvent = null;
             return false;
-        }
-
-        private static bool EventEquals(string s1, string s2)
-        {
-            if (string.IsNullOrEmpty(s1) && string.IsNullOrEmpty(s2)) return true;
-            return string.Equals(s1, s2);
         }
 
         private static ElementCallbackEvent Add(Type type, string id)
@@ -70,7 +65,7 @@ namespace GameFlow
         {
             for (var i = events.Count - 1; i >= 0; i--)
             {
-                if (type != events[i].type || !EventEquals(id, events[i].id)) continue;
+                if (type != events[i].type || !Utility.FlowIDEquals(id, events[i].id)) continue;
                 events.RemoveAt(i);
                 return;
             }
