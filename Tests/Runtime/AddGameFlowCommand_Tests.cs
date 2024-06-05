@@ -12,6 +12,11 @@ namespace GameFlow.Tests
         public class TestScript___ElementAddPrefab : GameFlowElement
         {
         }
+
+        public class TestScript___ElementAddScene : GameFlowElement
+        {
+        }
+
         public class TestScript___NoReference : GameFlowElement
         {
         }
@@ -58,6 +63,19 @@ namespace GameFlow.Tests
             Assert.IsTrue(mono.onEnable);
             Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
+
+            var next2 = false;
+            GameCommand.Add<TestScript___ElementAddScene>().OnCompleted(_ => next2 = true).Build();
+            while (!next2)
+            {
+                yield return null;
+            }
+
+            var mono2 = SceneTestMonoBehaviour.GetWithID("");
+            Assert.IsTrue(mono2.onActiveCount == 1);
+            Assert.IsTrue(mono2.onEnable);
+            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
+            GameFlowRuntimeController.CommandsIsEmpty();
         }
 
         [UnityTest]
@@ -94,7 +112,7 @@ namespace GameFlow.Tests
             Assert.IsTrue(mono.onEnable);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
-        
+
         [UnityTest]
         public IEnumerator _3_Single_Add_Execute_Command_WithID_id()
         {
@@ -111,7 +129,7 @@ namespace GameFlow.Tests
             Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
-        
+
         [UnityTest]
         public IEnumerator _4_Multi_Add_Execute_Command_WithID_id()
         {
@@ -126,14 +144,14 @@ namespace GameFlow.Tests
             var mono = PrefabTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono.onActiveCount == 1);
             Assert.IsTrue(mono.onEnable);
-            
+
             var mono2 = PrefabTestMonoBehaviour.GetWithID("id");
             Assert.IsTrue(mono2.onActiveCount == 1);
             Assert.IsTrue(mono2.onEnable);
             Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
-        
+
         [UnityTest]
         public IEnumerator _5_Multi_Add_Execute_Command_WithID_id()
         {
@@ -145,11 +163,12 @@ namespace GameFlow.Tests
             {
                 yield return null;
             }
+
             yield return new WaitForSeconds(0.5f);
             var mono = PrefabTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono.onActiveCount == 1);
             Assert.IsTrue(mono.onEnable);
-            
+
             var mono2 = PrefabTestMonoBehaviour.GetWithID("id");
             Assert.IsTrue(mono2.onActiveCount == 2);
             Assert.IsTrue(mono2.onCloseCount == 1);

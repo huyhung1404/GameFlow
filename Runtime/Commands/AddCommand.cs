@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace GameFlow
 {
@@ -116,8 +115,10 @@ namespace GameFlow
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    baseElement.runtimeInstance = SceneElementHandle.Create();
+                    var elementHandle = SceneElementHandle.Create();
+                    baseElement.runtimeInstance = elementHandle.gameObject;
                     SceneManager.MoveGameObjectToScene(baseElement.runtimeInstance, handle.Result.Scene);
+                    elementHandle.GetRootsGameObject();
                     ActiveElement();
                     return;
                 }

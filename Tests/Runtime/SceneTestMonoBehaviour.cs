@@ -3,11 +3,11 @@ using UnityEngine;
 namespace GameFlow.Tests
 {
     [AddComponentMenu("")]
-    public class PrefabTestMonoBehaviour : TestMonoBehaviour<AddGameFlowCommand_Tests.TestScript___ElementAddPrefab>
+    public class SceneTestMonoBehaviour : TestMonoBehaviour<AddGameFlowCommand_Tests.TestScript___ElementAddScene>
     {
-        public static PrefabTestMonoBehaviour GetWithID(string idSearch)
+        public static SceneTestMonoBehaviour GetWithID(string idSearch)
         {
-            foreach (var mono in FindObjectsOfType<PrefabTestMonoBehaviour>())
+            foreach (var mono in FindObjectsOfType<SceneTestMonoBehaviour>())
             {
                 if (string.IsNullOrEmpty(mono.id) && string.IsNullOrEmpty(idSearch)) return mono;
                 if (mono.id == idSearch) return mono;

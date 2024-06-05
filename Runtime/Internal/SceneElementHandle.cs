@@ -5,13 +5,13 @@ namespace GameFlow.Internal
     [AddComponentMenu("")]
     internal class SceneElementHandle : MonoBehaviour
     {
-        internal static GameObject Create()
+        internal static SceneElementHandle Create()
         {
             var handle = new GameObject().AddComponent<SceneElementHandle>();
 #if UNITY_EDITOR
             handle.name = "Scene Handle";
 #endif
-            return handle.gameObject;
+            return handle;
         }
 
         private struct ActiveData
@@ -21,9 +21,8 @@ namespace GameFlow.Internal
         }
 
         private ActiveData[] activeData;
-        private bool isActive;
 
-        private void Awake()
+        internal void GetRootsGameObject()
         {
             var root = gameObject.scene.GetRootGameObjects();
             var rootLength = root.Length;
@@ -40,18 +39,11 @@ namespace GameFlow.Internal
                 };
                 index++;
             }
-
-            isActive = true;
         }
 
         private void OnEnable()
         {
-            if (isActive)
-            {
-                isActive = false;
-                return;
-            }
-
+            if (activeData == null) return;
             for (var i = activeData.Length - 1; i >= 0; i--)
             {
                 activeData[i].o.SetActive(activeData[i].isActive);
@@ -60,6 +52,7 @@ namespace GameFlow.Internal
 
         private void OnDisable()
         {
+            if (activeData == null) return;
             for (var i = activeData.Length - 1; i >= 0; i--)
             {
                 if (activeData[i].o) activeData[i].o.SetActive(false);
