@@ -57,7 +57,7 @@ namespace GameFlow.Tests
             {
                 yield return null;
             }
-
+            
             var mono = PrefabTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono.onActiveCount == 1);
             Assert.IsTrue(mono.onEnable);
@@ -71,6 +71,7 @@ namespace GameFlow.Tests
                 yield return null;
             }
 
+            yield return null;
             var mono2 = SceneTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono2.onActiveCount == 1);
             Assert.IsTrue(mono2.onEnable);
@@ -109,6 +110,21 @@ namespace GameFlow.Tests
             var mono = PrefabTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono.onCloseCount == 1, "PrefabTestMonoBehaviour.onCloseCount = " + mono.onCloseCount);
             Assert.IsTrue(mono.onActiveCount == 2, "PrefabTestMonoBehaviour.onActiveCount = " + mono.onActiveCount);
+            Assert.IsTrue(mono.onEnable);
+            GameFlowRuntimeController.CommandsIsEmpty();
+            
+            var next2 = false;
+            GameCommand.Add<TestScript___ElementAddScene>().Build();
+            GameCommand.Add<TestScript___ElementAddScene>().OnCompleted(_ => { next2 = true; }).Build();
+            while (!next2)
+            {
+                yield return null;
+            }
+
+            yield return null;
+            var mono2 = SceneTestMonoBehaviour.GetWithID("");
+            Assert.IsTrue(mono2.onCloseCount == 1, "PrefabTestMonoBehaviour.onCloseCount = " + mono2.onCloseCount);
+            Assert.IsTrue(mono2.onActiveCount == 2, "PrefabTestMonoBehaviour.onActiveCount = " + mono2.onActiveCount);
             Assert.IsTrue(mono.onEnable);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
