@@ -1,6 +1,9 @@
 ﻿using System;
+using GameFlow.Internal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -11,7 +14,11 @@ namespace GameFlow
     [Serializable]
     public class AssetReferenceElement : AssetReferenceT<Object>
     {
-        [SerializeField] internal bool isScene;
+        [SerializeField] private bool isScene;
+        private bool isReleasing;
+        private int instanceCount;
+
+        #region Editor Setup
 
         public AssetReferenceElement(string guid) : base(guid)
         {
@@ -57,5 +64,65 @@ namespace GameFlow
             return true;
         }
 #endif
+
+        #endregion
+
+        internal bool IsReady() => IsDone && !isReleasing;
+        internal bool IsScene() => isScene;
+
+        internal GameObject InstanceGameObjectHandle()
+        {
+            return InstanceGameObjectHandle((GameObject)OperationHandle.Result);
+        }
+
+        internal GameObject InstanceGameObjectHandle(GameObject o)
+        {
+            instanceCount++;
+            return Object.Instantiate(o, GameFlowRuntimeController.PrefabElementContainer());
+        }
+
+        internal void LoadGameObjectHandle(Action<GameObject> callback)
+        {
+            if (isScene)
+            {
+                HandleReferenceScene(callback);
+                return;
+            }
+
+            HandleReferencePrefab(callback);
+        }
+
+        private void HandleReferenceScene(Action<GameObject> callback)
+        {
+            LoadSceneAsync(LoadSceneMode.Additive).Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    var elementHandle = SceneElementHandle.Create();
+                    SceneManager.MoveGameObjectToScene(elementHandle.gameObject, handle.Result.Scene);
+                    elementHandle.GetRootsGameObject();
+                    callback.Invoke(elementHandle.gameObject);
+                    return;
+                }
+
+                Addressables.Release(handle);
+                callback.Invoke(null);
+            };
+        }
+
+        private void HandleReferencePrefab(Action<GameObject> callback)
+        {
+            LoadAssetAsync<GameObject>().Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    callback.Invoke(InstanceGameObjectHandle(handle.Result));
+                    return;
+                }
+
+                Addressables.Release(handle);
+                callback.Invoke(null);
+            };
+        }
     }
 }

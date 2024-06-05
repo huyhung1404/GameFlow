@@ -27,6 +27,8 @@ namespace GameFlow
         {
         }
 
+        internal abstract void PreUpdate();
+
         /// <summary>
         /// Call every frame
         /// </summary>

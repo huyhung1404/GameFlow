@@ -8,6 +8,11 @@ namespace GameFlow
         {
         }
 
+        internal override void PreUpdate()
+        {
+            
+        }
+
         internal override void Update()
         {
         }

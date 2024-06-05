@@ -14,6 +14,11 @@ namespace GameFlow
             this.id = id;
         }
 
+        internal override void PreUpdate()
+        {
+            
+        }
+
         internal override void Update()
         {
             if (isExecute) return;

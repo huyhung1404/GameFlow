@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.UI;
 
 namespace GameFlow.Internal
 {
@@ -25,6 +26,19 @@ namespace GameFlow.Internal
         {
             return instance.transform;
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (GetComponentInChildren<LoadingController>()) return;
+            var loadingController = new GameObject("Loading Controller").AddComponent<LoadingController>();
+            loadingController.transform.SetParent(transform);
+            loadingController.GetComponent<Image>().color = Color.clear;
+            var canvas = loadingController.GetComponent<Canvas>();
+            canvas.sortingOrder = 100;
+            UnityEditor.EditorUtility.SetDirty(gameObject);
+        }
+#endif
 
         private void Awake()
         {
@@ -72,7 +86,13 @@ namespace GameFlow.Internal
         {
             if (!isActive) return;
             if (isLock) return;
-            if (!CommandHandle()) return;
+            if (!CommandHandle())
+            {
+                LoadingController.EnableTransparent();
+                return;
+            }
+            
+            LoadingController.DisableTransparent();
             KeyBackHandle();
         }
 
@@ -97,7 +117,7 @@ namespace GameFlow.Internal
 
             if (commands.Count == 0) return true;
             current = commands.Dequeue();
-            current.Update();
+            current.PreUpdate();
             return false;
         }
 

@@ -22,6 +22,11 @@ namespace GameFlow.Tests
                 this.executeFrame = executeFrame;
             }
 
+            internal override void PreUpdate()
+            {
+                Update();
+            }
+
             internal override void Update()
             {
                 if (isExecute) return;

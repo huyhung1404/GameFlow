@@ -1,9 +1,6 @@
 ﻿using System;
 using GameFlow.Internal;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.SceneManagement;
 
 namespace GameFlow
 {
@@ -13,7 +10,7 @@ namespace GameFlow
     {
         private bool isExecute;
         protected readonly string id;
-        internal int loadingId;
+        internal int loadingId = -1;
         internal bool isPreload;
         internal OnAddCommandCompleted onCompleted;
         internal object sendData;
@@ -27,6 +24,20 @@ namespace GameFlow
             this.id = id;
         }
 
+        internal override void PreUpdate()
+        {
+            var collection = GameFlowRuntimeController.GetElements();
+            if (collection.TryGetElement(elementType, id, out var element))
+            {
+                baseElement = element;
+                return;
+            }
+
+            ErrorHandle.LogError($"Element type {elementType.Name} not exits");
+            OnLoadResult(null);
+            isExecute = true;
+        }
+
         internal override void Update()
         {
             if (isExecute) return;
@@ -37,10 +48,41 @@ namespace GameFlow
         {
             try
             {
-                if (!GetElementsIfNeed()) return true;
                 var reference = baseElement.reference;
-                if (!reference.IsDone) return false;
-                Loading();
+                if (!reference.IsReady()) return false;
+                if (baseElement.runtimeInstance)
+                {
+                    if (isPreload)
+                    {
+                        OnLoadResult(null);
+                        return true;
+                    }
+
+                    if (baseElement.runtimeInstance.activeSelf)
+                    {
+                        IsCanReActiveElement();
+                        return true;
+                    }
+
+                    ActiveElement();
+                    return true;
+                }
+
+                if (!reference.IsValid())
+                {
+                    Loading();
+                    return true;
+                }
+
+                if (reference.IsScene())
+                {
+                    ErrorHandle.LogWarning($"Exist reference scene instance of: {elementType.Name}");
+                    OnLoadResult(null);
+                    return true;
+                }
+
+                baseElement.runtimeInstance = reference.InstanceGameObjectHandle();
+                ActiveElement();
                 return true;
             }
             catch (Exception e)
@@ -51,97 +93,18 @@ namespace GameFlow
             }
         }
 
-        private bool GetElementsIfNeed()
-        {
-            if (baseElement != null) return true;
-            var collection = GameFlowRuntimeController.GetElements();
-            if (collection.TryGetElement(elementType, id, out var element))
-            {
-                baseElement = element;
-                return true;
-            }
-
-            ErrorHandle.LogError($"Element type {elementType.Name} not exits");
-            OnLoadResult(null);
-            return false;
-        }
-
         private void Loading()
         {
             BaseLoadingTypeController loading = null;
             if (loadingId >= 0) loading = LoadingController.instance.LoadingOn(loadingId);
-            if (!loading)
+            if (ReferenceEquals(loading, null))
             {
-                AddElement();
+                HandleReference();
                 return;
             }
 
             isLoadingOn = true;
-            loading.OnCompleted(AddElement);
-        }
-
-        private void AddElement()
-        {
-            if (baseElement.runtimeInstance)
-            {
-                if (isPreload)
-                {
-                    OnLoadResult(null);
-                    return;
-                }
-
-                if (baseElement.runtimeInstance.activeSelf)
-                {
-                    IsCanReActiveElement();
-                    return;
-                }
-
-                ActiveElement();
-                return;
-            }
-
-            if (baseElement.reference.isScene)
-            {
-                HandleReferenceScene();
-                return;
-            }
-
-            HandleReferencePrefab();
-        }
-
-        private void HandleReferenceScene()
-        {
-            baseElement.reference.LoadSceneAsync(LoadSceneMode.Additive).Completed += handle =>
-            {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    var elementHandle = SceneElementHandle.Create();
-                    baseElement.runtimeInstance = elementHandle.gameObject;
-                    SceneManager.MoveGameObjectToScene(baseElement.runtimeInstance, handle.Result.Scene);
-                    elementHandle.GetRootsGameObject();
-                    ActiveElement();
-                    return;
-                }
-
-                Addressables.Release(handle);
-                OnLoadResult(null);
-            };
-        }
-
-        private void HandleReferencePrefab()
-        {
-            baseElement.reference.InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer()).Completed += handle =>
-            {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    baseElement.runtimeInstance = handle.Result;
-                    ActiveElement();
-                    return;
-                }
-
-                Addressables.Release(handle);
-                OnLoadResult(null);
-            };
+            loading.OnCompleted(HandleReference);
         }
 
         private void IsCanReActiveElement()
@@ -154,6 +117,21 @@ namespace GameFlow
             }
 
             ReActiveElement();
+        }
+
+        private void HandleReference()
+        {
+            baseElement.reference.LoadGameObjectHandle(handle =>
+            {
+                if (ReferenceEquals(handle, null))
+                {
+                    OnLoadResult(null);
+                    return;
+                }
+
+                baseElement.runtimeInstance = handle;
+                ActiveElement();
+            });
         }
 
         protected abstract void ReActiveElement();

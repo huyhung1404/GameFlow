@@ -1,8 +1,13 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GameFlow.Internal
 {
+    [AddComponentMenu("")]
+    [RequireComponent(typeof(Canvas))]
+    [RequireComponent(typeof(GraphicRaycaster))]
+    [RequireComponent(typeof(Image))]
     internal class LoadingController : MonoBehaviour
     {
 #if UNITY_EDITOR
@@ -13,18 +18,30 @@ namespace GameFlow.Internal
 
         [SerializeField] private BaseLoadingTypeController[] controllers = Array.Empty<BaseLoadingTypeController>();
         private static int totalController;
+        private static bool transparentEnable;
+        private Image transparent;
 
         private void Awake()
         {
-            if (instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
             instance = this;
             totalController = controllers.Length;
-            if (transform.parent == null) DontDestroyOnLoad(this);
+            transparent = GetComponent<Image>();
+            transparent.raycastTarget = true;
+            transparent.enabled = transparentEnable;
+        }
+
+        internal static void EnableTransparent()
+        {
+            if (transparentEnable) return;
+            instance.transparent.enabled = true;
+            transparentEnable = true;
+        }
+
+        internal static void DisableTransparent()
+        {
+            if (!transparentEnable) return;
+            instance.transparent.enabled = false;
+            transparentEnable = false;
         }
 
         public void RegisterControllers(params BaseLoadingTypeController[] registerControllers)
