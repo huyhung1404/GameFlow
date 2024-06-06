@@ -69,5 +69,20 @@ namespace GameFlow
         internal UIElementCallbackEvent(Type type, string id) : base(type, id)
         {
         }
+
+        private Action onShowCompleted;
+        public event Action OnShowCompleted { add => onShowCompleted += value; remove => onShowCompleted -= value; }
+
+        internal void RaiseOnShowCompleted()
+        {
+            try
+            {
+                onShowCompleted?.Invoke();
+            }
+            catch (Exception e)
+            {
+                ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+            }
+        }
     }
 }

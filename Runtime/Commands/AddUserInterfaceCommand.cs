@@ -1,4 +1,5 @@
 ﻿using System;
+using GameFlow.Internal;
 
 namespace GameFlow
 {
@@ -19,6 +20,10 @@ namespace GameFlow
 
         protected override void ActiveElement()
         {
+            baseElement.runtimeInstance.SetActive(true);
+            UserInterfaceElementsRuntimeManager.AddUserInterfaceElement(element);
+            callbackOnRelease = true;
+            OnLoadResult(baseElement.runtimeInstance);
         }
 
         internal override void OnRelease()
