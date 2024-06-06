@@ -21,20 +21,15 @@ namespace GameFlow.Tests
         {
         }
 
-        private LoadingController loadingController;
-        private DisplayLoading displayLoading;
         private FadeLoading fadeLoading;
         private ProgressLoading progressLoading;
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            var controller = Builder.CreateMono<GameFlowRuntimeController>();
-            loadingController = controller.CreateChildMono<LoadingController>();
-
-            displayLoading = loadingController.CreateChildMono<DisplayLoading>()
-                .Disable();
-
+            Builder.CreateMono<GameFlowRuntimeController>();
+            yield return null;
+            var loadingController = LoadingController.instance;
             fadeLoading = loadingController.CreateChildMono<FadeLoading>()
                 .AddCanvasGroup(0)
                 .Disable();
@@ -44,7 +39,7 @@ namespace GameFlow.Tests
                 .CreateChildMono<ProgressLoading, Slider>((loading, slider) => loading.progressSlider = slider)
                 .Disable();
 
-            loadingController.RegisterControllers(displayLoading, fadeLoading, progressLoading);
+            loadingController.RegisterControllers(fadeLoading, progressLoading);
             yield return null;
         }
 
@@ -52,20 +47,27 @@ namespace GameFlow.Tests
         public IEnumerator _0_Single_Add_Execute_Command()
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).OnCompleted(_ => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>().OnCompleted(_ =>
+            {
+                LoadingController.IsTransparentOn();
+                next = true;
+            }).Build();
             while (!next)
             {
                 yield return null;
             }
-            
+
             var mono = PrefabTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono.onActiveCount == 1);
             Assert.IsTrue(mono.onEnable);
-            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
 
             var next2 = false;
-            GameCommand.Add<TestScript___ElementAddScene>().OnCompleted(_ => next2 = true).Build();
+            GameCommand.Add<TestScript___ElementAddScene>().OnCompleted(_ =>
+            {
+                LoadingController.IsTransparentOn();
+                next2 = true;
+            }).Build();
             while (!next2)
             {
                 yield return null;
@@ -75,8 +77,8 @@ namespace GameFlow.Tests
             var mono2 = SceneTestMonoBehaviour.GetWithID("");
             Assert.IsTrue(mono2.onActiveCount == 1);
             Assert.IsTrue(mono2.onEnable);
-            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
+            LoadingController.IsTransparentOff();
         }
 
         [UnityTest]
@@ -84,7 +86,10 @@ namespace GameFlow.Tests
         {
             ErrorHandle.sendErrorIsLog = true;
             var next = false;
-            GameCommand.Add<TestScript___NoReference>().OnCompleted(_ => { next = true; }).Build();
+            GameCommand.Add<TestScript___NoReference>().OnCompleted(_ =>
+            {
+                next = true;
+            }).Build();
             while (!next)
             {
                 yield return null;
@@ -93,6 +98,7 @@ namespace GameFlow.Tests
             yield return null;
             GameFlowRuntimeController.CommandsIsEmpty();
             ErrorHandle.sendErrorIsLog = false;
+            LoadingController.IsTransparentOff();
         }
 
         [UnityTest]
@@ -112,7 +118,7 @@ namespace GameFlow.Tests
             Assert.IsTrue(mono.onActiveCount == 2, "PrefabTestMonoBehaviour.onActiveCount = " + mono.onActiveCount);
             Assert.IsTrue(mono.onEnable);
             GameFlowRuntimeController.CommandsIsEmpty();
-            
+
             var next2 = false;
             GameCommand.Add<TestScript___ElementAddScene>().Build();
             GameCommand.Add<TestScript___ElementAddScene>().OnCompleted(_ => { next2 = true; }).Build();
@@ -142,7 +148,6 @@ namespace GameFlow.Tests
             var mono = PrefabTestMonoBehaviour.GetWithID("id");
             Assert.IsTrue(mono.onActiveCount == 1);
             Assert.IsTrue(mono.onEnable);
-            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
 
@@ -164,7 +169,6 @@ namespace GameFlow.Tests
             var mono2 = PrefabTestMonoBehaviour.GetWithID("id");
             Assert.IsTrue(mono2.onActiveCount == 1);
             Assert.IsTrue(mono2.onEnable);
-            Assert.IsTrue(!displayLoading.gameObject.activeSelf);
             GameFlowRuntimeController.CommandsIsEmpty();
         }
 
@@ -172,9 +176,9 @@ namespace GameFlow.Tests
         public IEnumerator _5_Multi_Add_Execute_Command_WithID_id()
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(1).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(1).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(1).OnCompleted(_ => { next = true; }).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).Build();
+            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted(_ => { next = true; }).Build();
             while (!next)
             {
                 yield return null;

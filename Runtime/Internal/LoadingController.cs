@@ -37,6 +37,16 @@ namespace GameFlow.Internal
             transparentEnable = true;
         }
 
+        internal static void IsTransparentOff()
+        {
+            Assert.IsTrue(!transparentEnable);
+        }
+
+        internal static void IsTransparentOn()
+        {
+            Assert.IsTrue(transparentEnable);
+        }
+
         internal static void DisableTransparent()
         {
             if (!transparentEnable) return;
