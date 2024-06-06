@@ -16,7 +16,6 @@ namespace GameFlow
     {
         [SerializeField] private bool isScene;
         private bool isReleasing;
-        private int instanceCount;
 
         #region Editor Setup
 
@@ -70,17 +69,6 @@ namespace GameFlow
         internal bool IsReady() => IsDone && !isReleasing;
         internal bool IsScene() => isScene;
 
-        internal GameObject InstanceGameObjectHandle()
-        {
-            return InstanceGameObjectHandle((GameObject)OperationHandle.Result);
-        }
-
-        internal GameObject InstanceGameObjectHandle(GameObject o)
-        {
-            instanceCount++;
-            return Object.Instantiate(o, GameFlowRuntimeController.PrefabElementContainer());
-        }
-
         internal void LoadGameObjectHandle(AddCommand command)
         {
             if (isScene)
@@ -112,11 +100,11 @@ namespace GameFlow
 
         private void HandleReferencePrefab(AddCommand command)
         {
-            LoadAssetAsync<GameObject>().Completed += handle =>
+            InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer()).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    command.HandleReferencePrefab(InstanceGameObjectHandle(handle.Result));
+                    command.HandleReferencePrefab(handle.Result);
                     return;
                 }
 
@@ -138,22 +126,24 @@ namespace GameFlow
 
         private void HandleReleaseScene(ReleaseCommand command)
         {
+            isReleasing = true;
             Addressables.UnloadSceneAsync(OperationHandle).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     command.UnloadCompleted(true);
+                    isReleasing = false;
                     return;
                 }
 
+                isReleasing = false;
                 command.UnloadCompleted(false);
             };
         }
 
-        private void HandleReleasePrefab(Object handle, ReleaseCommand command)
+        private void HandleReleasePrefab(GameObject handle, ReleaseCommand command)
         {
-            Object.Destroy(handle);
-            if (--instanceCount <= 0) Addressables.Release(OperationHandle);
+            if (!Addressables.ReleaseInstance(handle)) Object.Destroy(handle);
             command.UnloadCompleted(true);
         }
     }

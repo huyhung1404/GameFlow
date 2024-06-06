@@ -81,8 +81,7 @@ namespace GameFlow
                     return true;
                 }
 
-                baseElement.runtimeInstance = reference.InstanceGameObjectHandle();
-                ActiveElement();
+                Loading();
                 return true;
             }
             catch (Exception e)
