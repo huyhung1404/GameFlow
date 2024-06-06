@@ -28,5 +28,10 @@ namespace GameFlow.Internal
         {
             UnityEngine.Assertions.Assert.IsNotNull(value, message);
         }
+
+        public static void IsValidReference<T>(bool condition, string id = null) where T : GameFlowElement
+        {
+            IsTrue(GameFlowRuntimeController.GetElements().GetElement(typeof(T), id).runtimeInstance == condition);
+        }
     }
 }

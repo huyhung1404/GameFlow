@@ -4,7 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "com.huyhung1404.gameflow"
+        "com.huyhung1404.gameflow",
+        "Unity.Addressables"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

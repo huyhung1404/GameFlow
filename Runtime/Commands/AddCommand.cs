@@ -74,14 +74,8 @@ namespace GameFlow
                     return true;
                 }
 
-                if (reference.IsScene())
-                {
-                    ErrorHandle.LogWarning($"Exist reference scene instance of: {elementType.Name}");
-                    OnLoadResult(null);
-                    return true;
-                }
-
-                Loading();
+                ErrorHandle.LogWarning($"Reference isValid: {elementType.Name}");
+                OnLoadResult(null);
                 return true;
             }
             catch (Exception e)
