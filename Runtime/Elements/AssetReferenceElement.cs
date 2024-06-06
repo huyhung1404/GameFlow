@@ -81,18 +81,18 @@ namespace GameFlow
             return Object.Instantiate(o, GameFlowRuntimeController.PrefabElementContainer());
         }
 
-        internal void LoadGameObjectHandle(Action<GameObject> callback)
+        internal void LoadGameObjectHandle(AddCommand command)
         {
             if (isScene)
             {
-                HandleReferenceScene(callback);
+                HandleReferenceScene(command);
                 return;
             }
 
-            HandleReferencePrefab(callback);
+            HandleReferencePrefab(command);
         }
 
-        private void HandleReferenceScene(Action<GameObject> callback)
+        private void HandleReferenceScene(AddCommand command)
         {
             LoadSceneAsync(LoadSceneMode.Additive).Completed += handle =>
             {
@@ -101,28 +101,60 @@ namespace GameFlow
                     var elementHandle = SceneElementHandle.Create();
                     SceneManager.MoveGameObjectToScene(elementHandle.gameObject, handle.Result.Scene);
                     elementHandle.GetRootsGameObject();
-                    callback.Invoke(elementHandle.gameObject);
+                    command.HandleReferencePrefab(elementHandle.gameObject);
                     return;
                 }
 
                 Addressables.Release(handle);
-                callback.Invoke(null);
+                command.HandleReferencePrefab(null);
             };
         }
 
-        private void HandleReferencePrefab(Action<GameObject> callback)
+        private void HandleReferencePrefab(AddCommand command)
         {
             LoadAssetAsync<GameObject>().Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    callback.Invoke(InstanceGameObjectHandle(handle.Result));
+                    command.HandleReferencePrefab(InstanceGameObjectHandle(handle.Result));
                     return;
                 }
 
                 Addressables.Release(handle);
-                callback.Invoke(null);
+                command.HandleReferencePrefab(null);
             };
+        }
+
+        internal void ReleaseHandlePrefab(GameObject handle, ReleaseCommand command)
+        {
+            if (isScene)
+            {
+                HandleReleaseScene(command);
+                return;
+            }
+
+            HandleReleasePrefab(handle, command);
+        }
+
+        private void HandleReleaseScene(ReleaseCommand command)
+        {
+            Addressables.UnloadSceneAsync(OperationHandle).Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    command.UnloadCompleted(true);
+                    return;
+                }
+
+                command.UnloadCompleted(false);
+            };
+        }
+
+        private void HandleReleasePrefab(Object handle, ReleaseCommand command)
+        {
+            Object.Destroy(handle);
+            if (--instanceCount <= 0) Addressables.Release(OperationHandle);
+            command.UnloadCompleted(true);
         }
     }
 }

@@ -28,6 +28,11 @@ namespace GameFlow
             Remove(typeof(T), id);
         }
 
+        public static void ReleaseEvent(Type type, string id = null)
+        {
+            Remove(type, id);
+        }
+
         private static ElementCallbackEvent GetEventPool<T>(string id) where T : GameFlowElement
         {
             var type = typeof(T);

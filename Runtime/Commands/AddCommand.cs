@@ -99,12 +99,12 @@ namespace GameFlow
             if (loadingId >= 0) loading = LoadingController.instance.LoadingOn(loadingId);
             if (ReferenceEquals(loading, null))
             {
-                HandleReference();
+                baseElement.reference.LoadGameObjectHandle(this);
                 return;
             }
 
             isLoadingOn = true;
-            loading.OnCompleted(HandleReference);
+            loading.OnCompleted(() => baseElement.reference.LoadGameObjectHandle(this));
         }
 
         private void IsCanReActiveElement()
@@ -119,19 +119,16 @@ namespace GameFlow
             ReActiveElement();
         }
 
-        private void HandleReference()
+        internal void HandleReferencePrefab(GameObject handle)
         {
-            baseElement.reference.LoadGameObjectHandle(handle =>
+            if (ReferenceEquals(handle, null))
             {
-                if (ReferenceEquals(handle, null))
-                {
-                    OnLoadResult(null);
-                    return;
-                }
+                OnLoadResult(null);
+                return;
+            }
 
-                baseElement.runtimeInstance = handle;
-                ActiveElement();
-            });
+            baseElement.runtimeInstance = handle;
+            ActiveElement();
         }
 
         protected abstract void ReActiveElement();

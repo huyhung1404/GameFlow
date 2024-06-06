@@ -34,10 +34,8 @@ namespace GameFlow
                 {
                     default:
                     case ElementReleaseMode.RELEASE_ON_CLOSE:
-                        ReleaseOnClose(false);
-                        break;
                     case ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK:
-                        ReleaseOnClose(true);
+                        ReleaseOnClose();
                         break;
                     case ElementReleaseMode.NONE_RELEASE:
                         NoneRelease();
@@ -54,16 +52,12 @@ namespace GameFlow
             }
         }
 
-        private void ReleaseOnClose(bool releaseCallback)
-        {
-        }
+        protected abstract void ReleaseOnClose();
+
+        internal abstract void UnloadCompleted(bool isSuccess);
 
         protected abstract void NoneRelease();
 
-        protected void OnLoadResult(bool canRelease)
-        {
-            onCompleted?.Invoke(canRelease);
-            Release();
-        }
+        protected abstract void OnLoadResult(bool canRelease);
     }
 }
