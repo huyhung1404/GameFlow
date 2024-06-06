@@ -3,20 +3,19 @@ using GameFlow.Internal;
 
 namespace GameFlow
 {
-    public class ReleaseCommand : Command
+    public delegate void OnReleaseCommandCompleted(bool isRelease);
+
+    public abstract class ReleaseCommand : Command
     {
-        private bool isExecute;
-        private readonly string id;
+        protected bool isExecute;
+        protected readonly string id;
+        protected GameFlowElement baseElement;
+        internal OnReleaseCommandCompleted onCompleted;
 
         internal ReleaseCommand(Type elementType, string id) : base(elementType)
         {
             isExecute = false;
             this.id = id;
-        }
-
-        internal override void PreUpdate()
-        {
-            
         }
 
         internal override void Update()
@@ -29,22 +28,41 @@ namespace GameFlow
         {
             try
             {
-                // if (!GetElementsIfNeed()) return true;
-                // var reference = baseElement.reference;
-                // if (!reference.IsDone) return false;
-                // Loading();
+                var reference = baseElement.reference;
+                if (!reference.IsReady()) return false;
+                switch (baseElement.releaseMode)
+                {
+                    default:
+                    case ElementReleaseMode.RELEASE_ON_CLOSE:
+                        ReleaseOnClose(false);
+                        break;
+                    case ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK:
+                        ReleaseOnClose(true);
+                        break;
+                    case ElementReleaseMode.NONE_RELEASE:
+                        NoneRelease();
+                        break;
+                }
+
+                return true;
             }
             catch (Exception e)
             {
                 ErrorHandle.LogException(e, $"Release Command Error: {elementType.Name}");
                 OnLoadResult(false);
+                return true;
             }
-            
-            return true;
         }
+
+        private void ReleaseOnClose(bool releaseCallback)
+        {
+        }
+
+        protected abstract void NoneRelease();
 
         protected void OnLoadResult(bool canRelease)
         {
+            onCompleted?.Invoke(canRelease);
             Release();
         }
     }

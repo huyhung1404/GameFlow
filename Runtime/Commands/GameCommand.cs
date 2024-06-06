@@ -19,7 +19,8 @@ namespace GameFlow
 
         public static ReleaseCommand Release<T>(string id = null) where T : GameFlowElement
         {
-            return new ReleaseCommand(typeof(T), id);
+            var type = typeof(T);
+            return type.IsSubclassOf(UIElementType) ? new ReleaseUserInterfaceCommand(type, id) : new ReleaseGameFlowCommand(type, id);
         }
     }
 
@@ -52,6 +53,15 @@ namespace GameFlow
         public static AddCommand SendData(this AddCommand command, object data)
         {
             command.sendData = data;
+            return command;
+        }
+    }
+
+    public static class ReleaseCommandBuilder
+    {
+        public static ReleaseCommand OnCompleted(this ReleaseCommand command, OnReleaseCommandCompleted completed)
+        {
+            command.onCompleted = completed;
             return command;
         }
     }

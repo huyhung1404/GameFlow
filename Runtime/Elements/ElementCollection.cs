@@ -6,31 +6,9 @@ using UnityEngine;
 namespace GameFlow
 {
     [Serializable]
-    internal class ElementCollection : ISerializationCallbackReceiver
+    internal class ElementCollection
     {
         [SerializeReference] private GameFlowElement[] elements;
-        private Type[] types;
-        private int elementCount;
-
-        public int count
-        {
-            get => elementCount;
-        }
-
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-            if (elements == null) return;
-            elementCount = elements.Length;
-            types = new Type[elementCount];
-            for (var i = 0; i < elementCount; i++)
-            {
-                types[i] = elements[i]?.GetType();
-            }
-        }
 
         internal GameFlowElement GetIndex(int index)
         {
@@ -39,10 +17,12 @@ namespace GameFlow
 
         internal GameFlowElement GetElement(Type type)
         {
+            var elementCount = elements.Length;
             for (var i = 0; i < elementCount; i++)
             {
-                if (type != types[i]) continue;
                 var element = elements[i];
+                if (element == null) continue;
+                if (type != element.elementType) continue;
 #if !UNITY_EDITOR
                 if (!element.includeInBuild) return null;
 #endif
@@ -54,10 +34,12 @@ namespace GameFlow
 
         internal GameFlowElement GetElement(Type type, string id)
         {
+            var elementCount = elements.Length;
             for (var i = 0; i < elementCount; i++)
             {
-                if (type != types[i]) continue;
                 var element = elements[i];
+                if (element == null) continue;
+                if (type != element.elementType) continue;
                 if (!Utility.FlowIDEquals(element.instanceID, id)) continue;
 #if !UNITY_EDITOR
                 if (!element.includeInBuild) return null;
@@ -94,7 +76,6 @@ namespace GameFlow
 
             if (isAdd) listElements.Add(element);
             elements = listElements.ToArray();
-            OnAfterDeserialize();
         }
 
         internal bool VerifyData()
@@ -110,7 +91,6 @@ namespace GameFlow
             }
 
             elements = listElements.ToArray();
-            OnAfterDeserialize();
             return isChange;
         }
     }

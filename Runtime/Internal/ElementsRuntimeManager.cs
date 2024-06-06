@@ -17,9 +17,18 @@ namespace GameFlow.Internal
             elementsRuntime.Add(element);
         }
 
-        internal static void RemoveElement(Type type, string id)
+        internal static GameFlowElement RemoveElement(Type type, string id)
         {
-                        
+            for (var i = elementsRuntime.Count - 1; i >= 0; i--)
+            {
+                if (type != elementsRuntime[i].elementType) continue;
+                if (!Utility.FlowIDEquals(id, elementsRuntime[i].instanceID)) continue;
+                var result = elementsRuntime[i];
+                elementsRuntime.RemoveAt(i);
+                return result;
+            }
+
+            return null;
         }
     }
 }
