@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -117,14 +116,14 @@ namespace GameFlow.Editor
             gameFlowProperties.Clear();
             userInterfaceFlowProperties.Clear();
             var property = serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements");
-            var assembly = AppDomain.CurrentDomain.GetAssemblies();
             if (property == null || property.arraySize == 0) return;
             var searchKey = searchField.value;
             var hasSearchKey = !string.IsNullOrEmpty(searchKey);
             for (var i = 0; i < property.arraySize; i++)
             {
                 var elementProperty = property.GetArrayElementAtIndex(i);
-                var type = GetAssemblyType(assembly, elementProperty.managedReferenceFullTypename);
+                if (elementProperty.objectReferenceValue == null) continue;
+                var type = elementProperty.objectReferenceValue.GetType();
                 var isUserInterface = type.IsSubclassOf(typeof(UserInterfaceFlowElement));
                 var instanceIDProperty = elementProperty.FindPropertyRelative(nameof(GameFlowElement.instanceID));
                 if (hasSearchKey)
@@ -151,26 +150,6 @@ namespace GameFlow.Editor
             {
                 properties = new List<SerializedProperty> { serializedProperty }
             });
-        }
-
-        private static Type GetAssemblyType(IEnumerable<Assembly> assemblies, string typeName)
-        {
-            var key = typeName.Split(" ");
-            foreach (var assembly in assemblies)
-            {
-                var nameIndex = 0;
-                if (key.Length == 2)
-                {
-                    if (!assembly.FullName.Contains(key[0])) continue;
-                    nameIndex = 1;
-                }
-
-                var type = assembly.GetType(key[nameIndex]);
-                if (type == null) continue;
-                return type;
-            }
-
-            return null;
         }
 
         private string SetCountTitle(int count)

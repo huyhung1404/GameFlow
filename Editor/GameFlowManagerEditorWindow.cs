@@ -168,12 +168,18 @@ namespace GameFlow.Editor
             var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
             var type = GetAssemblyType(string.Format(kScriptsElementNameFormat, elementNameGenerate));
             if (type == null) throw new Exception("Type generate not exits");
-            var instance = (GameFlowElement)Activator.CreateInstance(type);
+            var instance = (GameFlowElement)CreateInstance(type);
             instance.includeInBuild = true;
             instance.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
             instance.reference = assetReferenceGenerate;
             if (idGenerate != null) instance.instanceID = idGenerate;
             manager.elementCollection.GenerateElement(instance);
+            if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
+            {
+                Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());
+            }
+            AssetDatabase.CreateAsset(instance, PackagePath.AssetsScriptableObjectFolderPath() + $"/{string.Format(kScriptsElementNameFormat, elementNameGenerate)}.asset");
+            AddressableUtility.AddAddressableGroupController(AssetDatabase.GetAssetPath(instance));
             EditorUtility.SetDirty(manager);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
@@ -261,10 +267,7 @@ namespace GameFlow.Editor
         public void AddItemsToMenu(GenericMenu menu)
         {
             const string kPrefsKey = "com.huyhung1404.gameflow_showTestScripts";
-            menu.AddItem(new GUIContent("Tests Scripts"), EditorPrefs.GetBool(kPrefsKey, false), () =>
-            {
-                EditorPrefs.SetBool(kPrefsKey, !EditorPrefs.GetBool(kPrefsKey, false));
-            });
+            menu.AddItem(new GUIContent("Tests Scripts"), EditorPrefs.GetBool(kPrefsKey, false), () => { EditorPrefs.SetBool(kPrefsKey, !EditorPrefs.GetBool(kPrefsKey, false)); });
         }
     }
 

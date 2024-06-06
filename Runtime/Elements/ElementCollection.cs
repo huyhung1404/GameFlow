@@ -8,7 +8,7 @@ namespace GameFlow
     [Serializable]
     internal class ElementCollection
     {
-        [SerializeReference] private GameFlowElement[] elements;
+        [SerializeField] private GameFlowElement[] elements;
 
         internal GameFlowElement GetIndex(int index)
         {
@@ -21,7 +21,6 @@ namespace GameFlow
             for (var i = 0; i < elementCount; i++)
             {
                 var element = elements[i];
-                if (element == null) continue;
                 if (type != element.elementType) continue;
 #if !UNITY_EDITOR
                 if (!element.includeInBuild) return null;
@@ -38,7 +37,6 @@ namespace GameFlow
             for (var i = 0; i < elementCount; i++)
             {
                 var element = elements[i];
-                if (element == null) continue;
                 if (type != element.elementType) continue;
                 if (!Utility.FlowIDEquals(element.instanceID, id)) continue;
 #if !UNITY_EDITOR
@@ -55,11 +53,11 @@ namespace GameFlow
             if (string.IsNullOrEmpty(id))
             {
                 element = GetElement(type);
-                return element != null;
+                return !ReferenceEquals(element, null);
             }
 
             element = GetElement(type, id);
-            return element != null;
+            return !ReferenceEquals(element, null);
         }
 
         internal void GenerateElement(GameFlowElement element)

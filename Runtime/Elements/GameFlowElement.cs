@@ -4,15 +4,20 @@ using UnityEngine;
 namespace GameFlow
 {
     [Serializable]
-    public class GameFlowElement
+    public class GameFlowElement : ScriptableObject
     {
         internal GameObject runtimeInstance;
-        private Type _type;
-        internal Type elementType => _type ??= GetType();
+        internal Type elementType;
         [SerializeField] internal string instanceID;
         [SerializeField] internal bool includeInBuild = true;
         [SerializeField] internal AssetReferenceElement reference;
         [SerializeField] internal ElementReleaseMode releaseMode;
         [SerializeField] internal bool canReActive = true;
+
+        private void OnEnable()
+        {
+            elementType = GetType();
+            hideFlags = HideFlags.DontUnloadUnusedAsset;
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace GameFlow.Editor
 
                 var visualElement = elements[index];
                 visualElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                visualElement.UpdateGraphic(isUserInterface, type, elementProperty.properties[index], removeAt);
+                visualElement.UpdateGraphic(isUserInterface, elementProperty.properties[index], removeAt);
             }
 
             for (; index < elements.Count; index++)

@@ -16,6 +16,7 @@ namespace GameFlow.Internal
         private const string kAssetsFolderName = "Elements";
         private const string kAssetsElementsFolderName = "GameFlowElements";
         private const string kAssetsUserInterfaceElementsFolderName = "UserInterfaceFlowElements";
+        private const string kAssetSOFolderName = "ElementControllers";
 
         internal static string ProjectFolderPath(PathType type = PathType.UnityPath)
         {
@@ -50,6 +51,11 @@ namespace GameFlow.Internal
         private static string AssetsFolderPath(PathType type = PathType.UnityPath)
         {
             return ProjectFolderPath(type) + "/" + kAssetsFolderName;
+        }
+        
+        internal static string AssetsScriptableObjectFolderPath(PathType type = PathType.UnityPath)
+        {
+            return ProjectFolderPath(type) + "/" + kAssetSOFolderName;
         }
 
         internal static string AssetsElementsFolderPath(PathType type = PathType.UnityPath)

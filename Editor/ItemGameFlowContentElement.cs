@@ -64,7 +64,7 @@ namespace GameFlow.Editor
                 }
                 else
                 {
-                    AddressableUtility.AddAddressableGroupGUID(referenceValue.AssetGUID, !lastValue);
+                    AddressableUtility.AddAddressableGroupGUID(referenceValue.AssetGUID, !lastValue, false);
                 }
             }
 
@@ -94,20 +94,20 @@ namespace GameFlow.Editor
             removeAtIndex?.Invoke(index.Value);
         }
 
-        public void UpdateGraphic(bool isUserInterface, Type type, SerializedProperty serialized, Action<int> removeAt)
+        public void UpdateGraphic(bool isUserInterface, SerializedProperty serialized, Action<int> removeAt)
         {
             serializedProperty = serialized;
             removeAtIndex = removeAt;
-            serializedObject = serializedProperty.serializedObject;
+            serializedObject = new SerializedObject(serializedProperty.objectReferenceValue);
             container.BindToViewDataKey(serializedProperty.propertyPath, false);
-            includeInBuild = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.includeInBuild));
-            instanceID = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.instanceID));
-            reference = serializedProperty.FindPropertyRelative(nameof(GameFlowElement.reference));
-            releaseModeElement.BindProperty(serializedProperty.FindPropertyRelative(nameof(GameFlowElement.releaseMode)));
-            canReActive.BindProperty(serializedProperty.FindPropertyRelative(nameof(GameFlowElement.canReActive)));
+            includeInBuild = serializedObject.FindProperty(nameof(GameFlowElement.includeInBuild));
+            instanceID = serializedObject.FindProperty(nameof(GameFlowElement.instanceID));
+            reference = serializedObject.FindProperty(nameof(GameFlowElement.reference));
+            releaseModeElement.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.releaseMode)));
+            canReActive.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.canReActive)));
             if (isUserInterface)
             {
-                fullSceneElement.BindProperty(serializedProperty.FindPropertyRelative(nameof(UserInterfaceFlowElement.fullScene)));
+                fullSceneElement.BindProperty(serializedObject.FindProperty(nameof(UserInterfaceFlowElement.fullScene)));
                 fullSceneElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
             }
             else
@@ -130,10 +130,7 @@ namespace GameFlow.Editor
 
         public new class UxmlTraits : VisualElement.UxmlTraits
         {
-            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
-            {
-                get { yield break; }
-            }
+            public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription { get { yield break; } }
         }
     }
 }

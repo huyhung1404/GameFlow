@@ -25,7 +25,7 @@ namespace GameFlow.Editor
             var manager = ScriptableObject.CreateInstance<GameFlowManager>();
             Directory.CreateDirectory(PackagePath.ProjectFolderPath());
             AssetDatabase.CreateAsset(manager, PackagePath.ManagerPath());
-            AddressableUtility.AddAddressableGroup(PackagePath.ManagerPath(), true);
+            AddressableUtility.AddAddressableGroupController(PackagePath.ManagerPath());
             CreateScripts();
             CreateTemplates();
             AssetDatabase.SaveAssets();
