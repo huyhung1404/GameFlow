@@ -15,7 +15,7 @@ namespace GameFlow
 
         protected override void ReActiveElement()
         {
-            FlowSubject.Event(elementType, id).onRelease?.Invoke(true);
+            FlowSubject.Event(elementType, id).RaiseOnRelease(true);
             baseElement.runtimeInstance.SetActive(false);
             baseElement.runtimeInstance.SetActive(true);
             callbackOnRelease = true;
@@ -35,11 +35,11 @@ namespace GameFlow
             if (!callbackOnRelease) return;
             if (ReferenceEquals(sendData, null))
             {
-                FlowSubject.Event(elementType, id).onActive?.Invoke();
+                FlowSubject.Event(elementType, id).RaiseOnActive();
                 return;
             }
 
-            FlowSubject.Event(elementType, id).onActiveWithData?.Invoke(sendData);
+            FlowSubject.Event(elementType, id).RaiseOnActiveWithData(sendData);
         }
     }
 }

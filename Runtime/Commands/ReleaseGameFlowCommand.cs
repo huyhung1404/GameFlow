@@ -20,7 +20,7 @@ namespace GameFlow
 
         protected override void ReleaseOnClose()
         {
-            FlowSubject.Event(elementType, id).onRelease?.Invoke(false);
+            FlowSubject.Event(elementType, id).RaiseOnRelease(false);
             baseElement.reference.ReleaseHandlePrefab(baseElement.runtimeInstance, this);
         }
 
@@ -43,7 +43,7 @@ namespace GameFlow
 
         protected override void NoneRelease()
         {
-            FlowSubject.Event(elementType, id).onRelease?.Invoke(false);
+            FlowSubject.Event(elementType, id).RaiseOnRelease(false);
             baseElement.runtimeInstance.SetActive(false);
             OnLoadResult(true);
         }
