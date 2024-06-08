@@ -6,6 +6,6 @@ namespace GameFlow
     [Serializable]
     public class UserInterfaceFlowElement : GameFlowElement
     {
-        [SerializeField, HideInInspector] internal bool fullScene;
+        [SerializeField] internal bool fullScene;
     }
 }
