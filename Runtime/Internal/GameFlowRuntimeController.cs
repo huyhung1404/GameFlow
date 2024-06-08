@@ -27,6 +27,8 @@ namespace GameFlow.Internal
             return instance.transform;
         }
 
+        internal static GameFlowManager Manager() => instance.manager;
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
@@ -66,6 +68,7 @@ namespace GameFlow.Internal
                 if (operationHandle.Status == AsyncOperationStatus.Succeeded)
                 {
                     manager = operationHandle.Result;
+                    LoadingController.instance?.SetUpShieldSortingOrder(manager.loadingShieldSortingOrder);
                     isActive = true;
                     return;
                 }
@@ -91,7 +94,7 @@ namespace GameFlow.Internal
                 LoadingController.EnableTransparent();
                 return;
             }
-            
+
             LoadingController.DisableTransparent();
             KeyBackHandle();
         }

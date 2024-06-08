@@ -11,9 +11,10 @@ namespace GameFlow.Internal
             elementsRuntime = new List<UserInterfaceFlowElement>();
         }
 
-        internal static void AddUserInterfaceElement(UserInterfaceFlowElement userInterfaceFlowElement)
+        internal static int AddUserInterfaceElement(UserInterfaceFlowElement userInterfaceFlowElement)
         {
             elementsRuntime.Add(userInterfaceFlowElement);
+            return elementsRuntime.Count;
         }
     }
 }

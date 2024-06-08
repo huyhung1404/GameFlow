@@ -57,6 +57,22 @@ namespace GameFlow
 
     public class UIElementCallbackEvent : ElementCallbackEvent
     {
+        private Action<int> onSetUpCanvas;
+        public event Action<int> OnSetUpCanvas { add => onSetUpCanvas += value; remove => onSetUpCanvas -= value; }
+
+        internal void RaiseOnSetUpCanvas(int sortingOrder)
+        {
+            try
+            {
+                onSetUpCanvas?.Invoke(sortingOrder);
+            }
+            catch (Exception e)
+            {
+                ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+                throw;
+            }
+        }
+
         private Action onShowCompleted;
         public event Action OnShowCompleted { add => onShowCompleted += value; remove => onShowCompleted -= value; }
 

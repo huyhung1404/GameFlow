@@ -30,6 +30,11 @@ namespace GameFlow.Internal
             transparent.enabled = transparentEnable;
         }
 
+        internal void SetUpShieldSortingOrder(int sortingOrder)
+        {
+            GetComponent<Canvas>().sortingOrder = sortingOrder;
+        }
+
         internal static void EnableTransparent()
         {
             if (transparentEnable) return;
