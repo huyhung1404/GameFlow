@@ -137,18 +137,9 @@ namespace GameFlow.Editor
                         || (!isUserInterface && type?.BaseType == typeof(GameFlowElement)))
                     {
                         instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                        idSizePopup = 45;
-                        // if (!string.IsNullOrEmpty(idField.value) && manager.elementCollection.GetElement(type, idField.value) == null)
-                        // {
-                        //     elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                        //     generateSizePopup = 60;
-                        // }
-                        // else
-                        // {
-                        //     elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                        //     generateSizePopup = 0;
-                        // }
-
+                        idSizePopup = 30;
+                        elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                        generateSizePopup = 0;
                         fileNameIsExits = false;
                         return;
                     }

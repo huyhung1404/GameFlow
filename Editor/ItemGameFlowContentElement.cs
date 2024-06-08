@@ -67,9 +67,12 @@ namespace GameFlow.Editor
                 }
             }
 
-            var idWidth = Mathf.Max(30, guiWidth / 4);
-            // instanceID.stringValue = EditorGUI.TextField(new Rect(22, 1, idWidth, 18), GUIContent.none, instanceID.stringValue);
-            EditorGUI.PropertyField(new Rect(30 + idWidth, 1, Mathf.Max(45, guiWidth - idWidth - 135), 18), reference, GUIContent.none);
+            EditorGUI.PropertyField(new Rect(20, 1, Mathf.Max(45, guiWidth - 165), 18), reference, GUIContent.none);
+            if (GUI.Button(new Rect(guiWidth - 140, 1, 45, 18), new GUIContent("Ping")))
+            {
+                EditorGUIUtility.PingObject(serializedObject.targetObject);
+            }
+
             if (EditorGUI.EndChangeCheck()) serializedObject.ApplyModifiedProperties();
             if (!showDialog) return;
             ShowConfirmationDialog();

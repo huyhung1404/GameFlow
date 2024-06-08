@@ -8,10 +8,10 @@ namespace GameFlow
     {
         internal GameObject runtimeInstance;
         internal Type elementType;
-        [SerializeField] internal bool includeInBuild = true;
-        [SerializeField] internal AssetReferenceElement reference;
-        [SerializeField] internal ElementReleaseMode releaseMode;
-        [SerializeField] internal bool canReActive = true;
+        [SerializeField, HideInInspector] internal bool includeInBuild = true;
+        [SerializeField, HideInInspector] internal AssetReferenceElement reference;
+        [SerializeField, HideInInspector] internal ElementReleaseMode releaseMode;
+        [SerializeField, HideInInspector] internal bool canReActive = true;
 
         private void OnEnable()
         {
