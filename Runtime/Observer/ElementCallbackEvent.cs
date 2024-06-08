@@ -5,15 +5,6 @@ namespace GameFlow
 {
     public class ElementCallbackEvent
     {
-        internal readonly Type type;
-        internal readonly string id;
-
-        internal ElementCallbackEvent(Type type, string id)
-        {
-            this.type = type;
-            this.id = string.IsNullOrEmpty(id) ? null : id;
-        }
-
         private Action onActive;
         public event Action OnActive { add => onActive += value; remove => onActive -= value; }
 
@@ -66,10 +57,6 @@ namespace GameFlow
 
     public class UIElementCallbackEvent : ElementCallbackEvent
     {
-        internal UIElementCallbackEvent(Type type, string id) : base(type, id)
-        {
-        }
-
         private Action onShowCompleted;
         public event Action OnShowCompleted { add => onShowCompleted += value; remove => onShowCompleted -= value; }
 

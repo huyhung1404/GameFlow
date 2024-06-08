@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using GameFlow.Internal;
 using UnityEngine;
 
 namespace GameFlow
@@ -31,32 +30,9 @@ namespace GameFlow
             return null;
         }
 
-        internal GameFlowElement GetElement(Type type, string id)
+        internal bool TryGetElement(Type type, out GameFlowElement element)
         {
-            var elementCount = elements.Length;
-            for (var i = 0; i < elementCount; i++)
-            {
-                var element = elements[i];
-                if (type != element.elementType) continue;
-                if (!Utility.FlowIDEquals(element.instanceID, id)) continue;
-#if !UNITY_EDITOR
-                if (!element.includeInBuild) return null;
-#endif
-                return element;
-            }
-
-            return null;
-        }
-
-        internal bool TryGetElement(Type type, string id, out GameFlowElement element)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                element = GetElement(type);
-                return !ReferenceEquals(element, null);
-            }
-
-            element = GetElement(type, id);
+            element = GetElement(type);
             return !ReferenceEquals(element, null);
         }
 

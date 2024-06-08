@@ -8,14 +8,14 @@ namespace GameFlow
         protected override GameFlowElement baseElement { get; set; }
         private bool callbackOnRelease;
 
-        public AddGameFlowCommand(Type elementType, string id) : base(elementType, id)
+        public AddGameFlowCommand(Type elementType) : base(elementType)
         {
             callbackOnRelease = false;
         }
 
         protected override void ReActiveElement()
         {
-            FlowSubject.Event(elementType, id).RaiseOnRelease(true);
+            FlowSubject.Event(elementType).RaiseOnRelease(true);
             baseElement.runtimeInstance.SetActive(false);
             baseElement.runtimeInstance.SetActive(true);
             callbackOnRelease = true;
@@ -35,11 +35,11 @@ namespace GameFlow
             if (!callbackOnRelease) return;
             if (ReferenceEquals(sendData, null))
             {
-                FlowSubject.Event(elementType, id).RaiseOnActive();
+                FlowSubject.Event(elementType).RaiseOnActive();
                 return;
             }
 
-            FlowSubject.Event(elementType, id).RaiseOnActiveWithData(sendData);
+            FlowSubject.Event(elementType).RaiseOnActiveWithData(sendData);
         }
     }
 }

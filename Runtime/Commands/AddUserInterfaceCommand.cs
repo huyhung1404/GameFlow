@@ -9,7 +9,7 @@ namespace GameFlow
         protected override GameFlowElement baseElement { get => element; set => element = (UserInterfaceFlowElement)value; }
         private bool callbackOnRelease;
 
-        internal AddUserInterfaceCommand(Type elementType, string id) : base(elementType, id)
+        internal AddUserInterfaceCommand(Type elementType) : base(elementType)
         {
             callbackOnRelease = false;
         }
@@ -31,11 +31,11 @@ namespace GameFlow
             if (!callbackOnRelease) return;
             if (ReferenceEquals(sendData, null))
             {
-                FlowSubject.Event(elementType, id).RaiseOnActive();
+                FlowSubject.Event(elementType).RaiseOnActive();
                 return;
             }
 
-            FlowSubject.Event(elementType, id).RaiseOnActiveWithData(sendData);
+            FlowSubject.Event(elementType).RaiseOnActiveWithData(sendData);
         }
     }
 }

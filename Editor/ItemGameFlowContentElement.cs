@@ -14,7 +14,6 @@ namespace GameFlow.Editor
         private SerializedObject serializedObject;
         private SerializedProperty serializedProperty;
         private SerializedProperty includeInBuild;
-        private SerializedProperty instanceID;
         private SerializedProperty reference;
         private readonly EnumField releaseModeElement;
         private readonly Toggle fullSceneElement;
@@ -69,7 +68,7 @@ namespace GameFlow.Editor
             }
 
             var idWidth = Mathf.Max(30, guiWidth / 4);
-            instanceID.stringValue = EditorGUI.TextField(new Rect(22, 1, idWidth, 18), GUIContent.none, instanceID.stringValue);
+            // instanceID.stringValue = EditorGUI.TextField(new Rect(22, 1, idWidth, 18), GUIContent.none, instanceID.stringValue);
             EditorGUI.PropertyField(new Rect(30 + idWidth, 1, Mathf.Max(45, guiWidth - idWidth - 135), 18), reference, GUIContent.none);
             if (EditorGUI.EndChangeCheck()) serializedObject.ApplyModifiedProperties();
             if (!showDialog) return;
@@ -101,7 +100,6 @@ namespace GameFlow.Editor
             serializedObject = new SerializedObject(serializedProperty.objectReferenceValue);
             container.BindToViewDataKey(serializedProperty.propertyPath, false);
             includeInBuild = serializedObject.FindProperty(nameof(GameFlowElement.includeInBuild));
-            instanceID = serializedObject.FindProperty(nameof(GameFlowElement.instanceID));
             reference = serializedObject.FindProperty(nameof(GameFlowElement.reference));
             releaseModeElement.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.releaseMode)));
             canReActive.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.canReActive)));

@@ -5,13 +5,13 @@ namespace GameFlow
 {
     public class ReleaseGameFlowCommand : ReleaseCommand
     {
-        public ReleaseGameFlowCommand(Type elementType, string id) : base(elementType, id)
+        public ReleaseGameFlowCommand(Type elementType) : base(elementType)
         {
         }
 
         internal override void PreUpdate()
         {
-            baseElement = ElementsRuntimeManager.RemoveElement(elementType, id);
+            baseElement = ElementsRuntimeManager.RemoveElement(elementType);
             if (baseElement != null) return;
             ErrorHandle.LogWarning($"Element type {elementType.Name} is not exits in pool");
             OnLoadResult(false);
@@ -20,7 +20,7 @@ namespace GameFlow
 
         protected override void ReleaseOnClose()
         {
-            FlowSubject.Event(elementType, id).RaiseOnRelease(false);
+            FlowSubject.Event(elementType).RaiseOnRelease(false);
             baseElement.reference.ReleaseHandlePrefab(baseElement.runtimeInstance, this);
         }
 
@@ -28,7 +28,7 @@ namespace GameFlow
         {
             if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK)
             {
-                FlowSubject.ReleaseEvent(elementType, id);
+                FlowSubject.ReleaseEvent(elementType);
             }
 
             if (isSuccess)
@@ -43,7 +43,7 @@ namespace GameFlow
 
         protected override void NoneRelease()
         {
-            FlowSubject.Event(elementType, id).RaiseOnRelease(false);
+            FlowSubject.Event(elementType).RaiseOnRelease(false);
             baseElement.runtimeInstance.SetActive(false);
             OnLoadResult(true);
         }

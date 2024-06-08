@@ -8,14 +8,12 @@ namespace GameFlow
     public abstract class ReleaseCommand : Command
     {
         protected bool isExecute;
-        protected readonly string id;
         protected GameFlowElement baseElement;
         internal OnReleaseCommandCompleted onCompleted;
 
-        internal ReleaseCommand(Type elementType, string id) : base(elementType)
+        internal ReleaseCommand(Type elementType) : base(elementType)
         {
             isExecute = false;
-            this.id = id;
         }
 
         internal override void Update()

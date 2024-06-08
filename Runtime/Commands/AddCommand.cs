@@ -9,7 +9,6 @@ namespace GameFlow
     public abstract class AddCommand : Command
     {
         private bool isExecute;
-        protected readonly string id;
         internal int loadingId = -1;
         internal bool isPreload;
         internal OnAddCommandCompleted onCompleted;
@@ -17,17 +16,16 @@ namespace GameFlow
         private bool isLoadingOn;
         protected abstract GameFlowElement baseElement { get; set; }
 
-        internal AddCommand(Type elementType, string id) : base(elementType)
+        internal AddCommand(Type elementType) : base(elementType)
         {
             isExecute = false;
             isLoadingOn = false;
-            this.id = id;
         }
 
         internal override void PreUpdate()
         {
             var collection = GameFlowRuntimeController.GetElements();
-            if (collection.TryGetElement(elementType, id, out var element))
+            if (collection.TryGetElement(elementType, out var element))
             {
                 baseElement = element;
                 return;

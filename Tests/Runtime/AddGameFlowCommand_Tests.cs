@@ -133,68 +133,6 @@ namespace GameFlow.Tests
         }
 
         [UnityTest]
-        public IEnumerator _3_Single_Add_Execute_Command_WithID_id()
-        {
-            var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted(_ => { next = true; }).Build();
-            while (!next)
-            {
-                yield return null;
-            }
-
-            var mono = PrefabTestMonoBehaviour.GetWithID("id");
-            Assert.IsTrue(mono.onActiveCount == 1);
-            Assert.IsTrue(mono.onEnable);
-            GameFlowRuntimeController.CommandsIsEmpty();
-        }
-
-        [UnityTest]
-        public IEnumerator _4_Multi_Add_Execute_Command_WithID_id()
-        {
-            var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted(_ => { next = true; }).Build();
-            while (!next)
-            {
-                yield return null;
-            }
-
-            var mono = PrefabTestMonoBehaviour.GetWithID("");
-            Assert.IsTrue(mono.onActiveCount == 1);
-            Assert.IsTrue(mono.onEnable);
-
-            var mono2 = PrefabTestMonoBehaviour.GetWithID("id");
-            Assert.IsTrue(mono2.onActiveCount == 1);
-            Assert.IsTrue(mono2.onEnable);
-            GameFlowRuntimeController.CommandsIsEmpty();
-        }
-
-        [UnityTest]
-        public IEnumerator _5_Multi_Add_Execute_Command_WithID_id()
-        {
-            var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>().LoadingId(0).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).Build();
-            GameCommand.Add<TestScript___ElementAddPrefab>("id").LoadingId(0).OnCompleted(_ => { next = true; }).Build();
-            while (!next)
-            {
-                yield return null;
-            }
-
-            yield return new WaitForSeconds(0.5f);
-            var mono = PrefabTestMonoBehaviour.GetWithID("");
-            Assert.IsTrue(mono.onActiveCount == 1);
-            Assert.IsTrue(mono.onEnable);
-
-            var mono2 = PrefabTestMonoBehaviour.GetWithID("id");
-            Assert.IsTrue(mono2.onActiveCount == 2);
-            Assert.IsTrue(mono2.onCloseCount == 1);
-            Assert.IsTrue(mono2.onEnable);
-            fadeLoading.LoadingIsHide();
-            GameFlowRuntimeController.CommandsIsEmpty();
-        }
-
-        [UnityTest]
         public IEnumerator _6_Single_Add_Release_Execute_Command()
         {
             yield return AddPrefab(1, 0, true, null);
@@ -209,7 +147,7 @@ namespace GameFlow.Tests
         private static IEnumerator AddPrefab(int activeCount, int closeCount, bool enable, string id)
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddPrefab>(id).OnCompleted(_ =>
+            GameCommand.Add<TestScript___ElementAddPrefab>().OnCompleted(_ =>
             {
                 LoadingController.IsTransparentOn();
                 next = true;
@@ -228,7 +166,7 @@ namespace GameFlow.Tests
         private static IEnumerator ReleasePrefab(int activeCount, int closeCount, bool enable, string id)
         {
             var next = false;
-            GameCommand.Release<TestScript___ElementAddPrefab>(id).OnCompleted(_ =>
+            GameCommand.Release<TestScript___ElementAddPrefab>().OnCompleted(_ =>
             {
                 var mono = PrefabTestMonoBehaviour.GetWithID(id);
                 Assert.IsTrue(mono.onActiveCount == activeCount);
@@ -247,7 +185,7 @@ namespace GameFlow.Tests
         private static IEnumerator AddScene(int activeCount, int closeCount, bool enable, string id)
         {
             var next = false;
-            GameCommand.Add<TestScript___ElementAddScene>(id).OnCompleted(_ =>
+            GameCommand.Add<TestScript___ElementAddScene>().OnCompleted(_ =>
             {
                 LoadingController.IsTransparentOn();
                 next = true;
@@ -266,7 +204,7 @@ namespace GameFlow.Tests
         private static IEnumerator ReleaseScene(int activeCount, int closeCount, bool enable, string id)
         {
             var next = false;
-            GameCommand.Release<TestScript___ElementAddScene>(id).OnCompleted(_ =>
+            GameCommand.Release<TestScript___ElementAddScene>().OnCompleted(_ =>
             {
                 LoadingController.IsTransparentOn();
                 next = true;

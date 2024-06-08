@@ -21,7 +21,6 @@ namespace GameFlow.Editor
         private readonly List<string> elementChoices;
         private readonly GameFlowManager manager;
         private DropdownField scripts;
-        private TextField idField;
         private Button addButton;
         private VisualElement instanceIdView;
         private float generateSizePopup;
@@ -98,8 +97,6 @@ namespace GameFlow.Editor
             scripts.index = 0;
             scripts.RegisterValueChangedCallback(ScriptChange);
             instanceIdView = editorWindow.rootVisualElement.Q<VisualElement>("instance_id_view");
-            idField = editorWindow.rootVisualElement.Q<TextField>("instance_id");
-            idField.RegisterCallback<ChangeEvent<string>>(IDChange);
             addButton = editorWindow.rootVisualElement.Q<Button>("add_button");
             addButton.RegisterCallback<ClickEvent>(AddButton);
             SetUpView();
@@ -117,36 +114,24 @@ namespace GameFlow.Editor
             {
                 instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
                 generateSizePopup = 45;
-                if (!string.IsNullOrEmpty(idField.value) && manager.elementCollection.GetElement(currentType, idField.value) == null)
-                {
-                    addButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                    buttonSizePopup = 20;
-                }
-                else
-                {
-                    addButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                    buttonSizePopup = 0;
-                }
+                // if (!string.IsNullOrEmpty(idField.value) && manager.elementCollection.GetElement(currentType, idField.value) == null)
+                // {
+                //     addButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+                //     buttonSizePopup = 20;
+                // }
+                // else
+                // {
+                //     addButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                //     buttonSizePopup = 0;
+                // }
             }
             else
             {
-                idField.value = null;
                 instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
                 generateSizePopup = 0;
                 addButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
                 buttonSizePopup = 20;
             }
-        }
-
-        private void IDChange(ChangeEvent<string> evt)
-        {
-            if (string.IsNullOrEmpty(evt.newValue) || nameRegex.IsMatch(evt.newValue))
-            {
-                SetUpView();
-                return;
-            }
-
-            idField.value = evt.previousValue;
         }
 
         private void AddButton(ClickEvent evt)
@@ -160,7 +145,6 @@ namespace GameFlow.Editor
             var instance = (GameFlowElement)Activator.CreateInstance(elementsInProject[scripts.index]);
             instance.includeInBuild = true;
             instance.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
-            if (!string.IsNullOrEmpty(idField.value)) instance.instanceID = idField.value;
             manager.elementCollection.GenerateElement(instance);
             EditorUtility.SetDirty(manager);
             AssetDatabase.Refresh();

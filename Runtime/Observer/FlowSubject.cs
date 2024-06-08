@@ -1,79 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameFlow.Internal;
 
 namespace GameFlow
 {
     public static class FlowSubject
     {
-        internal static List<ElementCallbackEvent> events = new List<ElementCallbackEvent>();
+        internal static Dictionary<Type, ElementCallbackEvent> callbackEvents = new Dictionary<Type, ElementCallbackEvent>();
 
-        public static ElementCallbackEvent Event<T>(string id = null) where T : GameFlowElement
+        public static ElementCallbackEvent Event<T>() where T : GameFlowElement
         {
-            return GetEventPool<T>(id);
+            return Event(typeof(T));
         }
 
-        public static UIElementCallbackEvent UIEvent<T>(string id = null) where T : UserInterfaceFlowElement
+        public static ElementCallbackEvent Event(Type type)
         {
-            return (UIElementCallbackEvent)GetEventPool<T>(id);
-        }
-
-        public static ElementCallbackEvent Event(Type type, string id = null)
-        {
-            return GetEventPool(type, id);
-        }
-
-        public static void ReleaseEvent<T>(string id = null) where T : GameFlowElement
-        {
-            Remove(typeof(T), id);
-        }
-
-        public static void ReleaseEvent(Type type, string id = null)
-        {
-            Remove(type, id);
-        }
-
-        private static ElementCallbackEvent GetEventPool<T>(string id) where T : GameFlowElement
-        {
-            var type = typeof(T);
-            return TryGetValue(type, id, out var eventPool) ? eventPool : Add(type, id);
-        }
-
-        private static ElementCallbackEvent GetEventPool(Type type, string id)
-        {
-            return TryGetValue(type, id, out var eventPool) ? eventPool : Add(type, id);
-        }
-
-        private static bool TryGetValue(Type type, string id, out ElementCallbackEvent callbackEvent)
-        {
-            for (var i = events.Count - 1; i >= 0; i--)
+            if (callbackEvents.TryGetValue(type, out var elementCallbackEvent))
             {
-                if (type != events[i].type || !Utility.FlowIDEquals(id, events[i].id)) continue;
-                callbackEvent = events[i];
-                return true;
+                return elementCallbackEvent;
             }
 
-            callbackEvent = null;
-            return false;
-        }
-
-        private static ElementCallbackEvent Add(Type type, string id)
-        {
-            var elementEvent = type.IsSubclassOf(GameCommand.UIElementType)
-                ? new UIElementCallbackEvent(type, string.IsNullOrEmpty(id) ? null : id)
-                : new ElementCallbackEvent(type, string.IsNullOrEmpty(id) ? null : id);
-            events.Add(elementEvent);
+            var elementEvent = type.IsSubclassOf(GameCommand.UIElementType) ? new UIElementCallbackEvent() : new ElementCallbackEvent();
+            callbackEvents.Add(type, elementEvent);
             return elementEvent;
         }
 
-        private static void Remove(Type type, string id)
+        public static UIElementCallbackEvent UIEvent<T>() where T : UserInterfaceFlowElement
         {
-            for (var i = events.Count - 1; i >= 0; i--)
-            {
-                if (type != events[i].type || !Utility.FlowIDEquals(id, events[i].id)) continue;
-                events.RemoveAt(i);
-                return;
-            }
+            return (UIElementCallbackEvent)Event(typeof(T));
+        }
+
+        public static void ReleaseEvent<T>() where T : GameFlowElement
+        {
+            ReleaseEvent(typeof(T));
+        }
+
+        public static bool ReleaseEvent(Type type)
+        {
+            return callbackEvents.Remove(type);
         }
     }
 }

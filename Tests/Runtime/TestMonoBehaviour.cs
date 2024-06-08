@@ -13,8 +13,8 @@ namespace GameFlow.Tests
         private void OnEnable()
         {
             onEnable = true;
-            FlowSubject.Event<T>(id).OnActive += OnActive;
-            FlowSubject.Event<T>(id).OnRelease += OnClose;
+            FlowSubject.Event<T>().OnActive += OnActive;
+            FlowSubject.Event<T>().OnRelease += OnClose;
         }
 
         private void OnActive()
@@ -30,8 +30,8 @@ namespace GameFlow.Tests
         private void OnDisable()
         {
             onEnable = false;
-            FlowSubject.Event<T>(id).OnActive -= OnActive;
-            FlowSubject.Event<T>(id).OnRelease -= OnClose;
+            FlowSubject.Event<T>().OnActive -= OnActive;
+            FlowSubject.Event<T>().OnRelease -= OnClose;
         }
     }
 }

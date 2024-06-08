@@ -29,7 +29,6 @@ namespace GameFlow.Editor
         private string scriptGeneratePath;
         private GameObject prefabGenerate;
         private string elementNameGenerate;
-        private string idGenerate;
 
         public static void OpenWindow()
         {
@@ -62,26 +61,18 @@ namespace GameFlow.Editor
             editorDraw = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
         }
 
-        private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName, string id)
+        private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName)
         {
-            var pathName = id == null ? elementName : elementName + "_" + id;
             var unityPath = isUserInterface
-                ? PackagePath.AssetsUserInterfaceElementsFolderPath() + "/" + pathName + (isScene ? ".unity" : ".prefab")
-                : PackagePath.AssetsElementsFolderPath() + "/" + pathName + (isScene ? ".unity" : ".prefab");
+                ? PackagePath.AssetsUserInterfaceElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab")
+                : PackagePath.AssetsElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab");
 
             try
             {
                 elementNameGenerate = elementName;
-                idGenerate = id;
                 GenerateAsset(isScene, templatePath, unityPath);
-                if (id == null)
-                {
-                    GenerateScripts(elementName, isUserInterface);
-                    windowState = State.GENERATING;
-                    return;
-                }
-
-                windowState = State.COMPILING;
+                GenerateScripts(elementName, isUserInterface);
+                windowState = State.GENERATING;
             }
             catch (Exception e)
             {
@@ -172,12 +163,12 @@ namespace GameFlow.Editor
             instance.includeInBuild = true;
             instance.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
             instance.reference = assetReferenceGenerate;
-            if (idGenerate != null) instance.instanceID = idGenerate;
             manager.elementCollection.GenerateElement(instance);
             if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
             {
                 Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());
             }
+
             AssetDatabase.CreateAsset(instance, PackagePath.AssetsScriptableObjectFolderPath() + $"/{string.Format(kScriptsElementNameFormat, elementNameGenerate)}.asset");
             AddressableUtility.AddAddressableGroupController(AssetDatabase.GetAssetPath(instance));
             EditorUtility.SetDirty(manager);

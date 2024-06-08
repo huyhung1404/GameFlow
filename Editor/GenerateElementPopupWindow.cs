@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
 {
-    public delegate void Generate(bool isUserInterface, bool isScene, string templatePath, string elementName, string id);
+    public delegate void Generate(bool isUserInterface, bool isScene, string templatePath, string elementName);
 
     public class GenerateElementPopupWindow : PopupWindowContent
     {
@@ -28,7 +28,6 @@ namespace GameFlow.Editor
         private readonly GameFlowManager manager;
 
         private TextField textField;
-        private TextField idField;
         private bool exitsElement;
         private VisualElement elementTypeView;
         private VisualElement instanceIdView;
@@ -72,10 +71,6 @@ namespace GameFlow.Editor
             editorWindow.rootVisualElement.Q<IMGUIContainer>("log").onGUIHandler += OnLogGUI;
             textField = editorWindow.rootVisualElement.Q<TextField>("element_name");
             textField.RegisterCallback<ChangeEvent<string>>(NameChange);
-
-            idField = editorWindow.rootVisualElement.Q<TextField>("instance_id");
-            idField.RegisterCallback<ChangeEvent<string>>(IDChange);
-
             elementTypeView = editorWindow.rootVisualElement.Q<VisualElement>("template_view");
             instanceIdView = editorWindow.rootVisualElement.Q<VisualElement>("instance_id_view");
             idSizePopup = generateSizePopup = 0;
@@ -143,16 +138,16 @@ namespace GameFlow.Editor
                     {
                         instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
                         idSizePopup = 45;
-                        if (!string.IsNullOrEmpty(idField.value) && manager.elementCollection.GetElement(type, idField.value) == null)
-                        {
-                            elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                            generateSizePopup = 60;
-                        }
-                        else
-                        {
-                            elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                            generateSizePopup = 0;
-                        }
+                        // if (!string.IsNullOrEmpty(idField.value) && manager.elementCollection.GetElement(type, idField.value) == null)
+                        // {
+                        //     elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+                        //     generateSizePopup = 60;
+                        // }
+                        // else
+                        // {
+                        //     elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                        //     generateSizePopup = 0;
+                        // }
 
                         fileNameIsExits = false;
                         return;
@@ -166,7 +161,6 @@ namespace GameFlow.Editor
                 fileNameIsExits = false;
                 elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
                 instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                idField.value = null;
                 generateSizePopup = 60;
                 idSizePopup = 0;
                 return;
@@ -180,21 +174,9 @@ namespace GameFlow.Editor
         {
             exitsElement = false;
             fileNameIsExits = false;
-            idField.value = null;
             generateSizePopup = idSizePopup = 0;
             elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
             instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-        }
-
-        private void IDChange(ChangeEvent<string> evt)
-        {
-            if (string.IsNullOrEmpty(evt.newValue) || nameRegex.IsMatch(evt.newValue))
-            {
-                NameChange(null);
-                return;
-            }
-
-            idField.value = evt.previousValue;
         }
 
         public static List<Type> GetDerivedTypes(Type baseType)
@@ -277,7 +259,7 @@ namespace GameFlow.Editor
             if (templateList.Count == 0) return;
             var templatePath = templateList[template.index];
             editorWindow.Close();
-            generateAction.Invoke(isUserInterface, isScene, templatePath, textField.value, exitsElement ? idField.value : null);
+            generateAction.Invoke(isUserInterface, isScene, templatePath, textField.value);
         }
     }
 }

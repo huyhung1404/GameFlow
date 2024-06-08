@@ -125,13 +125,9 @@ namespace GameFlow.Editor
                 if (elementProperty.objectReferenceValue == null) continue;
                 var type = elementProperty.objectReferenceValue.GetType();
                 var isUserInterface = type.IsSubclassOf(typeof(UserInterfaceFlowElement));
-                var instanceIDProperty = elementProperty.FindPropertyRelative(nameof(GameFlowElement.instanceID));
                 if (hasSearchKey)
                 {
-                    if (!type.Name.Contains(searchKey)
-                        && (instanceIDProperty == null
-                            || (instanceIDProperty.stringValue != null
-                                && !instanceIDProperty.stringValue.Contains(searchKey)))) continue;
+                    if (!type.Name.Contains(searchKey)) continue;
                 }
 
                 AddDictionaryProperty(type, elementProperty, !isUserInterface ? gameFlowProperties : userInterfaceFlowProperties);

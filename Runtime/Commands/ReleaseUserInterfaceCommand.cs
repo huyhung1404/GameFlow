@@ -4,7 +4,7 @@ namespace GameFlow
 {
     public class ReleaseUserInterfaceCommand : ReleaseCommand
     {
-        public ReleaseUserInterfaceCommand(Type elementType, string id) : base(elementType, id)
+        public ReleaseUserInterfaceCommand(Type elementType) : base(elementType)
         {
         }
 
