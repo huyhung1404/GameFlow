@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using GameFlow.Component;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -10,6 +11,8 @@ namespace GameFlow.Internal
     internal class GameFlowRuntimeController : MonoBehaviour
     {
         private static readonly Queue<Command> commands = new Queue<Command>(5);
+        internal static OnBannerUpdate onBannerUpdate;
+        internal static bool updateBanner;
         private static GameFlowRuntimeController instance;
         private GameFlowManager manager;
         private Command current;
@@ -97,6 +100,13 @@ namespace GameFlow.Internal
 
             LoadingController.DisableTransparent();
             KeyBackHandle();
+        }
+
+        private void LateUpdate()
+        {
+            if (!updateBanner) return;
+            updateBanner = false;
+            onBannerUpdate?.Invoke(FlowBannerController.CurrentBannerHeight);
         }
 
         internal static void AddCommand(Command command)

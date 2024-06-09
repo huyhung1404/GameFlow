@@ -9,21 +9,24 @@ namespace GameFlow.Component
     {
         [SerializeField] protected UserInterfaceFlowElement element;
         [SerializeField] protected RectTransform safeView;
-        [SerializeField] private SafeAreaIgnore safeAreaIgnore;
-        private Canvas canvas;
-        private CanvasScaler canvasScale;
+        [SerializeField] protected SafeAreaIgnore safeAreaIgnore;
+        protected Canvas canvas;
+        protected CanvasScaler canvasScale;
+        protected RectTransform rectTransform;
         private bool hasSafeView;
 
         private void Awake()
         {
             canvas = GetComponent<Canvas>();
             canvasScale = GetComponent<CanvasScaler>();
+            rectTransform = GetComponent<RectTransform>();
             hasSafeView = safeView != null;
         }
 
         private void OnEnable()
         {
             FlowSubject.UIEvent(element.elementType).OnActive += SetUpCanvas;
+            FlowBannerController.OnBannerUpdate += OnBannerUpdate;
         }
 
         private void SetUpCanvas()
@@ -32,10 +35,12 @@ namespace GameFlow.Component
             canvas.sortingOrder = sortingOrder;
             canvas.worldCamera = FlowUICamera.instance;
             HandleCanvasScaler();
-            if (hasSafeView)
-            {
-                safeView.ApplySafeArea(Screen.safeArea, safeAreaIgnore);
-            }
+            if (hasSafeView) safeView.ApplySafeArea(Screen.safeArea, safeAreaIgnore);
+        }
+
+        private void OnBannerUpdate(float height)
+        {
+            safeView.offsetMin = height == 0 ? Vector2.zero : height / Screen.height * rectTransform.rect.size.y * Vector2.up;
         }
 
         private void HandleCanvasScaler()
@@ -46,6 +51,7 @@ namespace GameFlow.Component
         private void OnDisable()
         {
             FlowSubject.UIEvent(element.elementType).OnActive -= SetUpCanvas;
+            FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
         }
     }
 }
