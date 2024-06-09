@@ -8,20 +8,44 @@ namespace GameFlow.Component
     public class GameFlowUICanvas : MonoBehaviour
     {
         [SerializeField] protected UserInterfaceFlowElement element;
+        [SerializeField] protected RectTransform safeView;
+        [SerializeField] private SafeAreaIgnore safeAreaIgnore;
+        private Canvas canvas;
+        private CanvasScaler canvasScale;
+        private bool hasSafeView;
+
+        private void Awake()
+        {
+            canvas = GetComponent<Canvas>();
+            canvasScale = GetComponent<CanvasScaler>();
+            hasSafeView = safeView != null;
+        }
 
         private void OnEnable()
         {
-            FlowSubject.UIEvent(element.elementType).OnSetUpCanvas += OnSetUpCanvas;
+            FlowSubject.UIEvent(element.elementType).OnActive += SetUpCanvas;
         }
 
-        private void OnSetUpCanvas(int sortingOrder)
+        private void SetUpCanvas()
         {
+            var sortingOrder = element.currentSortingOrder;
+            canvas.sortingOrder = sortingOrder;
+            canvas.worldCamera = FlowUICamera.instance;
+            HandleCanvasScaler();
+            if (hasSafeView)
+            {
+                safeView.ApplySafeArea(Screen.safeArea, safeAreaIgnore);
+            }
         }
 
+        private void HandleCanvasScaler()
+        {
+            canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < canvasScale.referenceResolution.x / canvasScale.referenceResolution.y ? 0 : 1;
+        }
 
         private void OnDisable()
         {
-            FlowSubject.UIEvent(element.elementType).OnSetUpCanvas -= OnSetUpCanvas;
+            FlowSubject.UIEvent(element.elementType).OnActive -= SetUpCanvas;
         }
     }
 }

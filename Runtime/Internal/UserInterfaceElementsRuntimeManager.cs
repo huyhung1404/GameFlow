@@ -11,10 +11,12 @@ namespace GameFlow.Internal
             elementsRuntime = new List<UserInterfaceFlowElement>();
         }
 
-        internal static int AddUserInterfaceElement(UserInterfaceFlowElement userInterfaceFlowElement)
+        internal static void AddUserInterfaceElement(UserInterfaceFlowElement userInterfaceFlowElement)
         {
+            userInterfaceFlowElement.currentSortingOrder = elementsRuntime.Count == 0
+                ? 0
+                : userInterfaceFlowElement.currentSortingOrder = elementsRuntime[elementsRuntime.Count - 1].currentSortingOrder + GameFlowRuntimeController.Manager().sortingOrderOffset;
             elementsRuntime.Add(userInterfaceFlowElement);
-            return elementsRuntime.Count;
         }
     }
 }
