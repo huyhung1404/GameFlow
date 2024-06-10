@@ -1,25 +1,77 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GameFlow.Component
 {
     public class FlowEventListener : MonoBehaviour
     {
-        public enum EventTriggerType
+        internal enum EventTriggerType
         {
+            OnActive,
+            OnActiveWithData,
+            OnRelease
         }
 
         [Serializable]
-        public abstract class Entry
+        internal abstract class Entry
         {
-            public EventTriggerType eventId;
-            public abstract void Register(Type type);
-            public abstract void Unregister(Type type);
+            [SerializeField] internal EventTriggerType eventID;
+            internal abstract void Register(Type type);
+            internal abstract void Unregister(Type type);
+        }
+
+        [Serializable]
+        internal class OnActiveEntry : Entry
+        {
+            [SerializeField] internal UnityEvent callback;
+
+            internal override void Register(Type type)
+            {
+                FlowSubject.Event(type).OnActive += callback.Invoke;
+            }
+
+            internal override void Unregister(Type type)
+            {
+                FlowSubject.Event(type).OnActive -= callback.Invoke;
+            }
+        }
+
+        [Serializable]
+        internal class OnActiveWithDataEntry : Entry
+        {
+            [SerializeField] internal UnityEvent<object> callback;
+
+            internal override void Register(Type type)
+            {
+                FlowSubject.Event(type).OnActiveWithData += callback.Invoke;
+            }
+
+            internal override void Unregister(Type type)
+            {
+                FlowSubject.Event(type).OnActiveWithData -= callback.Invoke;
+            }
+        }
+
+        [Serializable]
+        internal class OnReleaseEntry : Entry
+        {
+            [SerializeField] internal UnityEvent<bool> callback;
+
+            internal override void Register(Type type)
+            {
+                FlowSubject.Event(type).OnRelease += callback.Invoke;
+            }
+
+            internal override void Unregister(Type type)
+            {
+                FlowSubject.Event(type).OnRelease -= callback.Invoke;
+            }
         }
 
         [SerializeField] private GameFlowElement element;
-        [SerializeReference] private List<Entry> delegates;
+        [SerializeReference] internal List<Entry> delegates;
 
         private void OnEnable()
         {
