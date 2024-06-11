@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace GameFlow.Internal
 {
@@ -20,17 +21,27 @@ namespace GameFlow.Internal
 
         internal static string ProjectFolderPath(PathType type = PathType.UnityPath)
         {
+#if UNITY_EDITOR
+            var folderParentName = EditorPrefs.GetString("com.huyhung1404.gameflow.folderParentName", string.Empty);
             if (type == PathType.UnityPath)
             {
-                return "Assets" + "/" + kDefaultProjectFolderName;
+                return $"Assets/{folderParentName}{kDefaultProjectFolderName}";
             }
 
-            return Application.dataPath + "/" + kDefaultProjectFolderName;
+            return $"{Application.dataPath}/{folderParentName}{kDefaultProjectFolderName}";
+#else
+             if (type == PathType.UnityPath)
+             {
+                 return $"Assets/{kDefaultProjectFolderName}";
+             }
+ 
+             return $"{Application.dataPath}/{kDefaultProjectFolderName}";
+#endif
         }
 
         internal static string ManagerPath(PathType type = PathType.UnityPath)
         {
-            return ProjectFolderPath(type) + "/" + kDefaultConfigAssetName + ".asset";
+            return $"{ProjectFolderPath(type)}/{kDefaultConfigAssetName}.asset";
         }
 
         internal static string ScriptsGenerateFolderPath(PathType type = PathType.UnityPath)
@@ -52,7 +63,7 @@ namespace GameFlow.Internal
         {
             return ProjectFolderPath(type) + "/" + kAssetsFolderName;
         }
-        
+
         internal static string AssetsScriptableObjectFolderPath(PathType type = PathType.UnityPath)
         {
             return ProjectFolderPath(type) + "/" + kAssetSOFolderName;

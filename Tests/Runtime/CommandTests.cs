@@ -5,16 +5,21 @@ using UnityEngine.TestTools;
 
 namespace GameFlow.Tests
 {
-    public class CommandTests : IPrebuildSetup
+    public class CommandTests : IPrebuildSetup, IPostBuildCleanup
     {
         public void Setup()
         {
-            PrebuildSetup.CheckingResource();
+            Prebuild.PresetResources();
         }
 
         [Test]
         public void WhenNullTextureIsPassed_CreateShouldReturnNullSprite()
         {
+        }
+
+        public void Cleanup()
+        {
+            Prebuild.CleanupResources();
         }
     }
 }
