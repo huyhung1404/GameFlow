@@ -16,7 +16,11 @@ namespace GameFlow.Internal
         private static GameFlowRuntimeController instance;
         private GameFlowManager manager;
         private Command current;
-        private bool isActive;
+#if UNITY_EDITOR
+        internal bool isActive { get; private set; }
+#else
+        internal bool isActive;
+#endif
         private bool isLock;
         private bool disableKeyBack;
 
@@ -134,7 +138,7 @@ namespace GameFlow.Internal
             return false;
         }
 
-        internal static void CommandsIsEmpty()
+        internal void CommandsIsEmpty()
         {
             Assert.IsNotNull(instance);
             Assert.IsTrue(commands.Count == 0, "commands.Count != 0");

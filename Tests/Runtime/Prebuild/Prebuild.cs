@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using GameFlow.Component;
 using GameFlow.Internal;
+using UnityEngine;
+using UnityEngine.UI;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.SceneManagement;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace GameFlow.Tests.Build
 {
@@ -17,14 +18,14 @@ namespace GameFlow.Tests.Build
     {
         internal const string kFolderParentName = "GameFlowTestResources";
         internal static readonly string kScenePath = $"Assets/{kFolderParentName}/TestManager.unity";
-        internal static Scene managerScene { get; private set; }
-        internal static GameFlowManager manager { get; private set; }
-        internal static GameObject root { get; private set; }
-        internal static GameFlowRuntimeController runtimeController { get; private set; }
-        internal static LoadingController loadingController { get; private set; }
-        internal static DisplayLoading imageLoading { get; private set; }
-        internal static FadeLoading fadeLoading { get; private set; }
-        internal static ProgressLoading progressLoading { get; private set; }
+        private static Scene managerScene;
+        private static GameFlowManager manager;
+        private static GameObject root;
+        private static GameFlowRuntimeController runtimeController;
+        private static LoadingController loadingController;
+        private static DisplayLoading imageLoading;
+        private static FadeLoading fadeLoading;
+        private static ProgressLoading progressLoading;
 
         public static void PresetResources()
         {
@@ -50,21 +51,17 @@ namespace GameFlow.Tests.Build
 
         private static void CreateResourcesIfNeed()
         {
+            if (File.Exists(kScenePath)) return;
             CreateSceneManager();
             CreateManager();
-            CreateRuntimeControllerIfNeed();
-            CreateCameraIfNeed();
+            CreateRuntimeController();
+            CreateCamera();
+            AssetDatabase.Refresh();
+            EditorSceneManager.SaveScene(managerScene, kScenePath);
         }
 
         private static void CreateSceneManager()
         {
-            if (File.Exists(kScenePath))
-            {
-                managerScene = EditorSceneManager.OpenScene(kScenePath, OpenSceneMode.Additive);
-                root = managerScene.GetRootGameObjects()[0];
-                return;
-            }
-
             managerScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Additive);
             if (!Directory.Exists($"Assets/{kFolderParentName}"))
             {
@@ -78,38 +75,28 @@ namespace GameFlow.Tests.Build
 
             root = new GameObject("root");
             SceneManager.MoveGameObjectToScene(root, managerScene);
-            var success = EditorSceneManager.SaveScene(managerScene, kScenePath);
-            if (success)
-            {
-                AssetDatabase.Refresh();
-            }
-            else
-            {
-                Debug.LogError("Failed to save the scene.");
-            }
+            AddSceneToBuild(kScenePath);
+        }
+
+        private static void AddSceneToBuild(string scenePath)
+        {
+            var scenes = EditorBuildSettings.scenes;
+            var sceneAlreadyAdded = scenes.Any(scene => scene.path == scenePath);
+            if (sceneAlreadyAdded) return;
+            ArrayUtility.Add(ref scenes, new EditorBuildSettingsScene(scenePath, true));
+            EditorBuildSettings.scenes = scenes;
         }
 
         private static void CreateManager()
         {
-            manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
-            if (manager != null) return;
             Directory.CreateDirectory(PackagePath.ProjectFolderPath());
             manager = ScriptableObject.CreateInstance<GameFlowManager>();
             AssetDatabase.CreateAsset(manager, PackagePath.ManagerPath());
             AddAddressableGroup(PackagePath.ManagerPath());
         }
 
-        private static void CreateRuntimeControllerIfNeed()
+        private static void CreateRuntimeController()
         {
-            runtimeController = root.GetComponent<GameFlowRuntimeController>();
-            if (runtimeController != null)
-            {
-                imageLoading = runtimeController.GetComponentInChildren<DisplayLoading>();
-                fadeLoading = runtimeController.GetComponentInChildren<FadeLoading>();
-                progressLoading = runtimeController.GetComponentInChildren<ProgressLoading>();
-                return;
-            }
-
             runtimeController = root.AddComponent<GameFlowRuntimeController>();
             loadingController = runtimeController.GetComponentInChildren<LoadingController>();
             imageLoading = new GameObject("Image").AddComponent<DisplayLoading>();
@@ -123,11 +110,9 @@ namespace GameFlow.Tests.Build
             EditorSceneManager.SaveScene(managerScene);
         }
 
-        private static void CreateCameraIfNeed()
+        private static void CreateCamera()
         {
-            var camera = root.GetComponent<FlowUICamera>();
-            if (camera != null) return;
-            camera = new GameObject("Camera").AddComponent<FlowUICamera>();
+            var camera = new GameObject("Camera").AddComponent<FlowUICamera>();
             camera.transform.SetParent(root.transform);
             EditorSceneManager.SaveScene(managerScene);
         }
