@@ -5,7 +5,9 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "com.huyhung1404.gameflow",
-        "Unity.Addressables"
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "com.huyhung1404.gameflow.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
