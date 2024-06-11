@@ -20,8 +20,14 @@ namespace GameFlow.Tests.Build
         {
             SceneManager.LoadScene("TestManager", LoadSceneMode.Additive);
             managerScene = SceneManager.GetSceneByName("TestManager");
-            root = Object.FindObjectOfType<GameFlowRuntimeController>().gameObject;
-            runtimeController = root.GetComponent<GameFlowRuntimeController>();
+            yield return null;
+            foreach (var o in DontDestroyOnLoadObjects())
+            {
+                runtimeController = o.GetComponent<GameFlowRuntimeController>();
+                if (runtimeController != null) break;
+            }
+
+            root = runtimeController.gameObject;
             loadingController = root.GetComponentInChildren<LoadingController>();
             imageLoading = runtimeController.GetComponentInChildren<DisplayLoading>();
             fadeLoading = runtimeController.GetComponentInChildren<FadeLoading>();
@@ -36,6 +42,13 @@ namespace GameFlow.Tests.Build
 
             if (currentTimeOut >= timeOut) Debug.LogError("Time out!");
             manager = GameFlowRuntimeController.Manager();
+        }
+
+        public static GameObject[] DontDestroyOnLoadObjects()
+        {
+            var go = new GameObject("Sacrificial Lamb");
+            Object.DontDestroyOnLoad(go);
+            return go.scene.GetRootGameObjects();
         }
     }
 }
