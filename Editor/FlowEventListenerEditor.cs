@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GameFlow.Component;
 using UnityEditor;
 using UnityEngine;
@@ -117,6 +118,7 @@ namespace GameFlow.Editor
             serializedObject.ApplyModifiedProperties();
             var selected = (int)index;
             var listener = (FlowEventListener)target;
+            listener.delegates ??= new List<FlowEventListener.Entry>();
             switch ((FlowEventListener.EventTriggerType)selected)
             {
                 case FlowEventListener.EventTriggerType.OnActive:
