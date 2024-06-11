@@ -20,7 +20,7 @@ namespace GameFlow.Tests.Build
         {
             SceneManager.LoadScene("TestManager", LoadSceneMode.Additive);
             managerScene = SceneManager.GetSceneByName("TestManager");
-            root = managerScene.GetRootGameObjects()[0];
+            root = Object.FindObjectOfType<GameFlowRuntimeController>().gameObject;
             runtimeController = root.GetComponent<GameFlowRuntimeController>();
             loadingController = root.GetComponentInChildren<LoadingController>();
             imageLoading = runtimeController.GetComponentInChildren<DisplayLoading>();
