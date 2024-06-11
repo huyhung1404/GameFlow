@@ -58,6 +58,7 @@ namespace GameFlow.Tests.Build
             CreateCamera();
             AssetDatabase.Refresh();
             EditorSceneManager.SaveScene(managerScene, kScenePath);
+            AddSceneToBuild(kScenePath);
         }
 
         private static void CreateSceneManager()
@@ -75,7 +76,6 @@ namespace GameFlow.Tests.Build
 
             root = new GameObject("root");
             SceneManager.MoveGameObjectToScene(root, managerScene);
-            AddSceneToBuild(kScenePath);
         }
 
         private static void AddSceneToBuild(string scenePath)
