@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using GameFlow.Component;
 using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
@@ -8,6 +9,7 @@ using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace GameFlow.Tests.Build
 {
@@ -19,6 +21,10 @@ namespace GameFlow.Tests.Build
         internal static GameFlowManager manager { get; private set; }
         internal static GameObject root { get; private set; }
         internal static GameFlowRuntimeController runtimeController { get; private set; }
+        internal static LoadingController loadingController { get; private set; }
+        internal static DisplayLoading imageLoading { get; private set; }
+        internal static FadeLoading fadeLoading { get; private set; }
+        internal static ProgressLoading progressLoading { get; private set; }
 
         public static void PresetResources()
         {
@@ -46,7 +52,8 @@ namespace GameFlow.Tests.Build
         {
             CreateSceneManager();
             CreateManager();
-            RuntimeControllerIfNeed();
+            CreateRuntimeControllerIfNeed();
+            CreateCameraIfNeed();
         }
 
         private static void CreateSceneManager()
@@ -92,11 +99,36 @@ namespace GameFlow.Tests.Build
             AddAddressableGroup(PackagePath.ManagerPath());
         }
 
-        private static void RuntimeControllerIfNeed()
+        private static void CreateRuntimeControllerIfNeed()
         {
             runtimeController = root.GetComponent<GameFlowRuntimeController>();
-            if (runtimeController != null) return;
+            if (runtimeController != null)
+            {
+                imageLoading = runtimeController.GetComponentInChildren<DisplayLoading>();
+                fadeLoading = runtimeController.GetComponentInChildren<FadeLoading>();
+                progressLoading = runtimeController.GetComponentInChildren<ProgressLoading>();
+                return;
+            }
+
             runtimeController = root.AddComponent<GameFlowRuntimeController>();
+            loadingController = runtimeController.GetComponentInChildren<LoadingController>();
+            imageLoading = new GameObject("Image").AddComponent<DisplayLoading>();
+            imageLoading.transform.SetParent(loadingController.transform);
+            fadeLoading = new GameObject("Fade").AddComponent<FadeLoading>();
+            fadeLoading.transform.SetParent(loadingController.transform);
+            progressLoading = new GameObject("Progress").AddComponent<ProgressLoading>();
+            progressLoading.transform.SetParent(loadingController.transform);
+            progressLoading.progressSlider = progressLoading.gameObject.AddComponent<Slider>();
+            loadingController.RegisterControllers(imageLoading, fadeLoading, progressLoading);
+            EditorSceneManager.SaveScene(managerScene);
+        }
+
+        private static void CreateCameraIfNeed()
+        {
+            var camera = root.GetComponent<FlowUICamera>();
+            if (camera != null) return;
+            camera = new GameObject("Camera").AddComponent<FlowUICamera>();
+            camera.transform.SetParent(root.transform);
             EditorSceneManager.SaveScene(managerScene);
         }
 
