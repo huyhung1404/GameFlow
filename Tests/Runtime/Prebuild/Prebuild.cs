@@ -107,14 +107,12 @@ namespace GameFlow.Tests.Build
             progressLoading.transform.SetParent(loadingController.transform);
             progressLoading.progressSlider = progressLoading.gameObject.AddComponent<Slider>();
             loadingController.RegisterControllers(imageLoading, fadeLoading, progressLoading);
-            EditorSceneManager.SaveScene(managerScene);
         }
 
         private static void CreateCamera()
         {
             var camera = new GameObject("Camera").AddComponent<FlowUICamera>();
             camera.transform.SetParent(root.transform);
-            EditorSceneManager.SaveScene(managerScene);
         }
 
         internal static void AddAddressableGroup(string assetPath)
