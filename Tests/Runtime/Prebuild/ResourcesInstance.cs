@@ -1,7 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
 using GameFlow.Internal;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace GameFlow.Tests.Build
 {
@@ -18,15 +20,17 @@ namespace GameFlow.Tests.Build
 
         public static IEnumerator Load()
         {
-            SceneManager.LoadScene("TestManager", LoadSceneMode.Additive);
-            managerScene = SceneManager.GetSceneByName("TestManager");
+            SceneManager.LoadScene(Prebuild.kSceneBuildPath, LoadSceneMode.Additive);
+            managerScene = SceneManager.GetSceneByName(Prebuild.kSceneName);
             yield return null;
-            foreach (var o in DontDestroyOnLoadObjects())
+            var dontDestroyOnLoadObjects = DontDestroyOnLoadObjects(out var lamb);
+            foreach (var o in dontDestroyOnLoadObjects)
             {
                 runtimeController = o.GetComponent<GameFlowRuntimeController>();
                 if (runtimeController != null) break;
             }
 
+            Object.Destroy(lamb);
             root = runtimeController.gameObject;
             loadingController = root.GetComponentInChildren<LoadingController>();
             imageLoading = runtimeController.GetComponentInChildren<DisplayLoading>();
@@ -44,11 +48,17 @@ namespace GameFlow.Tests.Build
             manager = GameFlowRuntimeController.Manager();
         }
 
-        public static GameObject[] DontDestroyOnLoadObjects()
+        public static IEnumerator Unload()
         {
-            var go = new GameObject("Sacrificial Lamb");
-            Object.DontDestroyOnLoad(go);
-            return go.scene.GetRootGameObjects();
+            Object.Destroy(root);
+            yield return SceneManager.UnloadSceneAsync(managerScene, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+        }
+
+        public static IEnumerable<GameObject> DontDestroyOnLoadObjects(out GameObject lamb)
+        {
+            lamb = new GameObject("Sacrificial Lamb");
+            Object.DontDestroyOnLoad(lamb);
+            return lamb.scene.GetRootGameObjects();
         }
     }
 }

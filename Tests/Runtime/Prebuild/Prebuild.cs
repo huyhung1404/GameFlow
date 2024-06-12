@@ -17,7 +17,9 @@ namespace GameFlow.Tests.Build
     internal static class Prebuild
     {
         internal const string kFolderParentName = "__TestResources";
-        internal static readonly string kScenePath = $"Assets/{kFolderParentName}/TestManager.unity";
+        internal const string kSceneName = "TestManager";
+        internal static readonly string kSceneBuildPath = $"{kFolderParentName}/{kSceneName}";
+        internal static readonly string kScenePath = $"Assets/{kSceneBuildPath}.unity";
         private static Scene managerScene;
         private static GameFlowManager manager;
         private static GameObject root;

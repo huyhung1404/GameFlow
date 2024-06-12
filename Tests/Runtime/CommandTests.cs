@@ -7,24 +7,8 @@ using UnityEngine.TestTools;
 
 namespace GameFlow.Tests
 {
-    public class CommandTests : IPrebuildSetup, IPostBuildCleanup
+    public class CommandTests : BaseTests
     {
-        public void Setup()
-        {
-            Prebuild.PresetResources();
-        }
-
-        public void Cleanup()
-        {
-            Prebuild.CleanupResources();
-        }
-
-        [UnitySetUp]
-        public IEnumerator UnitySetUp()
-        {
-            yield return ResourcesInstance.Load();
-        }
-
         [UnityTest]
         public IEnumerator Execute_CommandEmpty_Add_1()
         {
