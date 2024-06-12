@@ -41,7 +41,7 @@ namespace GameFlow.Tests
         }
 
         [UnityTest]
-        public IEnumerator Loading_Hide_FadeShowStraightWay()
+        public IEnumerator Loading_Hide_FadeShowHideStraightWay()
         {
             var time = Time.time;
             float timeOn;

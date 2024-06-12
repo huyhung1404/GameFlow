@@ -18,6 +18,7 @@ namespace GameFlow
         private void Awake()
         {
             canvasGroup = GetComponent<CanvasGroup>();
+            canvasGroup.alpha = 0;
         }
 
         protected override void OnShow()
