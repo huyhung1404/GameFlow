@@ -1,7 +1,6 @@
-using GameFlow.Tests.Build;
 using UnityEngine.TestTools;
 
-namespace GameFlow.Tests
+namespace GameFlow.Tests.Build
 {
     public class BaseTests : IPrebuildSetup, IPostBuildCleanup
     {
