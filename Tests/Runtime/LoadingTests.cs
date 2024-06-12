@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace GameFlow.Tests
 {
-    public class LoadingTests : BaseTests
+    public class LoadingTests : ResourcesTests
     {
         [UnityTest]
         public IEnumerator Loading_AllHide_ShowAllType()

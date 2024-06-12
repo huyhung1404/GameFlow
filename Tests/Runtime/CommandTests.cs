@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 namespace GameFlow.Tests
 {
-    public class CommandTests : BaseTests
+    public class CommandTests : ResourcesTests
     {
         [UnityTest]
         public IEnumerator Execute_CommandEmpty_Add_1()
