@@ -1,19 +1,21 @@
-﻿using NUnit.Framework;
-using Assert = GameFlow.Internal.Assert;
+using NUnit.Framework;
 
 namespace GameFlow.Tests
 {
-    public class Event_Tests
+    public class ObserverTests
     {
-        public class TestScript___EventCallback1 : GameFlowElement
+        private class TestScript___EventCallback1 : GameFlowElement
         {
             public static int timeRun;
         }
 
-        public class TestScript___EventCallback2 : GameFlowElement
+        private class TestScript___EventCallback2 : UserInterfaceFlowElement
         {
             public static int timeRun;
         }
+
+        private static void Execute1() => TestScript___EventCallback1.timeRun++;
+        private static void Execute2() => TestScript___EventCallback2.timeRun++;
 
         [SetUp]
         public void SetUp()
@@ -24,27 +26,27 @@ namespace GameFlow.Tests
         }
 
         [Test]
-        public void _0_Simple_Callback()
+        public void Execute_Simple_OnActive()
         {
-            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Test1;
+            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Execute1;
             FlowSubject.Event<TestScript___EventCallback1>().RaiseOnActive();
             FlowSubject.Event<TestScript___EventCallback1>().RaiseOnActive();
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 2);
-            FlowSubject.Event<TestScript___EventCallback1>().OnActive -= Test1;
+            FlowSubject.Event<TestScript___EventCallback1>().OnActive -= Execute1;
             FlowSubject.Event<TestScript___EventCallback1>().RaiseOnActive();
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 2);
         }
 
         [Test]
-        public void _1_Simple_Callback()
+        public void Execute_Double_OnActive()
         {
-            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Test1;
+            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Execute1;
             FlowSubject.Event<TestScript___EventCallback1>().RaiseOnActive();
             FlowSubject.Event<TestScript___EventCallback2>().RaiseOnActive();
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 1);
             Assert.IsTrue(TestScript___EventCallback2.timeRun == 0);
-            FlowSubject.Event<TestScript___EventCallback2>().OnActive += Test2;
-            FlowSubject.Event<TestScript___EventCallback1>().OnActive -= Test1;
+            FlowSubject.Event<TestScript___EventCallback2>().OnActive += Execute2;
+            FlowSubject.Event<TestScript___EventCallback1>().OnActive -= Execute1;
             FlowSubject.Event<TestScript___EventCallback1>().RaiseOnActive();
             FlowSubject.Event<TestScript___EventCallback2>().RaiseOnActive();
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 1);
@@ -52,23 +54,13 @@ namespace GameFlow.Tests
         }
 
         [Test]
-        public void _2_Duplicate_2_Action()
+        public void Execute_Simple_OnActiveDuplicateAction()
         {
-            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Test1;
-            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Test2;
+            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Execute1;
+            FlowSubject.Event<TestScript___EventCallback1>().OnActive += Execute2;
             FlowSubject.Event<TestScript___EventCallback1>().RaiseOnActive();
             Assert.IsTrue(TestScript___EventCallback1.timeRun == 1);
             Assert.IsTrue(TestScript___EventCallback2.timeRun == 1);
-        }
-
-        private static void Test1()
-        {
-            TestScript___EventCallback1.timeRun++;
-        }
-
-        private static void Test2()
-        {
-            TestScript___EventCallback2.timeRun++;
         }
     }
 }

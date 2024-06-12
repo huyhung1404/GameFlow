@@ -5,7 +5,7 @@ namespace GameFlow
 {
     public static class FlowSubject
     {
-        internal static Dictionary<Type, ElementCallbackEvent> callbackEvents = new Dictionary<Type, ElementCallbackEvent>();
+        internal static readonly Dictionary<Type, ElementCallbackEvent> callbackEvents = new Dictionary<Type, ElementCallbackEvent>();
 
         public static ElementCallbackEvent Event<T>() where T : GameFlowElement
         {
