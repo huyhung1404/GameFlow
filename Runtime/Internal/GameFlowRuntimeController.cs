@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GameFlow.Component;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -141,8 +142,15 @@ namespace GameFlow.Internal
         internal void CommandsIsEmpty()
         {
             Assert.IsNotNull(instance);
-            Assert.IsTrue(commands.Count == 0, "commands.Count != 0");
-            Assert.IsTrue(instance.current == null, instance.current?.ToString());
+            Assert.IsTrue(commands.Count == 0 && current == null, CommandCountErrorMessage());
+            return;
+
+            string CommandCountErrorMessage()
+            {
+                var message = "Command Count: " + commands.Count;
+                message += $"\n Current: {(current == null ? "Empty" : current)}";
+                return commands.Aggregate(message, (s, c) => s + ("\n" + c));
+            }
         }
 
         private void KeyBackHandle()

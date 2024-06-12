@@ -38,5 +38,10 @@ namespace GameFlow
         {
             GameFlowRuntimeController.AddCommand(this);
         }
+
+        public override string ToString()
+        {
+            return $"name: {elementType.FullName} - isRelease: {isRelease}";
+        }
     }
 }

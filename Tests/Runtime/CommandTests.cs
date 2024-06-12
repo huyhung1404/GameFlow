@@ -54,7 +54,7 @@ namespace GameFlow.Tests
             }
         }
 
-        private IEnumerator MultiExecuteOrder(
+        private static IEnumerator MultiExecuteOrder(
             CommandData commandData1,
             CommandData commandData2,
             CommandData commandData3,
