@@ -67,25 +67,21 @@ namespace GameFlow.Tests.Build
             CreateManager();
             CreateRuntimeController();
             CreateCamera();
-            CreateTestElements();
             AssetDatabase.Refresh();
             EditorSceneManager.SaveScene(managerScene, kScenePath);
             AddSceneToBuild(kScenePath);
             EditorSceneManager.CloseScene(managerScene, false);
+            CreateTestElements();
+            AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
         }
 
         private static void CreateSceneManager()
         {
-            managerScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Additive);
+            managerScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
             if (!Directory.Exists($"Assets/{kFolderParentName}"))
             {
                 Directory.CreateDirectory($"Assets/{kFolderParentName}");
-            }
-
-            foreach (var o in managerScene.GetRootGameObjects())
-            {
-                Object.DestroyImmediate(o);
             }
 
             root = new GameObject("root");
@@ -162,6 +158,7 @@ namespace GameFlow.Tests.Build
         private static void CreateTestElements()
         {
             CreateTestSimpleElement();
+            CreateTestSimpleSceneElement();
         }
 
         private static void CreateTestSimpleElement()
@@ -173,7 +170,17 @@ namespace GameFlow.Tests.Build
             var callback = instance.AddComponent<FlowCallbackMonoBehaviour>();
             callback.element = element;
             element.reference = GenerateAsset(instance, false, unityPath);
-            Object.DestroyImmediate(instance);
+        }
+
+        private static void CreateTestSimpleSceneElement()
+        {
+            const string elementName = "SimpleSceneGameFlowElement";
+            var unityPath = GetPath(false, true, elementName);
+            var instance = new GameObject(elementName);
+            var element = GenerateElementInstance(typeof(TestScript___SimpleSceneElement), elementName);
+            var callback = instance.AddComponent<FlowCallbackMonoBehaviour>();
+            callback.element = element;
+            element.reference = GenerateAsset(instance, true, unityPath);
         }
 
         private static string GetPath(bool isUserInterface, bool isScene, string elementName)
@@ -200,10 +207,15 @@ namespace GameFlow.Tests.Build
 
             if (isScene)
             {
+                var newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+                SceneManager.MoveGameObjectToScene(create, newScene);
+                EditorSceneManager.SaveScene(newScene, unityPath);
+                EditorSceneManager.CloseScene(newScene, false);
             }
             else
             {
                 PrefabUtility.SaveAsPrefabAsset(create, unityPath);
+                Object.DestroyImmediate(create);
             }
 
             return AddAddressableGroup(unityPath, isScene);
