@@ -55,6 +55,13 @@ namespace GameFlow.Tests.Build
 
         private static void CreateResourcesIfNeed()
         {
+            manager = null;
+            root = null;
+            runtimeController = null;
+            loadingController = null;
+            imageLoading = null;
+            fadeLoading = null;
+            progressLoading = null;
             if (File.Exists(kScenePath)) return;
             CreateSceneManager();
             CreateManager();
@@ -114,7 +121,7 @@ namespace GameFlow.Tests.Build
             progressLoading = new GameObject("Progress").AddComponent<ProgressLoading>();
             progressLoading.transform.SetParent(loadingController.transform);
             progressLoading.progressSlider = progressLoading.gameObject.AddComponent<Slider>();
-            loadingController.RegisterControllers(imageLoading, fadeLoading, progressLoading);
+            loadingController.RegisterControllers(false, imageLoading, fadeLoading, progressLoading);
         }
 
         private static void CreateCamera()

@@ -19,7 +19,7 @@ namespace GameFlow.Tests
 
             public override string ToString()
             {
-                return $"{content} - {gameObject}";
+                return $"{content} - Active: {gameObject?.activeSelf}";
             }
         }
 
@@ -118,7 +118,7 @@ namespace GameFlow.Tests
         public override string ToString()
         {
             var result = new StringBuilder();
-            result.Append($"Recorder Count: {recorderObject.Count}");
+            result.AppendLine($"Recorder Count: {recorderObject.Count}");
             foreach (var record in recorderObject)
             {
                 result.AppendLine(record.ToString());

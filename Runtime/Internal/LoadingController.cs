@@ -59,8 +59,15 @@ namespace GameFlow.Internal
             transparentEnable = false;
         }
 
-        public void RegisterControllers(params BaseLoadingTypeController[] registerControllers)
+        public void RegisterControllers(bool isAppend, params BaseLoadingTypeController[] registerControllers)
         {
+            if (!isAppend)
+            {
+                controllers = registerControllers;
+                totalController = controllers.Length;
+                return;
+            }
+
             var mergedArray = new BaseLoadingTypeController[totalController + registerControllers.Length];
             controllers.CopyTo(mergedArray, 0);
             registerControllers.CopyTo(mergedArray, totalController);
