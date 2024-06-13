@@ -38,6 +38,7 @@ namespace GameFlow
 
         internal void GenerateElement(GameFlowElement element)
         {
+            elements ??= Array.Empty<GameFlowElement>();
             var listElements = elements.ToList();
             var isAdd = true;
             for (var i = 0; i < listElements.Count - 1; i++)

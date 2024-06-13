@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace GameFlow.Tests.Build
 {
@@ -58,10 +60,12 @@ namespace GameFlow.Tests.Build
             CreateManager();
             CreateRuntimeController();
             CreateCamera();
+            CreateTestElements();
             AssetDatabase.Refresh();
             EditorSceneManager.SaveScene(managerScene, kScenePath);
             AddSceneToBuild(kScenePath);
             EditorSceneManager.CloseScene(managerScene, false);
+            AssetDatabase.SaveAssets();
         }
 
         private static void CreateSceneManager()
@@ -95,7 +99,8 @@ namespace GameFlow.Tests.Build
             Directory.CreateDirectory(PackagePath.ProjectFolderPath());
             manager = ScriptableObject.CreateInstance<GameFlowManager>();
             AssetDatabase.CreateAsset(manager, PackagePath.ManagerPath());
-            AddAddressableGroup(PackagePath.ManagerPath());
+            AddAddressableGroup(PackagePath.ManagerPath(), false);
+            manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
         }
 
         private static void CreateRuntimeController()
@@ -118,11 +123,12 @@ namespace GameFlow.Tests.Build
             camera.transform.SetParent(root.transform);
         }
 
-        internal static void AddAddressableGroup(string assetPath)
+        internal static AssetReferenceElement AddAddressableGroup(string assetPath, bool isScene)
         {
             var guid = AssetDatabase.AssetPathToGUID(assetPath);
-            if (SetGroup(guid)) return;
+            if (SetGroup(guid)) return new AssetReferenceElement(guid, isScene);
             Debug.LogError("Set Group Fail");
+            return null;
         }
 
         private static bool SetGroup(string guid)
@@ -144,6 +150,71 @@ namespace GameFlow.Tests.Build
             group.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, false, true);
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entriesAdded, true);
             return true;
+        }
+
+        private static void CreateTestElements()
+        {
+            CreateTestSimpleElement();
+        }
+
+        private static void CreateTestSimpleElement()
+        {
+            const string elementName = "SimpleGameFlowElement";
+            var unityPath = GetPath(false, false, elementName);
+            var instance = new GameObject(elementName);
+            var element = GenerateElementInstance(typeof(TestScript___SimpleElement), elementName);
+            var callback = instance.AddComponent<FlowCallbackMonoBehaviour>();
+            callback.element = element;
+            element.reference = GenerateAsset(instance, false, unityPath);
+            Object.DestroyImmediate(instance);
+        }
+
+        private static string GetPath(bool isUserInterface, bool isScene, string elementName)
+        {
+            return isUserInterface
+                ? PackagePath.AssetsUserInterfaceElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab")
+                : PackagePath.AssetsElementsFolderPath() + "/" + elementName + (isScene ? ".unity" : ".prefab");
+        }
+
+        private static AssetReferenceElement GenerateAsset(GameObject create, bool isScene, string unityPath)
+        {
+            var folder = Path.GetDirectoryName(unityPath);
+            var parentFolder = Path.GetDirectoryName(Path.GetDirectoryName(unityPath));
+
+            if (!Directory.Exists(parentFolder))
+            {
+                if (parentFolder != null) Directory.CreateDirectory(parentFolder);
+            }
+
+            if (!Directory.Exists(folder))
+            {
+                if (folder != null) Directory.CreateDirectory(folder);
+            }
+
+            if (isScene)
+            {
+            }
+            else
+            {
+                PrefabUtility.SaveAsPrefabAsset(create, unityPath);
+            }
+
+            return AddAddressableGroup(unityPath, isScene);
+        }
+
+        private static GameFlowElement GenerateElementInstance(Type type, string name)
+        {
+            var instance = (GameFlowElement)ScriptableObject.CreateInstance(type);
+            instance.includeInBuild = true;
+            manager.elementCollection.GenerateElement(instance);
+            if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
+            {
+                Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());
+            }
+
+            AssetDatabase.CreateAsset(instance, PackagePath.AssetsScriptableObjectFolderPath() + $"/{name}.asset");
+            AddAddressableGroup(AssetDatabase.GetAssetPath(instance), false);
+            return AssetDatabase.LoadAssetAtPath<GameFlowElement>(PackagePath.AssetsScriptableObjectFolderPath() + $"/{name}.asset");
         }
     }
 }

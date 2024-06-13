@@ -46,22 +46,6 @@
 //         [UnityTest]
 //         public IEnumerator _0_Single_Add_Execute_Command()
 //         {
-//             var next = false;
-//             GameCommand.Add<TestScript___ElementAddPrefab>().OnCompleted(_ =>
-//             {
-//                 LoadingController.IsTransparentOn();
-//                 next = true;
-//             }).Build();
-//             while (!next)
-//             {
-//                 yield return null;
-//             }
-//
-//             var mono = PrefabTestMonoBehaviour.GetWithID("");
-//             Assert.IsTrue(mono.onActiveCount == 1);
-//             Assert.IsTrue(mono.onEnable);
-//             GameFlowRuntimeController.CommandsIsEmpty();
-//
 //             var next2 = false;
 //             GameCommand.Add<TestScript___ElementAddScene>().OnCompleted(_ =>
 //             {
