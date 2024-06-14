@@ -12,6 +12,7 @@ namespace GameFlow.Tests
         [SetUp]
         public void SetUp()
         {
+            LogAssert.ignoreFailingMessages = false;
             CallbackHistory.current = new CallbackHistory();
         }
 
@@ -50,6 +51,22 @@ namespace GameFlow.Tests
             CallbackHistory.RecordCountEquals(1);
             Assert.IsTrue(CallbackHistory.GetRecord(0).gameObject.activeSelf);
             CallbackHistory.CheckHistoryIndex(0, typeof(CallbackHistory.OnActiveRecord), typeof(TestScript___SimpleSceneElement));
+        }
+
+        public class TestScript___NoReference : GameFlowElement
+        {
+        }
+
+        [UnityTest]
+        public IEnumerator Add_ThrowError_NoReference()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            var next = false;
+            GameCommand.Add<TestScript___NoReference>().OnCompleted(_ => next = true).Build();
+            while (!next) yield return null;
+            yield return null;
+            ResourcesInstance.runtimeController.CommandsIsEmpty();
+            ResourcesInstance.loadingController.IsTransparentOff();
         }
     }
 }
