@@ -71,5 +71,23 @@ namespace GameFlow
                 ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
             }
         }
+
+        private Action<ICommandReleaseHandle> onHide;
+        public event Action<ICommandReleaseHandle> OnHide { add => onHide += value; remove => onHide -= value; }
+
+        internal bool RaiseOnHide(ICommandReleaseHandle handle)
+        {
+            if (onHide == null) return false;
+            try
+            {
+                onHide.Invoke(handle);
+            }
+            catch (Exception e)
+            {
+                ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+            }
+
+            return true;
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
+using GameFlow.Internal;
 
 namespace GameFlow
 {
-    public class ReleaseUserInterfaceCommand : ReleaseCommand
+    public class ReleaseUserInterfaceCommand : ReleaseCommand, ICommandReleaseHandle
     {
         public ReleaseUserInterfaceCommand(Type elementType) : base(elementType)
         {
@@ -25,6 +26,10 @@ namespace GameFlow
         }
 
         protected override void OnLoadResult(bool canRelease)
+        {
+        }
+
+        public void Next()
         {
         }
     }
