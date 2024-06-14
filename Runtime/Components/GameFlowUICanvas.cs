@@ -5,6 +5,7 @@ namespace GameFlow.Component
 {
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasScaler))]
+    [AddComponentMenu("Game Flow/UI Canvas")]
     public class GameFlowUICanvas : MonoBehaviour
     {
         [SerializeField] protected UserInterfaceFlowElement element;

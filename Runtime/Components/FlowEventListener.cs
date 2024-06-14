@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 namespace GameFlow.Component
 {
+    [AddComponentMenu("Game Flow/Event Listener")]
     public class FlowEventListener : MonoBehaviour
     {
         internal enum EventTriggerType
