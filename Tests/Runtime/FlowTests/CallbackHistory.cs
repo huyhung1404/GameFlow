@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using GameFlow.Internal;
 using UnityEngine;
@@ -141,6 +142,11 @@ namespace GameFlow.Tests
         public static void RecordCountEquals(int count)
         {
             Assert.IsTrue(current.recorderObject.Count == count);
+        }
+
+        public static void TotalExecuteHistory<T>(int count) where T : RecordCallback
+        {
+            Assert.IsTrue(current.executeHistory.Count(item => item is T) == count);
         }
 
         public static void CheckHistoryIndex(int index, Type typeRecord, Type typeElement)
