@@ -72,6 +72,7 @@ namespace GameFlow.Tests.Build
             AddSceneToBuild(kScenePath);
             EditorSceneManager.CloseScene(managerScene, false);
             CreateTestElements();
+            EditorUtility.SetDirty(manager);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
         }

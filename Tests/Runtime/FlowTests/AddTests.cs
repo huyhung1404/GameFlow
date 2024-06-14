@@ -32,5 +32,24 @@ namespace GameFlow.Tests
             Assert.IsTrue(CallbackHistory.GetRecord(0).gameObject.activeSelf);
             CallbackHistory.CheckHistoryIndex(0, typeof(CallbackHistory.OnActiveRecord), typeof(TestScript___SimpleElement));
         }
+
+        [UnityTest]
+        public IEnumerator Add_Active_SingleSceneElement()
+        {
+            var next = false;
+            GameCommand.Add<TestScript___SimpleSceneElement>().OnCompleted(_ =>
+            {
+                ResourcesInstance.loadingController.IsTransparentOn();
+                next = true;
+            }).Build();
+            while (!next) yield return null;
+            yield return null;
+            ResourcesInstance.runtimeController.CommandsIsEmpty();
+            Debug.Log(CallbackHistory.current.ToString());
+            CallbackHistory.HistoryCountEquals(1);
+            CallbackHistory.RecordCountEquals(1);
+            Assert.IsTrue(CallbackHistory.GetRecord(0).gameObject.activeSelf);
+            CallbackHistory.CheckHistoryIndex(0, typeof(CallbackHistory.OnActiveRecord), typeof(TestScript___SimpleSceneElement));
+        }
     }
 }
