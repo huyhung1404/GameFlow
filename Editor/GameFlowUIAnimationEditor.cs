@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameFlow.Editor
 {
-    [CustomEditor(typeof(GameFlowUIAnimation))]
+    [CustomEditor(typeof(GameFlowUIAnimation), true)]
     public class GameFlowUIAnimationEditor : UnityEditor.Editor
     {
         private static readonly string[] propertyToExclude = new string[]
