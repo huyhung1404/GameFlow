@@ -30,13 +30,14 @@ namespace GameFlow.Component
             FlowBannerController.OnBannerUpdate += OnBannerUpdate;
         }
 
-        private void SetUpCanvas()
+        protected virtual void SetUpCanvas()
         {
             var sortingOrder = element.currentSortingOrder;
             canvas.sortingOrder = sortingOrder;
             canvas.worldCamera = FlowUICamera.instance;
             HandleCanvasScaler();
             if (hasSafeView) safeView.ApplySafeArea(Screen.safeArea, safeAreaIgnore);
+            OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }
 
         private void OnBannerUpdate(float height)

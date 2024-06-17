@@ -36,6 +36,7 @@ namespace GameFlow.Editor
             EditorGUILayout.PropertyField(safeViewProperty, GUIContent.none);
             EditorGUILayout.PropertyField(safeAreaIgnoreProperty, GUIContent.none, GUILayout.Width(80));
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(1);
             DrawPropertiesExcluding(serializedObject, propertyToExclude);
             serializedObject.ApplyModifiedProperties();
         }
