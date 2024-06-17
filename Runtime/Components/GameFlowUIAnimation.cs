@@ -2,40 +2,53 @@ using UnityEngine;
 
 namespace GameFlow.Component
 {
-    [AddComponentMenu("Game Flow/UI Animation")]
-    public class GameFlowUIAnimation : MonoBehaviour
+    public abstract class GameFlowUIAnimation : MonoBehaviour
     {
         [SerializeField] protected UserInterfaceFlowElement element;
         protected UIElementCallbackEvent delegates;
+        private ICommandReleaseHandle releaseHandle;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             delegates = FlowSubject.UIEvent(element.GetType());
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             delegates.OnActive += OnShow;
             delegates.OnHide += OnHide;
-        }
-
-        private void OnShow()
-        {
-        }
-
-        private void OnHide(ICommandReleaseHandle handle)
-        {
-        }
-
-        protected virtual void OnAnimationCompleted()
-        {
-            delegates.RaiseOnShowCompleted();
         }
 
         private void OnDisable()
         {
             delegates.OnActive -= OnShow;
             delegates.OnHide -= OnHide;
+        }
+
+        private void OnHide(ICommandReleaseHandle handle)
+        {
+            releaseHandle = handle;
+            OnHide();
+        }
+
+        protected abstract void OnShow();
+        protected abstract void OnHide();
+
+        protected void OnShowCompleted()
+        {
+            delegates.RaiseOnShowCompleted();
+        }
+
+        protected void OnHideCompleted()
+        {
+            if (releaseHandle == null)
+            {
+                Debug.LogWarning("Release handle is not exits");
+                return;
+            }
+
+            releaseHandle.Next();
+            releaseHandle = null;
         }
     }
 }

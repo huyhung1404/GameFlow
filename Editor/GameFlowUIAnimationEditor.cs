@@ -24,6 +24,7 @@ namespace GameFlow.Editor
         {
             serializedObject.Update();
             EditorGUILayout.PropertyField(elementProperty, GUIContent.none);
+            EditorGUILayout.Space(5);
             DrawPropertiesExcluding(serializedObject, propertyToExclude);
             serializedObject.ApplyModifiedProperties();
         }
