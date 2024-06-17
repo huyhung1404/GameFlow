@@ -17,6 +17,7 @@ namespace GameFlow
             baseElement.runtimeInstance.SetActive(false);
             baseElement.runtimeInstance.SetActive(true);
             callbackOnRelease = true;
+            Release();
         }
 
         protected override void ActiveElement()
@@ -24,6 +25,7 @@ namespace GameFlow
             baseElement.runtimeInstance.SetActive(true);
             ElementsRuntimeManager.AddElement(baseElement);
             callbackOnRelease = true;
+            Release();
         }
     }
 }
