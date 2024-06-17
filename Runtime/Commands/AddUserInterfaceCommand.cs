@@ -7,11 +7,9 @@ namespace GameFlow
     {
         private UserInterfaceFlowElement element;
         protected override GameFlowElement baseElement { get => element; set => element = (UserInterfaceFlowElement)value; }
-        private bool callbackOnRelease;
 
         internal AddUserInterfaceCommand(Type elementType) : base(elementType)
         {
-            callbackOnRelease = false;
         }
 
         protected override void ReActiveElement()
@@ -24,19 +22,6 @@ namespace GameFlow
             UserInterfaceElementsRuntimeManager.AddUserInterfaceElement(element);
             callbackOnRelease = true;
             OnLoadResult(baseElement.runtimeInstance);
-        }
-
-        internal override void OnRelease()
-        {
-            if (!callbackOnRelease) return;
-            var callback = FlowSubject.UIEvent(elementType);
-            if (ReferenceEquals(sendData, null))
-            {
-                callback.RaiseOnActive();
-                return;
-            }
-
-            callback.RaiseOnActiveWithData(sendData);
         }
     }
 }

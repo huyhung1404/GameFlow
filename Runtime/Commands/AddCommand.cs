@@ -14,12 +14,15 @@ namespace GameFlow
         internal OnAddCommandCompleted onCompleted;
         internal object sendData;
         private bool isLoadingOn;
+        protected bool callbackOnRelease;
+
         protected abstract GameFlowElement baseElement { get; set; }
 
         internal AddCommand(Type elementType) : base(elementType)
         {
             isExecute = false;
             isLoadingOn = false;
+            callbackOnRelease = false;
         }
 
         internal override void PreUpdate()
@@ -130,6 +133,18 @@ namespace GameFlow
             onCompleted?.Invoke(result);
             if (loadingId >= 0 && isLoadingOn) LoadingController.instance.LoadingOff(loadingId);
             Release();
+        }
+
+        internal override void OnRelease()
+        {
+            if (!callbackOnRelease) return;
+            if (ReferenceEquals(sendData, null))
+            {
+                FlowSubject.Event(elementType).RaiseOnActive();
+                return;
+            }
+
+            FlowSubject.Event(elementType).RaiseOnActiveWithData(sendData);
         }
     }
 }
