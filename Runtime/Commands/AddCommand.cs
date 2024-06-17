@@ -138,6 +138,7 @@ namespace GameFlow
         internal override void OnRelease()
         {
             if (!callbackOnRelease) return;
+            OnLoadResult(baseElement.runtimeInstance);
             if (ReferenceEquals(sendData, null))
             {
                 FlowSubject.Event(elementType).RaiseOnActive();

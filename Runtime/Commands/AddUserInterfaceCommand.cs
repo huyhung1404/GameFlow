@@ -14,6 +14,12 @@ namespace GameFlow
 
         protected override void ReActiveElement()
         {
+            FlowSubject.Event(elementType).RaiseOnRelease(true);
+            UserInterfaceElementsRuntimeManager.ReleaseElement(elementType);
+            baseElement.runtimeInstance.SetActive(false);
+            baseElement.runtimeInstance.SetActive(true);
+            UserInterfaceElementsRuntimeManager.AddUserInterfaceElement(element);
+            callbackOnRelease = true;
         }
 
         protected override void ActiveElement()
@@ -21,7 +27,6 @@ namespace GameFlow
             baseElement.runtimeInstance.SetActive(true);
             UserInterfaceElementsRuntimeManager.AddUserInterfaceElement(element);
             callbackOnRelease = true;
-            OnLoadResult(baseElement.runtimeInstance);
         }
     }
 }
