@@ -19,7 +19,7 @@ namespace GameFlow.Component
             delegates.OnHide += OnHide;
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             delegates.OnActive -= OnShow;
             delegates.OnHide -= OnHide;
@@ -41,12 +41,7 @@ namespace GameFlow.Component
 
         protected void OnHideCompleted()
         {
-            if (releaseHandle == null)
-            {
-                Debug.LogWarning("Release handle is not exits");
-                return;
-            }
-
+            if (releaseHandle == null) return;
             releaseHandle.Next();
             releaseHandle = null;
         }
