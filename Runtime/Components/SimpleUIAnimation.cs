@@ -8,9 +8,10 @@ namespace GameFlow
     public class SimpleUIAnimation : GameFlowUIAnimation
     {
         [SerializeField] private bool ignoreTimeScale;
-
-        [Header("Show")] [SerializeField] private Vector3 startScale = new Vector3(0.9f, 0.9f, 1f);
+        [SerializeField] private Transform view;
+        [SerializeField] private Vector3 startScale = new Vector3(0.9f, 0.9f, 1f);
         [SerializeField] private float durationShow = 0.25f;
+        [SerializeField] private float durationHide = 0.15f;
 
         [SerializeField] private AnimationCurve curve = new AnimationCurve(new[]
         {
@@ -20,8 +21,6 @@ namespace GameFlow
             new Keyframe(0.879574f, 0.8086627f, 0.2559986f, 0.2559986f),
             new Keyframe(1.001953f, 1.004486f, 2.678603f, 2.678603f)
         });
-
-        [Header("Hide")] [SerializeField] private float durationHide = 0.15f;
 
         protected override void OnShow()
         {
@@ -35,7 +34,18 @@ namespace GameFlow
 
         private IEnumerator IEShow()
         {
-            yield return null;
+            view.localScale = startScale;
+            var scale = Vector3.one - startScale;
+            var time = 0f;
+            do
+            {
+                yield return null;
+                time += (ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime) / durationShow;
+                view.localScale = startScale + scale * curve.Evaluate(time);
+            } while (time < 1f);
+
+            view.localScale = Vector3.one;
+            OnShowCompleted();
         }
 
         protected IEnumerator IEHide()
