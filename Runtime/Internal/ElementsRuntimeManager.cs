@@ -17,17 +17,20 @@ namespace GameFlow.Internal
             elementsRuntime.Add(element);
         }
 
-        internal static GameFlowElement RemoveElement(Type type)
+        internal static GameFlowElement GetElement(Type type)
         {
             for (var i = elementsRuntime.Count - 1; i >= 0; i--)
             {
                 if (type != elementsRuntime[i].elementType) continue;
-                var result = elementsRuntime[i];
-                elementsRuntime.RemoveAt(i);
-                return result;
+                return elementsRuntime[i];
             }
 
             return null;
+        }
+
+        internal static void RemoveElement(GameFlowElement element)
+        {
+            elementsRuntime.Remove(element);
         }
     }
 }

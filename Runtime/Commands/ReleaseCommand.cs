@@ -8,8 +8,8 @@ namespace GameFlow
     public abstract class ReleaseCommand : Command
     {
         protected bool isExecute;
-        protected GameFlowElement baseElement;
         internal OnReleaseCommandCompleted onCompleted;
+        protected abstract GameFlowElement baseElement { get; set; }
 
         internal ReleaseCommand(Type elementType) : base(elementType)
         {

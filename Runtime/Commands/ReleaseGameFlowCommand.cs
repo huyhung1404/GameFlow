@@ -5,13 +5,15 @@ namespace GameFlow
 {
     public class ReleaseGameFlowCommand : ReleaseCommand
     {
+        protected override GameFlowElement baseElement { get; set; }
+
         public ReleaseGameFlowCommand(Type elementType) : base(elementType)
         {
         }
 
         internal override void PreUpdate()
         {
-            baseElement = ElementsRuntimeManager.RemoveElement(elementType);
+            baseElement = ElementsRuntimeManager.GetElement(elementType);
             if (baseElement != null) return;
             ErrorHandle.LogWarning($"Element type {elementType.Name} is not exits in pool");
             OnLoadResult(false);
@@ -51,6 +53,7 @@ namespace GameFlow
         protected override void OnLoadResult(bool canRelease)
         {
             onCompleted?.Invoke(canRelease);
+            if (isRelease) ElementsRuntimeManager.RemoveElement(baseElement);
             Release();
         }
     }

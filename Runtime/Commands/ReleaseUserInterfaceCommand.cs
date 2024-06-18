@@ -5,8 +5,12 @@ namespace GameFlow
 {
     public class ReleaseUserInterfaceCommand : ReleaseCommand, ICommandReleaseHandle
     {
+        private UserInterfaceFlowElement element;
+        protected override GameFlowElement baseElement { get => element; set => element = (UserInterfaceFlowElement)value; }
+
         public ReleaseUserInterfaceCommand(Type elementType) : base(elementType)
         {
+            element = UIElementsRuntimeManager.GetElement(elementType);
         }
 
         internal override void PreUpdate()

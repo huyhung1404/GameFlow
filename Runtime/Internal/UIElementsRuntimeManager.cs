@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace GameFlow.Internal
 {
-    public static class UserInterfaceElementsRuntimeManager
+    public static class UIElementsRuntimeManager
     {
         private static readonly List<UserInterfaceFlowElement> elementsRuntime;
 
-        static UserInterfaceElementsRuntimeManager()
+        static UIElementsRuntimeManager()
         {
             elementsRuntime = new List<UserInterfaceFlowElement>();
         }
@@ -25,14 +25,12 @@ namespace GameFlow.Internal
             return elementsRuntime[elementCount - 1].currentSortingOrder + GameFlowRuntimeController.Manager().sortingOrderOffset;
         }
 
-        internal static UserInterfaceFlowElement ReleaseElement(Type type)
+        internal static UserInterfaceFlowElement GetElement(Type type)
         {
             for (var i = elementsRuntime.Count - 1; i >= 0; i--)
             {
                 if (elementsRuntime[i].elementType != type) continue;
-                var element = elementsRuntime[i];
-                elementsRuntime.RemoveAt(i);
-                return element;
+                return elementsRuntime[i];
             }
 
             return null;

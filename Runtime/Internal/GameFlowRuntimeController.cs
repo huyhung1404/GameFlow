@@ -12,6 +12,8 @@ namespace GameFlow.Internal
     internal class GameFlowRuntimeController : MonoBehaviour
     {
         private static readonly Queue<Command> commands = new Queue<Command>(5);
+        [SerializeField] private Transform elementContainer;
+        [SerializeField] private Transform uiElementContainer;
         internal static OnBannerUpdate onBannerUpdate;
         internal static bool updateBanner;
         private static GameFlowRuntimeController instance;
@@ -30,9 +32,9 @@ namespace GameFlow.Internal
             return instance.manager.elementCollection;
         }
 
-        internal static Transform PrefabElementContainer()
+        internal static Transform PrefabElementContainer(bool isUI)
         {
-            return instance.transform;
+            return isUI ? instance.uiElementContainer : instance.elementContainer;
         }
 
         internal static GameFlowManager Manager() => instance.manager;
@@ -47,6 +49,10 @@ namespace GameFlow.Internal
             var canvas = loadingController.GetComponent<Canvas>();
             canvas.sortingOrder = 100;
             UnityEditor.EditorUtility.SetDirty(gameObject);
+            elementContainer = new GameObject("Elements").transform;
+            elementContainer.SetParent(transform);
+            uiElementContainer = new GameObject("UI Elements").transform;
+            uiElementContainer.SetParent(transform);
         }
 #endif
 

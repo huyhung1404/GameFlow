@@ -15,10 +15,10 @@ namespace GameFlow
         protected override void ReActiveElement()
         {
             FlowSubject.Event(elementType).RaiseOnRelease(true);
-            UserInterfaceElementsRuntimeManager.ReleaseElement(elementType);
+            UIElementsRuntimeManager.GetElement(elementType);
             baseElement.runtimeInstance.SetActive(false);
             baseElement.runtimeInstance.SetActive(true);
-            UserInterfaceElementsRuntimeManager.AddUserInterfaceElement(element);
+            UIElementsRuntimeManager.AddUserInterfaceElement(element);
             callbackOnRelease = true;
             Release();
         }
@@ -26,7 +26,7 @@ namespace GameFlow
         protected override void ActiveElement()
         {
             baseElement.runtimeInstance.SetActive(true);
-            UserInterfaceElementsRuntimeManager.AddUserInterfaceElement(element);
+            UIElementsRuntimeManager.AddUserInterfaceElement(element);
             callbackOnRelease = true;
             Release();
         }
