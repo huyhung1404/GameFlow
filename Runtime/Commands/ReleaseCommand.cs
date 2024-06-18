@@ -28,18 +28,7 @@ namespace GameFlow
             {
                 var reference = baseElement.reference;
                 if (!reference.IsReady()) return false;
-                switch (baseElement.releaseMode)
-                {
-                    default:
-                    case ElementReleaseMode.RELEASE_ON_CLOSE:
-                    case ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK:
-                        ReleaseOnClose();
-                        break;
-                    case ElementReleaseMode.NONE_RELEASE:
-                        NoneRelease();
-                        break;
-                }
-
+                HandleRelease();
                 return true;
             }
             catch (Exception e)
@@ -50,12 +39,42 @@ namespace GameFlow
             }
         }
 
+        protected abstract void HandleRelease();
+
+        protected void ExecuteByReleaseMode()
+        {
+            switch (baseElement.releaseMode)
+            {
+                default:
+                case ElementReleaseMode.RELEASE_ON_CLOSE:
+                case ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK:
+                    ReleaseOnClose();
+                    break;
+                case ElementReleaseMode.NONE_RELEASE:
+                    NoneRelease();
+                    break;
+            }
+        }
+
+        internal void UnloadCompleted(bool isSuccess)
+        {
+            if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK)
+            {
+                FlowSubject.ReleaseEvent(elementType);
+            }
+
+            if (isSuccess)
+            {
+                baseElement.runtimeInstance = null;
+                OnLoadResult(true);
+                return;
+            }
+
+            OnLoadResult(false);
+        }
+
         protected abstract void ReleaseOnClose();
-
-        internal abstract void UnloadCompleted(bool isSuccess);
-
         protected abstract void NoneRelease();
-
         protected abstract void OnLoadResult(bool canRelease);
     }
 }

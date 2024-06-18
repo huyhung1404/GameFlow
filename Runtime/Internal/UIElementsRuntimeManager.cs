@@ -35,5 +35,10 @@ namespace GameFlow.Internal
 
             return null;
         }
+        
+        internal static void RemoveElement(UserInterfaceFlowElement element)
+        {
+            elementsRuntime.Remove(element);
+        }
     }
 }

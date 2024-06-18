@@ -20,7 +20,7 @@ namespace GameFlow
         public static ReleaseCommand Release<T>() where T : GameFlowElement
         {
             var type = typeof(T);
-            return type.IsSubclassOf(UIElementType) ? new ReleaseUserInterfaceCommand(type) : new ReleaseGameFlowCommand(type);
+            return type.IsSubclassOf(UIElementType) ? new ReleaseUserInterfaceElementCommand(type) : new ReleaseElementCommand(type);
         }
     }
 
