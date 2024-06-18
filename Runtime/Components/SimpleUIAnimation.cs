@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameFlow
 {
     [AddComponentMenu("Game Flow/UI Simple Animation")]
-    public class SimpleUIAnimation : GameFlowUIAnimation
+    public sealed class SimpleUIAnimation : GameFlowUIAnimation
     {
         [SerializeField] private bool ignoreTimeScale;
         [SerializeField] private Transform view;
@@ -48,7 +48,7 @@ namespace GameFlow
             OnShowCompleted();
         }
 
-        protected IEnumerator IEHide()
+        private IEnumerator IEHide()
         {
             var executeTime = (ignoreTimeScale ? Time.realtimeSinceStartup : Time.time) + durationHide;
             do

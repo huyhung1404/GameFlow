@@ -15,7 +15,7 @@ namespace GameFlow.Editor
 
         private SerializedProperty elementProperty;
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             elementProperty = serializedObject.FindProperty("element");
         }
@@ -27,6 +27,15 @@ namespace GameFlow.Editor
             EditorGUILayout.Space(5);
             DrawPropertiesExcluding(serializedObject, propertyToExclude);
             serializedObject.ApplyModifiedProperties();
+        }
+    }
+
+    [CustomEditor(typeof(SimpleUIAnimation))]
+    public class GameFlowSimpleUIAnimationEditor : GameFlowUIAnimationEditor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
         }
     }
 }
