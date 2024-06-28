@@ -144,38 +144,38 @@ namespace GameFlow
             };
         }
 
-        internal void ReleaseHandlePrefab(GameObject handle, ReleaseCommand command)
+        internal void ReleaseHandlePrefab(GameObject handle, IReleaseCompleted completed)
         {
             if (isScene)
             {
-                HandleReleaseScene(command);
+                HandleReleaseScene(completed);
                 return;
             }
 
-            HandleReleasePrefab(handle, command);
+            HandleReleasePrefab(handle, completed);
         }
 
-        private void HandleReleaseScene(ReleaseCommand command)
+        private void HandleReleaseScene(IReleaseCompleted completed)
         {
             isReleasing = true;
             Addressables.UnloadSceneAsync(OperationHandle).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    command.UnloadCompleted(true);
+                    completed.UnloadCompleted(true);
                     isReleasing = false;
                     return;
                 }
 
                 isReleasing = false;
-                command.UnloadCompleted(false);
+                completed.UnloadCompleted(false);
             };
         }
 
-        private void HandleReleasePrefab(GameObject handle, ReleaseCommand command)
+        private void HandleReleasePrefab(GameObject handle, IReleaseCompleted completed)
         {
             if (!Addressables.ReleaseInstance(handle)) Object.Destroy(handle);
-            command.UnloadCompleted(true);
+            completed.UnloadCompleted(true);
         }
     }
 }

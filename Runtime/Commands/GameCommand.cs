@@ -65,7 +65,7 @@ namespace GameFlow
         /// <returns></returns>
         public static AddCommand GetActiveHandle(this AddCommand command, out ReferenceActiveHandle handle)
         {
-            command.activeHandle ??= new ReferenceActiveHandle();
+            command.activeHandle ??= new ReferenceActiveHandle(command);
             handle = command.activeHandle;
             return command;
         }
@@ -78,5 +78,15 @@ namespace GameFlow
             command.onCompleted = completed;
             return command;
         }
+    }
+
+    public static class LoadCommandBuilder
+    {
+        // public static LoadCommand GetActiveHandle(this LoadCommand loadCommand,  out ReferenceActiveHandle handle)
+        // {
+            // command.activeHandle ??= new ReferenceActiveHandle(command);
+            // handle = command.activeHandle;
+            // return command;
+        // }
     }
 }

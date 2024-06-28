@@ -5,7 +5,7 @@ namespace GameFlow
 {
     public delegate void OnReleaseCommandCompleted(bool isRelease);
 
-    public abstract class ReleaseCommand : Command
+    public abstract class ReleaseCommand : Command, IReleaseCompleted
     {
         protected bool isExecute;
         internal OnReleaseCommandCompleted onCompleted;
@@ -55,21 +55,21 @@ namespace GameFlow
                     break;
             }
         }
-
-        internal void UnloadCompleted(bool isSuccess)
+        
+        void IReleaseCompleted.UnloadCompleted(bool isSuccess)
         {
             if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK)
             {
                 FlowObservable.ReleaseEvent(elementType);
             }
-
+        
             if (isSuccess)
             {
                 baseElement.runtimeInstance = null;
                 OnLoadResult(true);
                 return;
             }
-
+        
             OnLoadResult(false);
         }
 

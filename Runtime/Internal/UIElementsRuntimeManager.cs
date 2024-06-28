@@ -35,10 +35,60 @@ namespace GameFlow.Internal
 
             return null;
         }
-        
+
         internal static void RemoveElement(UserInterfaceFlowElement element)
         {
             elementsRuntime.Remove(element);
+        }
+
+        internal static void ReleaseAllElement(Action onReleaseCompleted)
+        {
+            var elementCount = elementsRuntime.Count;
+            var releaseCount = new ReleaseCount(onReleaseCompleted, elementCount);
+            for (var i = elementsRuntime.Count - 1; i >= 0; i--)
+            {
+                ReleaseElement(elementsRuntime[i], releaseCount);
+            }
+        }
+
+        private static void ReleaseElement(UserInterfaceFlowElement element, ReleaseCount releaseCount)
+        {
+            FlowObservable.Event(element.GetType()).RaiseOnRelease(true);
+            switch (element.releaseMode)
+            {
+                default:
+                case ElementReleaseMode.RELEASE_ON_CLOSE:
+                case ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK:
+                    element.reference.ReleaseHandlePrefab(element.runtimeInstance, releaseCount);
+                    break;
+                case ElementReleaseMode.NONE_RELEASE:
+                    element.runtimeInstance.SetActive(false);
+                    releaseCount.Count();
+                    break;
+            }
+        }
+
+        internal class ReleaseCount : IReleaseCompleted
+        {
+            private readonly Action onCompleted;
+            private readonly int totalCount;
+            private int current;
+
+            internal ReleaseCount(Action onCompleted, int totalCount)
+            {
+                this.onCompleted = onCompleted;
+                this.totalCount = totalCount;
+            }
+
+            void IReleaseCompleted.UnloadCompleted(bool isSuccess)
+            {
+                Count();
+            }
+
+            internal void Count()
+            {
+                if (++current == totalCount) onCompleted.Invoke();
+            }
         }
     }
 }

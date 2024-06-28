@@ -28,9 +28,9 @@ namespace GameFlow
 
         internal void OnHandleLoadCompleted(SceneInstance sceneInstance, GameObject elementHandleObject)
         {
-            status = ActiveHandleStatus.Succeeded;
             resultInstance = sceneInstance;
             elementHandle = elementHandleObject;
+            status = ActiveHandleStatus.Succeeded;
             onLoadResult?.Invoke(status);
         }
 
@@ -40,14 +40,16 @@ namespace GameFlow
             onLoadResult?.Invoke(status);
         }
 
-        public void ActiveScene(Action onCompleted = null)
+        public bool ActiveScene(Action onCompleted = null)
         {
-            if (status != ActiveHandleStatus.Succeeded) return;
+            if (status != ActiveHandleStatus.Succeeded) return false;
             resultInstance.ActivateAsync().completed += _ =>
             {
                 onCompleted?.Invoke();
                 command.HandleReferencePrefab(elementHandle);
             };
+
+            return true;
         }
     }
 }
