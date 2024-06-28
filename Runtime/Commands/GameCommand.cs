@@ -1,4 +1,5 @@
 using System;
+using GameFlow.Internal;
 
 namespace GameFlow
 {
@@ -27,7 +28,7 @@ namespace GameFlow
     public static class AddCommandBuilder
     {
         /// <summary>
-        /// Set Loading Id
+        /// Set Loading ID
         /// </summary>
         /// <param name="command"></param>
         /// <param name="id">id less than 0 => loading type is none</param>
@@ -56,6 +57,12 @@ namespace GameFlow
             return command;
         }
 
+        /// <summary>
+        /// Only support scene reference
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="handle"></param>
+        /// <returns></returns>
         public static AddCommand GetActiveHandle(this AddCommand command, out ReferenceActiveHandle handle)
         {
             command.activeHandle ??= new ReferenceActiveHandle();

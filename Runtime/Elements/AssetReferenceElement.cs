@@ -3,6 +3,7 @@ using GameFlow.Internal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
@@ -73,6 +74,13 @@ namespace GameFlow
         {
             if (isScene)
             {
+                var hasActiveHandle = command.activeHandle != null;
+                if (hasActiveHandle)
+                {
+                    HandleReferenceSceneWithActiveHandle(command);
+                    return;
+                }
+
                 HandleReferenceScene(command);
                 return;
             }
@@ -86,9 +94,7 @@ namespace GameFlow
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    var elementHandle = SceneElementHandle.Create();
-                    SceneManager.MoveGameObjectToScene(elementHandle.gameObject, handle.Result.Scene);
-                    elementHandle.GetRootsGameObject();
+                    var elementHandle = MoveGameObjectToScene(handle);
                     command.HandleReferencePrefab(elementHandle.gameObject);
                     return;
                 }
@@ -96,6 +102,31 @@ namespace GameFlow
                 Addressables.Release(handle);
                 command.HandleReferencePrefab(null);
             };
+        }
+
+        private void HandleReferenceSceneWithActiveHandle(AddCommand command)
+        {
+            LoadSceneAsync(LoadSceneMode.Additive, false).Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    var elementHandle = MoveGameObjectToScene(handle);
+                    command.activeHandle.OnHandleLoadCompleted(handle.Result, elementHandle.gameObject);
+                    return;
+                }
+
+                Addressables.Release(handle);
+                command.HandleReferencePrefab(null);
+                command.activeHandle.OnHandleLoadFailed();
+            };
+        }
+
+        private static SceneElementHandle MoveGameObjectToScene(AsyncOperationHandle<SceneInstance> handle)
+        {
+            var elementHandle = SceneElementHandle.Create();
+            SceneManager.MoveGameObjectToScene(elementHandle.gameObject, handle.Result.Scene);
+            elementHandle.GetRootsGameObject();
+            return elementHandle;
         }
 
         private void HandleReferencePrefab(AddCommand command)
