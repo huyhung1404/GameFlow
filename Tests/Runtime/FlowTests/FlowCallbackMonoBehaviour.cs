@@ -13,7 +13,7 @@ namespace GameFlow.Tests
 
         private void OnEnable()
         {
-            var delegates = FlowSubject.Event(element.GetType());
+            var delegates = FlowObservable.Event(element.GetType());
             delegates.OnActive += OnActive;
             delegates.OnActiveWithData += OnActiveWithData;
             delegates.OnRelease += OnRelease;
@@ -36,7 +36,7 @@ namespace GameFlow.Tests
 
         private void OnDisable()
         {
-            var delegates = FlowSubject.Event(element.GetType());
+            var delegates = FlowObservable.Event(element.GetType());
             delegates.OnActive -= OnActive;
             delegates.OnActiveWithData -= OnActiveWithData;
             delegates.OnRelease -= OnRelease;

@@ -26,7 +26,7 @@ namespace GameFlow.Component
 
         private void OnEnable()
         {
-            FlowSubject.UIEvent(element.elementType).OnActive += SetUpCanvas;
+            FlowObservable.UIEvent(element.elementType).OnActive += SetUpCanvas;
             FlowBannerController.OnBannerUpdate += OnBannerUpdate;
         }
 
@@ -52,7 +52,7 @@ namespace GameFlow.Component
 
         private void OnDisable()
         {
-            FlowSubject.UIEvent(element.elementType).OnActive -= SetUpCanvas;
+            FlowObservable.UIEvent(element.elementType).OnActive -= SetUpCanvas;
             FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
         }
     }

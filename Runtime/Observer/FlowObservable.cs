@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFlow
 {
-    public static class FlowSubject
+    public static class FlowObservable
     {
         internal static readonly Dictionary<Type, ElementCallbackEvent> callbackEvents = new Dictionary<Type, ElementCallbackEvent>();
 

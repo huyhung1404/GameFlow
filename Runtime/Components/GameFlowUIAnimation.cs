@@ -10,7 +10,7 @@ namespace GameFlow.Component
 
         protected virtual void Awake()
         {
-            delegates = FlowSubject.UIEvent(element.GetType());
+            delegates = FlowObservable.UIEvent(element.GetType());
         }
 
         protected virtual void OnEnable()

@@ -14,7 +14,7 @@ namespace GameFlow
 
         protected override void ReActiveElement()
         {
-            FlowSubject.Event(elementType).RaiseOnRelease(true);
+            FlowObservable.Event(elementType).RaiseOnRelease(true);
             UIElementsRuntimeManager.GetElement(elementType);
             baseElement.runtimeInstance.SetActive(false);
             baseElement.runtimeInstance.SetActive(true);

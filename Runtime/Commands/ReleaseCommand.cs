@@ -60,7 +60,7 @@ namespace GameFlow
         {
             if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK)
             {
-                FlowSubject.ReleaseEvent(elementType);
+                FlowObservable.ReleaseEvent(elementType);
             }
 
             if (isSuccess)

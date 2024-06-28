@@ -11,7 +11,7 @@ namespace GameFlow
 
         public ReleaseUserInterfaceElementCommand(Type elementType) : base(elementType)
         {
-            delegates = FlowSubject.UIEvent(elementType);
+            delegates = FlowObservable.UIEvent(elementType);
         }
 
         internal override void PreUpdate()

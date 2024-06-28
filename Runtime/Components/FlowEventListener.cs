@@ -30,12 +30,12 @@ namespace GameFlow.Component
 
             internal override void Register(Type type)
             {
-                FlowSubject.Event(type).OnActive += callback.Invoke;
+                FlowObservable.Event(type).OnActive += callback.Invoke;
             }
 
             internal override void Unregister(Type type)
             {
-                FlowSubject.Event(type).OnActive -= callback.Invoke;
+                FlowObservable.Event(type).OnActive -= callback.Invoke;
             }
         }
 
@@ -46,12 +46,12 @@ namespace GameFlow.Component
 
             internal override void Register(Type type)
             {
-                FlowSubject.Event(type).OnActiveWithData += callback.Invoke;
+                FlowObservable.Event(type).OnActiveWithData += callback.Invoke;
             }
 
             internal override void Unregister(Type type)
             {
-                FlowSubject.Event(type).OnActiveWithData -= callback.Invoke;
+                FlowObservable.Event(type).OnActiveWithData -= callback.Invoke;
             }
         }
 
@@ -62,12 +62,12 @@ namespace GameFlow.Component
 
             internal override void Register(Type type)
             {
-                FlowSubject.Event(type).OnRelease += callback.Invoke;
+                FlowObservable.Event(type).OnRelease += callback.Invoke;
             }
 
             internal override void Unregister(Type type)
             {
-                FlowSubject.Event(type).OnRelease -= callback.Invoke;
+                FlowObservable.Event(type).OnRelease -= callback.Invoke;
             }
         }
 

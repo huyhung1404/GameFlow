@@ -139,7 +139,7 @@ namespace GameFlow
         {
             if (!callbackOnRelease) return;
             OnLoadResult(baseElement.runtimeInstance);
-            var delegates = FlowSubject.Event(elementType);
+            var delegates = FlowObservable.Event(elementType);
             delegates.RaiseOnActive();
             if (!ReferenceEquals(sendData, null)) delegates.RaiseOnActiveWithData(sendData);
         }
