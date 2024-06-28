@@ -55,6 +55,13 @@ namespace GameFlow
             command.sendData = data;
             return command;
         }
+
+        public static AddCommand GetActiveHandle(this AddCommand command, out ReferenceActiveHandle handle)
+        {
+            command.activeHandle ??= new ReferenceActiveHandle();
+            handle = command.activeHandle;
+            return command;
+        }
     }
 
     public static class ReleaseCommandBuilder

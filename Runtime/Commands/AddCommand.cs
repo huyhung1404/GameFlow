@@ -8,13 +8,14 @@ namespace GameFlow
 
     public abstract class AddCommand : Command
     {
-        private bool isExecute;
         internal int loadingId = -1;
         internal bool isPreload;
-        internal OnAddCommandCompleted onCompleted;
         internal object sendData;
-        private bool isLoadingOn;
+        internal OnAddCommandCompleted onCompleted;
+        internal ReferenceActiveHandle activeHandle;
         protected bool callbackOnRelease;
+        private bool isExecute;
+        private bool isLoadingOn;
 
         protected abstract GameFlowElement baseElement { get; set; }
 
