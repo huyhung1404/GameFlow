@@ -18,6 +18,12 @@ namespace GameFlow.Internal
             elementsRuntime.Add(userInterfaceFlowElement);
         }
 
+        internal static Type GetTopElement()
+        {
+            var elementCount = elementsRuntime.Count;
+            return elementCount == 0 ? null : elementsRuntime[elementCount - 1].elementType;
+        }
+
         private static int GetSortingOrder()
         {
             var elementCount = elementsRuntime.Count;

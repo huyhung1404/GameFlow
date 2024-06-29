@@ -1,19 +1,10 @@
-﻿using System;
+﻿using GameFlow.Internal;
 
 namespace GameFlow
 {
-    internal class KeyBackCommand : Command
+    internal class KeyBackCommand : ReleaseUserInterfaceElementCommand
     {
-        public KeyBackCommand(Type elementType) : base(elementType)
-        {
-        }
-
-        internal override void PreUpdate()
-        {
-            
-        }
-
-        internal override void Update()
+        public KeyBackCommand() : base(UIElementsRuntimeManager.GetTopElement())
         {
         }
     }
