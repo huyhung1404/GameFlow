@@ -33,7 +33,7 @@ namespace GameFlow
         /// <param name="command"></param>
         /// <param name="id">id less than 0 => loading type is none</param>
         /// <returns></returns>
-        public static AddCommand LoadingId(this AddCommand command, int id)
+        public static AddCommand LoadingID(this AddCommand command, int id)
         {
             command.loadingId = id;
             return command;
@@ -69,6 +69,13 @@ namespace GameFlow
             handle = command.activeHandle;
             return command;
         }
+
+        public static LoadCommand GetActiveHandle(this LoadCommand command, out ReferenceActiveHandle handle)
+        {
+            handle = command.activeHandle;
+            command.autoActive = false;
+            return command;
+        }
     }
 
     public static class ReleaseCommandBuilder
@@ -78,15 +85,5 @@ namespace GameFlow
             command.onCompleted = completed;
             return command;
         }
-    }
-
-    public static class LoadCommandBuilder
-    {
-        // public static LoadCommand GetActiveHandle(this LoadCommand loadCommand,  out ReferenceActiveHandle handle)
-        // {
-            // command.activeHandle ??= new ReferenceActiveHandle(command);
-            // handle = command.activeHandle;
-            // return command;
-        // }
     }
 }

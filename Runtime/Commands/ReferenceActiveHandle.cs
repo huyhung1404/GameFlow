@@ -1,4 +1,5 @@
 ﻿using System;
+using GameFlow.Internal;
 using UnityEngine;
 using UnityEngine.ResourceManagement.ResourceProviders;
 
@@ -13,12 +14,14 @@ namespace GameFlow
 
     public class ReferenceActiveHandle
     {
-        private readonly AddCommand command;
-        private ActiveHandleStatus status;
-        private SceneInstance resultInstance;
-        private GameObject elementHandle;
+        protected readonly AddCommand command;
+        protected ActiveHandleStatus status;
+        protected SceneInstance resultInstance;
+        protected GameObject elementHandle;
+        protected Action onCompleted;
         private Action<ActiveHandleStatus> onLoadResult;
         public event Action<ActiveHandleStatus> OnLoadResult { add => onLoadResult += value; remove => onLoadResult -= value; }
+        public event Action OnCompleted { add => onCompleted += value; remove => onCompleted -= value; }
 
         internal ReferenceActiveHandle(AddCommand command)
         {
@@ -40,15 +43,30 @@ namespace GameFlow
             onLoadResult?.Invoke(status);
         }
 
-        public bool ActiveScene(Action onCompleted = null)
+        public virtual bool ActiveScene()
         {
             if (status != ActiveHandleStatus.Succeeded) return false;
             resultInstance.ActivateAsync().completed += _ =>
             {
                 onCompleted?.Invoke();
+                onCompleted = null;
                 command.HandleReferencePrefab(elementHandle);
             };
 
+            return true;
+        }
+    }
+
+    public class ReferenceActiveHandleForLoadCommand : ReferenceActiveHandle
+    {
+        internal ReferenceActiveHandleForLoadCommand(AddCommand command) : base(command)
+        {
+        }
+
+        public override bool ActiveScene()
+        {
+            if (status != ActiveHandleStatus.Succeeded) return false;
+            UIElementsRuntimeManager.ReleaseAllElement(() => base.ActiveScene());
             return true;
         }
     }

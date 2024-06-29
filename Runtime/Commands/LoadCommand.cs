@@ -1,20 +1,24 @@
 ﻿using System;
+using GameFlow.Internal;
 
 namespace GameFlow
 {
-    public class LoadCommand : Command
+    public class LoadCommand : AddUserInterfaceCommand
     {
+        internal bool autoActive;
+
         internal LoadCommand(Type elementType) : base(elementType)
         {
+            activeHandle = new ReferenceActiveHandleForLoadCommand(this);
+            activeHandle.OnLoadResult += OnActiveHandleLoadResult;
+            autoActive = true;
         }
 
-        internal override void PreUpdate()
+        private void OnActiveHandleLoadResult(ActiveHandleStatus status)
         {
-            
-        }
-
-        internal override void Update()
-        {
+            if (status != ActiveHandleStatus.Succeeded) return;
+            if (!autoActive) return;
+            activeHandle.ActiveScene();
         }
     }
 }
