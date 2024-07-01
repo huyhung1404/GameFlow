@@ -19,11 +19,11 @@ namespace GameFlow
         protected ActiveHandleStatus status;
         protected SceneInstance resultInstance;
         protected GameObject elementHandle;
-        protected Action onCompleted;
+        protected Action<SceneInstance> onCompleted;
         private Action<ActiveHandleStatus> onLoadResult;
 
         public event Action<ActiveHandleStatus> OnLoadResult { add => onLoadResult += value; remove => onLoadResult -= value; }
-        public event Action OnCompleted { add => onCompleted += value; remove => onCompleted -= value; }
+        public event Action<SceneInstance> OnCompleted { add => onCompleted += value; remove => onCompleted -= value; }
 
         internal ReferenceActiveHandle(AddCommand command)
         {
@@ -55,7 +55,7 @@ namespace GameFlow
             if (status != ActiveHandleStatus.Succeeded) return false;
             resultInstance.ActivateAsync().completed += _ =>
             {
-                onCompleted?.Invoke();
+                onCompleted?.Invoke(resultInstance);
                 onCompleted = null;
                 command.HandleReferencePrefab(elementHandle);
             };
