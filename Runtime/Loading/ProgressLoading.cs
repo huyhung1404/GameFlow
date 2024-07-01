@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 namespace GameFlow
 {
+    [AddComponentMenu("Game Flow/Loading/Progress")]
     [RequireComponent(typeof(CanvasGroup))]
     public class ProgressLoading : BaseLoadingTypeController
     {

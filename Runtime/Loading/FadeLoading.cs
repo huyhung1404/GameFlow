@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace GameFlow
 {
+    [AddComponentMenu("Game Flow/Loading/Fade")]
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeLoading : BaseLoadingTypeController
     {

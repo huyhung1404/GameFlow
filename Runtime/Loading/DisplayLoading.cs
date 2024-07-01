@@ -1,7 +1,9 @@
 ﻿using System;
+using UnityEngine;
 
 namespace GameFlow
 {
+    [AddComponentMenu("Game Flow/Loading/Display")]
     public class DisplayLoading : BaseLoadingTypeController
     {
         protected override void OnShow()
