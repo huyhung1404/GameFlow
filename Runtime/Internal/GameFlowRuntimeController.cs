@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace GameFlow.Internal
 {
+    [AddComponentMenu("Game Flow/Runtime Controller")]
     internal class GameFlowRuntimeController : MonoBehaviour
     {
         private static readonly Queue<Command> commands = new Queue<Command>(5);
