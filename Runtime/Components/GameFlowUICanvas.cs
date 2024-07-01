@@ -24,12 +24,16 @@ namespace GameFlow.Component
             hasSafeView = safeView != null;
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
-            var delegates = FlowObservable.UIEvent(element.elementType);
+            RegisterDelegates(FlowObservable.UIEvent(element.elementType));
+            FlowBannerController.OnBannerUpdate += OnBannerUpdate;
+        }
+
+        protected virtual void RegisterDelegates(UIElementCallbackEvent delegates)
+        {
             delegates.OnActive += SetUpCanvas;
             delegates.OnKeyBack += OnKeyBack;
-            FlowBannerController.OnBannerUpdate += OnBannerUpdate;
         }
 
         protected virtual void SetUpCanvas()
@@ -52,12 +56,16 @@ namespace GameFlow.Component
             canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < canvasScale.referenceResolution.x / canvasScale.referenceResolution.y ? 0 : 1;
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
-            var delegates = FlowObservable.UIEvent(element.elementType);
+            UnregisterDelegates(FlowObservable.UIEvent(element.elementType));
+            FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
+        }
+
+        protected virtual void UnregisterDelegates(UIElementCallbackEvent delegates)
+        {
             delegates.OnActive -= SetUpCanvas;
             delegates.OnKeyBack -= OnKeyBack;
-            FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
         }
 
         protected virtual void OnKeyBack()
