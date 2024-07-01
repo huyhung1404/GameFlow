@@ -30,7 +30,7 @@ namespace GameFlow.Editor
         }
     }
 
-    [CustomEditor(typeof(SimpleUIAnimation))]
+    [CustomEditor(typeof(BubbleUIAnimation))]
     public class GameFlowSimpleUIAnimationEditor : GameFlowUIAnimationEditor
     {
         public override void OnInspectorGUI()

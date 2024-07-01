@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace GameFlow
 {
-    [AddComponentMenu("Game Flow/UI Simple Animation")]
-    public sealed class SimpleUIAnimation : GameFlowUIAnimation
+    [AddComponentMenu("Game Flow/UI Bubble Animation")]
+    public sealed class BubbleUIAnimation : GameFlowUIAnimation
     {
         [SerializeField] private bool ignoreTimeScale;
         [SerializeField] private Transform view;
