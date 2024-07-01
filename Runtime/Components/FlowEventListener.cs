@@ -12,6 +12,8 @@ namespace GameFlow.Component
         {
             OnActive,
             OnActiveWithData,
+            OnShowCompleted,
+            OnKeyBack,
             OnRelease
         }
 
@@ -52,6 +54,38 @@ namespace GameFlow.Component
             internal override void Unregister(Type type)
             {
                 FlowObservable.Event(type).OnActiveWithData -= callback.Invoke;
+            }
+        }
+
+        [Serializable]
+        internal class OnShowCompletedEntry : Entry
+        {
+            [SerializeField] internal UnityEvent callback;
+
+            internal override void Register(Type type)
+            {
+                FlowObservable.UIEvent(type).OnShowCompleted += callback.Invoke;
+            }
+
+            internal override void Unregister(Type type)
+            {
+                FlowObservable.UIEvent(type).OnShowCompleted -= callback.Invoke;
+            }
+        }
+
+        [Serializable]
+        internal class OnKeyBackEntry : Entry
+        {
+            [SerializeField] internal UnityEvent callback;
+
+            internal override void Register(Type type)
+            {
+                FlowObservable.UIEvent(type).OnKeyBack += callback.Invoke;
+            }
+
+            internal override void Unregister(Type type)
+            {
+                FlowObservable.UIEvent(type).OnKeyBack -= callback.Invoke;
             }
         }
 
