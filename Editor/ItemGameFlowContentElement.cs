@@ -67,8 +67,8 @@ namespace GameFlow.Editor
                 }
             }
 
-            EditorGUI.PropertyField(new Rect(20, 1, Mathf.Max(45, guiWidth - 165), 18), reference, GUIContent.none);
-            if (GUI.Button(new Rect(guiWidth - 140, 1, 45, 18), new GUIContent("Ping")))
+            EditorGUI.PropertyField(new Rect(20, 1, Mathf.Max(45, guiWidth - 175), 18), reference, GUIContent.none);
+            if (GUI.Button(new Rect(guiWidth - 150, 1, 45, 18), new GUIContent("Ping")))
             {
                 EditorGUIUtility.PingObject(serializedObject.targetObject);
             }
