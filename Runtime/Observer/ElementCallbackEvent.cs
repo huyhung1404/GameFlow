@@ -89,5 +89,20 @@ namespace GameFlow
 
             return true;
         }
+
+        private Action onKeyBack;
+        public event Action OnKeyBack { add => onKeyBack += value; remove => onKeyBack -= value; }
+
+        internal void RaiseOnKeyBack()
+        {
+            try
+            {
+                onKeyBack?.Invoke();
+            }
+            catch (Exception e)
+            {
+                ErrorHandle.LogException(e, "Callback OnKeyBack Error");
+            }
+        }
     }
 }

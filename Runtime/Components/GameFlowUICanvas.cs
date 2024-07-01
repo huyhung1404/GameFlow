@@ -26,7 +26,9 @@ namespace GameFlow.Component
 
         private void OnEnable()
         {
-            FlowObservable.UIEvent(element.elementType).OnActive += SetUpCanvas;
+            var delegates = FlowObservable.UIEvent(element.elementType);
+            delegates.OnActive += SetUpCanvas;
+            delegates.OnKeyBack += OnKeyBack;
             FlowBannerController.OnBannerUpdate += OnBannerUpdate;
         }
 
@@ -52,8 +54,15 @@ namespace GameFlow.Component
 
         private void OnDisable()
         {
-            FlowObservable.UIEvent(element.elementType).OnActive -= SetUpCanvas;
+            var delegates = FlowObservable.UIEvent(element.elementType);
+            delegates.OnActive -= SetUpCanvas;
+            delegates.OnKeyBack -= OnKeyBack;
             FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
+        }
+
+        protected virtual void OnKeyBack()
+        {
+            GameCommand.Release(element.elementType);
         }
     }
 }

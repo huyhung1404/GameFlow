@@ -74,6 +74,13 @@ namespace GameFlow.Internal
             }
         }
 
+        internal static void OnKeyBack()
+        {
+            var type = GetTopElement();
+            if (type == null) return;
+            FlowObservable.UIEvent(type).RaiseOnKeyBack();
+        }
+
         internal class ReleaseCount : IReleaseCompleted
         {
             private readonly Action onCompleted;
