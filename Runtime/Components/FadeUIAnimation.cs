@@ -5,12 +5,19 @@ using UnityEngine;
 namespace GameFlow
 {
     [AddComponentMenu("Game Flow/UI Fade Animation")]
+    [RequireComponent(typeof(CanvasGroup))]
     public class FadeUIAnimation : GameFlowUIAnimation
     {
-        [SerializeField] private CanvasGroup canvasGroup;
+        private CanvasGroup canvasGroup;
         [SerializeField] private bool ignoreTimeScale;
         [SerializeField] private float durationShow = 0.3f;
         [SerializeField] private float durationHide = 0.3f;
+
+        protected override void Awake()
+        {
+            canvasGroup.GetComponent<CanvasGroup>();
+            base.Awake();
+        }
 
         protected override void OnShow()
         {
