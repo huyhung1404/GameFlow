@@ -32,6 +32,7 @@ namespace GameFlow
             if (collection.TryGetElement(elementType, out var element))
             {
                 baseElement = element;
+                activeHandle?.SetReference(element.reference);
                 return;
             }
 

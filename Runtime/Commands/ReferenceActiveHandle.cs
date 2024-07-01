@@ -14,12 +14,14 @@ namespace GameFlow
 
     public class ReferenceActiveHandle
     {
+        private AssetReferenceElement reference;
         protected readonly AddCommand command;
         protected ActiveHandleStatus status;
         protected SceneInstance resultInstance;
         protected GameObject elementHandle;
         protected Action onCompleted;
         private Action<ActiveHandleStatus> onLoadResult;
+
         public event Action<ActiveHandleStatus> OnLoadResult { add => onLoadResult += value; remove => onLoadResult -= value; }
         public event Action OnCompleted { add => onCompleted += value; remove => onCompleted -= value; }
 
@@ -27,6 +29,11 @@ namespace GameFlow
         {
             status = ActiveHandleStatus.None;
             this.command = command;
+        }
+
+        internal void SetReference(AssetReferenceElement referenceElement)
+        {
+            reference = referenceElement;
         }
 
         internal void OnHandleLoadCompleted(SceneInstance sceneInstance, GameObject elementHandleObject)
@@ -54,6 +61,13 @@ namespace GameFlow
             };
 
             return true;
+        }
+
+        public float Progress()
+        {
+            if (!reference.OperationHandle.IsValid()) return 0;
+            if (reference.OperationHandle.IsDone) return 1;
+            return reference.OperationHandle.PercentComplete;
         }
     }
 
