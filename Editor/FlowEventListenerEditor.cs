@@ -133,6 +133,24 @@ namespace GameFlow.Editor
                         eventID = FlowEventListener.EventTriggerType.OnActiveWithData
                     });
                     break;
+                case FlowEventListener.EventTriggerType.OnShowCompleted:
+                    listener.delegates.Add(new FlowEventListener.OnShowCompletedEntry
+                    {
+                        eventID = FlowEventListener.EventTriggerType.OnShowCompleted
+                    });
+                    break;
+                case FlowEventListener.EventTriggerType.OnKeyBack:
+                    listener.delegates.Add(new FlowEventListener.OnKeyBackEntry
+                    {
+                        eventID = FlowEventListener.EventTriggerType.OnKeyBack
+                    });
+                    break;
+                case FlowEventListener.EventTriggerType.OnReFocus:
+                    listener.delegates.Add(new FlowEventListener.OnReFocusEntry
+                    {
+                        eventID = FlowEventListener.EventTriggerType.OnReFocus
+                    });
+                    break;
                 case FlowEventListener.EventTriggerType.OnRelease:
                     listener.delegates.Add(new FlowEventListener.OnReleaseEntry
                     {

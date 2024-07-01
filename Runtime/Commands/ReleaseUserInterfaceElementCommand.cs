@@ -53,5 +53,12 @@ namespace GameFlow
             if (isRelease && element) UIElementsRuntimeManager.RemoveElement(element);
             Release();
         }
+
+        internal override void OnRelease()
+        {
+            var topElement = UIElementsRuntimeManager.GetTopElement();
+            if (topElement == null) return;
+            FlowObservable.UIEvent(elementType).RaiseOnReFocus();
+        }
     }
 }

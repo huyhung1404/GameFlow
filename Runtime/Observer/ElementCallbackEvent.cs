@@ -104,5 +104,20 @@ namespace GameFlow
                 ErrorHandle.LogException(e, "Callback OnKeyBack Error");
             }
         }
+
+        private Action onReFocus;
+        public event Action OnReFocus { add => onReFocus += value; remove => onReFocus -= value; }
+
+        internal void RaiseOnReFocus()
+        {
+            try
+            {
+                onReFocus?.Invoke();
+            }
+            catch (Exception e)
+            {
+                ErrorHandle.LogException(e, "Callback OnReFocus Error");
+            }
+        }
     }
 }
