@@ -7,7 +7,7 @@ namespace GameFlow.Component
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasScaler))]
     [AddComponentMenu("Game Flow/UI Canvas Callback")]
-    public class GameFlowUICanvasCallbackEvent : GameFlowUICanvas
+    public class GameFlowUICanvasCallbackEvent : GameFlowUICanvasOnKeyBack
     {
         [SerializeField] protected UnityEvent<int> onCanvasUpdate;
 
