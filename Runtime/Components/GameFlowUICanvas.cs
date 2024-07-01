@@ -62,6 +62,11 @@ namespace GameFlow.Component
 
         protected virtual void OnKeyBack()
         {
+            ReleaseCanvas();
+        }
+
+        public void ReleaseCanvas()
+        {
             GameCommand.Release(element.elementType);
         }
     }
