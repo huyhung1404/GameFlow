@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 using GameFlow.Internal;
 
 namespace GameFlow
 {
     public class ElementCallbackEvent
     {
-        private Action onActive;
+        protected Action onActive;
         public event Action OnActive { add => onActive += value; remove => onActive -= value; }
 
         internal void RaiseOnActive()
@@ -20,7 +21,7 @@ namespace GameFlow
             }
         }
 
-        private Action<object> onActiveWithData;
+        protected Action<object> onActiveWithData;
         public event Action<object> OnActiveWithData { add => onActiveWithData += value; remove => onActiveWithData -= value; }
 
         internal void RaiseOnActiveWithData(object data)
@@ -35,7 +36,7 @@ namespace GameFlow
             }
         }
 
-        private Action<bool> onRelease;
+        protected Action<bool> onRelease;
 
         /// <summary>
         /// Return true if release immediately
@@ -52,6 +53,29 @@ namespace GameFlow
             {
                 ErrorHandle.LogException(e, "Callback OnRelease Error");
             }
+        }
+
+        internal virtual void GetInfo(out bool isUserInterface, out int callbackCount)
+        {
+            isUserInterface = false;
+            callbackCount = 0;
+            if (onActive != null) callbackCount++;
+            if (onActiveWithData != null) callbackCount++;
+            if (onRelease != null) callbackCount++;
+        }
+
+        public override string ToString()
+        {
+            return $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnActiveWithData</size></b>    {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnRelease</size></b>                 {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
+        }
+
+        protected static string GetDelegatesInfo(Delegate[] delegates)
+        {
+            var result = $"Event: {delegates.Length}";
+            return delegates.Aggregate(result, (current, variableDelegate)
+                => current + $"\n{variableDelegate.Target}.{variableDelegate.Method}");
         }
     }
 
@@ -118,6 +142,27 @@ namespace GameFlow
             {
                 ErrorHandle.LogException(e, "Callback OnReFocus Error");
             }
+        }
+
+        internal override void GetInfo(out bool isUserInterface, out int callbackCount)
+        {
+            base.GetInfo(out isUserInterface, out callbackCount);
+            isUserInterface = true;
+            if (onShowCompleted != null) callbackCount++;
+            if (onHide != null) callbackCount++;
+            if (onKeyBack != null) callbackCount++;
+            if (onReFocus != null) callbackCount++;
+        }
+
+        public override string ToString()
+        {
+            return $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnActiveWithData</size></b>       {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnShowCompleted</size></b>     {(onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(onShowCompleted.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnHide</size></b>                          {(onHide == null ? "Event: 0" : GetDelegatesInfo(onHide.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnKeyBack</size></b>                    {(onKeyBack == null ? "Event: 0" : GetDelegatesInfo(onKeyBack.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnReFocus</size></b>                   {(onReFocus == null ? "Event: 0" : GetDelegatesInfo(onReFocus.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnRelease</size></b>                    {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
         }
     }
 }
