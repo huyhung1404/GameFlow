@@ -20,7 +20,8 @@ namespace GameFlow.Editor
         public enum ViewType
         {
             Command,
-            Event
+            Event,
+            Element
         }
 
         private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowViewerEditorWindow.uxml";
@@ -71,17 +72,21 @@ namespace GameFlow.Editor
             commandToggle.value = currentViewType == ViewType.Command;
             var eventToggle = rootVisualElement.Q<ToolbarToggle>("event_toggle");
             eventToggle.value = currentViewType == ViewType.Event;
-            commandToggle.RegisterCallback(ToggleCallback(commandToggle, eventToggle, ViewType.Command));
-            eventToggle.RegisterCallback(ToggleCallback(eventToggle, commandToggle, ViewType.Event));
+            var elementToggle = rootVisualElement.Q<ToolbarToggle>("element_toggle");
+            elementToggle.value = currentViewType == ViewType.Element;
+            commandToggle.RegisterCallback(ToggleCallback(commandToggle, eventToggle, elementToggle, ViewType.Command));
+            eventToggle.RegisterCallback(ToggleCallback(eventToggle, commandToggle, elementToggle, ViewType.Event));
+            elementToggle.RegisterCallback(ToggleCallback(elementToggle, commandToggle, eventToggle, ViewType.Element));
         }
 
-        private EventCallback<ClickEvent> ToggleCallback(ToolbarToggle currentToggle, ToolbarToggle otherToggle, ViewType viewType)
+        private EventCallback<ClickEvent> ToggleCallback(ToolbarToggle currentToggle, ToolbarToggle otherToggle, ToolbarToggle otherToggle2, ViewType viewType)
         {
             return _ =>
             {
                 currentToggle.value = true;
-                if (!otherToggle.value) return;
+                if (!otherToggle.value && !otherToggle2.value) return;
                 otherToggle.value = false;
+                otherToggle2.value = false;
                 currentViewType = viewType;
                 EditorPrefs.SetInt("com.huyhung1404.gameflow.viewerViewType", (int)currentViewType);
             };
@@ -120,6 +125,9 @@ namespace GameFlow.Editor
                 case ViewType.Event:
                     DrawListEventViewerUtility.OnGUIList();
                     break;
+                case ViewType.Element:
+                    DrawElementViewerUtility.OnGUIList();
+                    break;
             }
         }
 
@@ -134,6 +142,9 @@ namespace GameFlow.Editor
                     break;
                 case ViewType.Event:
                     DrawListEventViewerUtility.OnGUIInfo();
+                    break;
+                case ViewType.Element:
+                    DrawElementViewerUtility.OnGUIInfo();
                     break;
             }
         }
@@ -270,6 +281,65 @@ namespace GameFlow.Editor
             if (e.type != EventType.MouseDown || e.button != 0 || !rect.Contains(e.mousePosition)) return;
             currentInfoType = type;
             currentCallback = callbackEvent;
+            GameFlowViewerEditorWindow.infoView.MarkDirtyRepaint();
+        }
+    }
+
+    internal static class DrawElementViewerUtility
+    {
+        private static Vector2 scrollPosition;
+        private static Vector2 scrollInfoPosition;
+        private static GameFlowElement currentElement;
+
+        internal static void OnGUIList()
+        {
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+
+            var index = 0;
+            foreach (var element in UIElementsRuntimeManager.elementsRuntime)
+            {
+                DrawElement(index, element, true);
+                index++;
+            }
+
+            foreach (var element in ElementsRuntimeManager.elementsRuntime)
+            {
+                DrawElement(index, element, false);
+                index++;
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+
+        internal static void OnGUIInfo()
+        {
+            if (currentElement == null) return;
+            scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
+            EditorGUILayout.LabelField(GetTitle(currentElement is UserInterfaceFlowElement, currentElement).Trim(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.Space(2);
+            EditorGUILayout.TextArea(currentElement.GetFullInfo(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.EndScrollView();
+        }
+
+        private static void DrawElement(int index, GameFlowElement element, bool isUI)
+        {
+            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
+            EditorGUILayout.LabelField(GetTitle(isUI, element), GameFlowViewerEditorWindow.labelStyle);
+            HandleMouseClick(GUILayoutUtility.GetLastRect());
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private static string GetTitle(bool isUserInterface, GameFlowElement element)
+        {
+            return isUserInterface
+                ? $"<b><size=9>UI    </size></b> {element.GetInfo()}"
+                : $"       {element.GetInfo()}";
+        }
+
+        private static void HandleMouseClick(Rect rect)
+        {
+            var e = Event.current;
+            if (e.type != EventType.MouseDown || e.button != 0 || !rect.Contains(e.mousePosition)) return;
             GameFlowViewerEditorWindow.infoView.MarkDirtyRepaint();
         }
     }

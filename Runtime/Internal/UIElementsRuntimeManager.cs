@@ -3,9 +3,13 @@ using System.Collections.Generic;
 
 namespace GameFlow.Internal
 {
-    public static class UIElementsRuntimeManager
+    internal static class UIElementsRuntimeManager
     {
-        private static readonly List<UserInterfaceFlowElement> elementsRuntime;
+#if UNITY_EDITOR
+        internal static List<UserInterfaceFlowElement> elementsRuntime { get; }
+#else
+        private static List<UserInterfaceFlowElement> elementsRuntime;
+#endif
 
         static UIElementsRuntimeManager()
         {

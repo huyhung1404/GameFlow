@@ -5,7 +5,11 @@ namespace GameFlow.Internal
 {
     internal static class ElementsRuntimeManager
     {
+#if UNITY_EDITOR
+        internal static List<GameFlowElement> elementsRuntime { get; }
+#else
         private static readonly List<GameFlowElement> elementsRuntime;
+#endif
 
         static ElementsRuntimeManager()
         {
