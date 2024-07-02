@@ -173,5 +173,11 @@ namespace GameFlow.Internal
             if (instance != null) isActive = false;
             StopAllCoroutines();
         }
+
+        internal static Queue<Command> GetInfo(out Command currentCommand)
+        {
+            currentCommand = instance?.current;
+            return commands;
+        }
     }
 }

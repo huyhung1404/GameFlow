@@ -69,6 +69,12 @@ namespace GameFlow
             if (reference.OperationHandle.IsDone) return 1;
             return reference.OperationHandle.PercentComplete;
         }
+
+        public override string ToString()
+        {
+            return $"Status:{status} Scene:{resultInstance.Scene.name} Handle:{elementHandle?.name} " +
+                   $"OnCompeted{onCompleted.Target}.{onCompleted.Method.Name} OnLoadResult:{onLoadResult.Target}.{onLoadResult.Method}";
+        }
     }
 
     public class ReferenceActiveHandleForLoadCommand : ReferenceActiveHandle

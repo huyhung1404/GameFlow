@@ -55,26 +55,35 @@ namespace GameFlow
                     break;
             }
         }
-        
+
         void IReleaseCompleted.UnloadCompleted(bool isSuccess)
         {
             if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK)
             {
                 FlowObservable.ReleaseEvent(elementType);
             }
-        
+
             if (isSuccess)
             {
                 baseElement.runtimeInstance = null;
                 OnLoadResult(true);
                 return;
             }
-        
+
             OnLoadResult(false);
         }
 
         protected abstract void ReleaseOnClose();
         protected abstract void NoneRelease();
         protected abstract void OnLoadResult(bool canRelease);
+
+
+        public override string GetFullInfo()
+        {
+            return $@"<b><size=11>isRelease:</size></b> {isRelease}
+<b><size=11>onCompleted:</size></b> {onCompleted.Target}.{onCompleted.Method.Name}
+<b><size=11>isExecute:</size></b> {isExecute}
+<b><size=11>isUserInterface:</size></b> {this is ReleaseUserInterfaceElementCommand}";
+        }
     }
 }

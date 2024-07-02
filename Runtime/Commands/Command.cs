@@ -6,6 +6,11 @@ namespace GameFlow
     public abstract class Command
     {
 #if UNITY_EDITOR
+        internal static readonly System.Collections.Generic.List<Command> waitBuildCommands = new System.Collections.Generic.List<Command>();
+#endif
+
+
+#if UNITY_EDITOR
         internal bool isRelease { get; private set; }
 #else
         internal bool isRelease;
@@ -15,6 +20,9 @@ namespace GameFlow
 
         protected Command(Type elementType)
         {
+#if UNITY_EDITOR
+            waitBuildCommands.Add(this);
+#endif
             this.elementType = elementType;
         }
 
@@ -36,6 +44,9 @@ namespace GameFlow
 
         public void Build()
         {
+#if UNITY_EDITOR
+            waitBuildCommands.Remove(this);
+#endif
             GameFlowRuntimeController.AddCommand(this);
         }
 
@@ -43,5 +54,12 @@ namespace GameFlow
         {
             return $"name: {elementType.FullName} - isRelease: {isRelease}";
         }
+
+        internal string GetInfo()
+        {
+            return $"{GetType().Name}:  {elementType.Namespace}.<b>{elementType.Name}</b>";
+        }
+
+        public abstract string GetFullInfo();
     }
 }

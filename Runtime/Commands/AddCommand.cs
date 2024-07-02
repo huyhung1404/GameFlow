@@ -145,5 +145,19 @@ namespace GameFlow
             delegates.RaiseOnActive();
             if (!ReferenceEquals(sendData, null)) delegates.RaiseOnActiveWithData(sendData);
         }
+
+        public override string GetFullInfo()
+        {
+            return $@"<b><size=11>isRelease:</size></b> {isRelease}
+<b><size=11>loadingId:</size></b> {loadingId}
+<b><size=11>isPreload:</size></b> {isPreload}
+<b><size=11>sendData:</size></b> {sendData}
+<b><size=11>onCompleted:</size></b> {onCompleted.Target}.{onCompleted.Method.Name}
+<b><size=11>activeHandle:</size></b> {activeHandle}
+<b><size=11>callbackOnRelease:</size></b> {callbackOnRelease}
+<b><size=11>isExecute:</size></b> {isExecute}
+<b><size=11>isLoadingOn:</size></b> {isLoadingOn}
+<b><size=11>isUserInterface:</size></b> {this is AddUserInterfaceCommand}";
+        }
     }
 }

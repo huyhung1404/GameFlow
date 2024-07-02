@@ -75,7 +75,7 @@ namespace GameFlow
         {
             var result = $"Event: {delegates.Length}";
             return delegates.Aggregate(result, (current, variableDelegate)
-                => current + $"\n{variableDelegate.Target}.{variableDelegate.Method}");
+                => current + $"\n{variableDelegate.Target}.{variableDelegate.Method.Name}");
         }
     }
 

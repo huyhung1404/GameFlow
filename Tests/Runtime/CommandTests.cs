@@ -95,6 +95,11 @@ namespace GameFlow.Tests
                 ResourcesInstance.runtimeController.StartCoroutine(IERelease());
             }
 
+            public override string GetFullInfo()
+            {
+                return null;
+            }
+
             protected IEnumerator IERelease()
             {
                 yield return DelayFrame(executeFrame);

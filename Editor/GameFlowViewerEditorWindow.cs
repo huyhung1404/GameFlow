@@ -1,4 +1,5 @@
 using System;
+using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -114,6 +115,7 @@ namespace GameFlow.Editor
             {
                 default:
                 case ViewType.Command:
+                    DrawCommandViewerUtility.OnGUIList();
                     break;
                 case ViewType.Event:
                     DrawListEventViewerUtility.OnGUIList();
@@ -128,11 +130,89 @@ namespace GameFlow.Editor
             {
                 default:
                 case ViewType.Command:
+                    DrawCommandViewerUtility.OnGUIInfo();
                     break;
                 case ViewType.Event:
                     DrawListEventViewerUtility.OnGUIInfo();
                     break;
             }
+        }
+    }
+
+
+    internal static class DrawCommandViewerUtility
+    {
+        private static Vector2 scrollPosition;
+        private static Vector2 scrollInfoPosition;
+        private static Command currentCommand;
+
+        internal static void OnGUIList()
+        {
+            var commands = GameFlowRuntimeController.GetInfo(out var current);
+
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            int index;
+            if (current != null)
+            {
+                DrawElement(0, current, true, false);
+                index = 1;
+            }
+            else
+            {
+                index = 0;
+            }
+
+            foreach (var command in commands)
+            {
+                if (command == null) continue;
+                DrawElement(index, command, false, false);
+                index++;
+            }
+
+            foreach (var command in Command.waitBuildCommands)
+            {
+                if (command == null) continue;
+                DrawElement(index, command, false, true);
+                index++;
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+
+        internal static void OnGUIInfo()
+        {
+            if (currentCommand == null) return;
+            GameFlowRuntimeController.GetInfo(out var current);
+            var isCurrent = currentCommand == current;
+            var isWaitBuild = Command.waitBuildCommands.Contains(currentCommand);
+            scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
+            EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, currentCommand).Trim(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.Space(2);
+            EditorGUILayout.TextArea(currentCommand.GetFullInfo(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.EndScrollView();
+        }
+
+        private static void DrawElement(int index, Command command, bool isCurrent, bool isWaitBuild)
+        {
+            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
+            EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, command), GameFlowViewerEditorWindow.labelStyle);
+            HandleMouseClick(GUILayoutUtility.GetLastRect());
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private static string GetTitle(bool isCurrent, bool isWaitBuild, Command command)
+        {
+            if (isWaitBuild) return $"<b><size=9>B     </size></b> {command.GetInfo()}";
+            return isCurrent
+                ? $"<b><size=9>C     </size></b> {command.GetInfo()}"
+                : $"       {command.GetInfo()}";
+        }
+
+        private static void HandleMouseClick(Rect rect)
+        {
+            var e = Event.current;
+            if (e.type != EventType.MouseDown || e.button != 0 || !rect.Contains(e.mousePosition)) return;
+            GameFlowViewerEditorWindow.infoView.MarkDirtyRepaint();
         }
     }
 

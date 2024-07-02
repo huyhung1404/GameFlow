@@ -19,5 +19,10 @@ namespace GameFlow
             if (!autoActive) return;
             activeHandle.ActiveScene();
         }
+
+        public override string GetFullInfo()
+        {
+            return base.GetFullInfo() + $"\n<b><size=11>autoActive:</size></b> {autoActive}";
+        }
     }
 }
