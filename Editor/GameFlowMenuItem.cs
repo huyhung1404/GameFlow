@@ -5,10 +5,16 @@ namespace GameFlow.Editor
 {
     public static class GameFlowMenuItem
     {
-        [MenuItem("GameFlow/Game Flow Manager")]
+        [MenuItem("GameFlow/Manager")]
         public static void OpenManager()
         {
             GameFlowManagerEditorWindow.OpenWindow();
+        }
+
+        [MenuItem("GameFlow/Viewer")]
+        public static void OpenViewerEditor()
+        {
+            GameFlowViewerEditorWindow.OpenWindow();
         }
 
         [MenuItem("GameFlow/Documentation")]
