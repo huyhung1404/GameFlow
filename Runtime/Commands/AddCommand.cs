@@ -10,7 +10,7 @@ namespace GameFlow
     {
         internal int loadingId = -1;
         internal bool isPreload;
-        internal object sendData;
+        internal object activeData;
         internal OnAddCommandCompleted onCompleted;
         internal ReferenceActiveHandle activeHandle;
         protected bool callbackOnRelease;
@@ -143,7 +143,7 @@ namespace GameFlow
             OnLoadResult(baseElement.runtimeInstance);
             var delegates = FlowObservable.Event(elementType);
             delegates.RaiseOnActive();
-            if (!ReferenceEquals(sendData, null)) delegates.RaiseOnActiveWithData(sendData);
+            if (!ReferenceEquals(activeData, null)) delegates.RaiseOnActiveWithData(activeData);
         }
 
         public override string GetFullInfo()
@@ -151,7 +151,7 @@ namespace GameFlow
             return $@"<b><size=11>isRelease:</size></b> {isRelease}
 <b><size=11>loadingId:</size></b> {loadingId}
 <b><size=11>isPreload:</size></b> {isPreload}
-<b><size=11>sendData:</size></b> {sendData}
+<b><size=11>activeData:</size></b> {activeData}
 <b><size=11>onCompleted:</size></b> {onCompleted.Target}.{onCompleted.Method.Name}
 <b><size=11>activeHandle:</size></b> {activeHandle}
 <b><size=11>callbackOnRelease:</size></b> {callbackOnRelease}

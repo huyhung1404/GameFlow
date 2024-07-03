@@ -54,9 +54,9 @@ namespace GameFlow
             return command;
         }
 
-        public static AddCommand SendData(this AddCommand command, object data)
+        public static AddCommand ActiveData(this AddCommand command, object data)
         {
-            command.sendData = data;
+            command.activeData = data;
             return command;
         }
 
