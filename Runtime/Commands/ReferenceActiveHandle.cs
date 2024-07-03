@@ -65,6 +65,7 @@ namespace GameFlow
 
         public float Progress()
         {
+            if (reference == null) return 0;
             if (!reference.OperationHandle.IsValid()) return 0;
             if (reference.OperationHandle.IsDone) return 1;
             return reference.OperationHandle.PercentComplete;
