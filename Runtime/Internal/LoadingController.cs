@@ -17,6 +17,7 @@ namespace GameFlow.Internal
 #endif
 
         [SerializeField] private BaseLoadingTypeController[] controllers = Array.Empty<BaseLoadingTypeController>();
+        internal static bool isInitialization;
         private static int totalController;
         private static bool transparentEnable;
         private Image transparent;
@@ -24,6 +25,7 @@ namespace GameFlow.Internal
         private void Awake()
         {
             instance = this;
+            isInitialization = true;
             totalController = controllers.Length;
             transparent = GetComponent<Image>();
             transparent.raycastTarget = true;

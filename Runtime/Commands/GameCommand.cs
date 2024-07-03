@@ -1,4 +1,5 @@
 using System;
+using GameFlow.Internal;
 
 namespace GameFlow
 {
@@ -25,6 +26,19 @@ namespace GameFlow
         internal static ReleaseCommand Release(Type type)
         {
             return type.IsSubclassOf(UIElementType) ? new ReleaseUserInterfaceElementCommand(type) : new ReleaseElementCommand(type);
+        }
+    }
+
+    public static partial class GameLoading
+    {
+        public static BaseLoadingTypeController LoadingOn(int i)
+        {
+            return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOn(i);
+        }
+
+        public static BaseLoadingTypeController LoadingOff(int i)
+        {
+            return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOff(i);
         }
     }
 
