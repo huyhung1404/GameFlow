@@ -29,7 +29,7 @@ namespace GameFlow
         }
     }
 
-    public static partial class GameLoading
+    public static class GameLoading
     {
         public static BaseLoadingTypeController LoadingOn(int i)
         {
