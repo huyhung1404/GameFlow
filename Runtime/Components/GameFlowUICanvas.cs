@@ -75,7 +75,7 @@ namespace GameFlow.Component
 
         public void ReleaseCanvas()
         {
-            GameCommand.Release(element.elementType);
+            GameCommand.Release(element.elementType).Build();
         }
     }
 }
