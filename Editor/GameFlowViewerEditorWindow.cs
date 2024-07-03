@@ -14,8 +14,8 @@ namespace GameFlow.Editor
         internal static GUIStyle evenStyle;
         internal static GUIStyle oddStyle;
         internal static GUIStyle labelStyle;
-        internal static IMGUIContainer listView;
-        internal static IMGUIContainer infoView;
+        private IMGUIContainer listView;
+        private IMGUIContainer infoView;
 
         public enum ViewType
         {
@@ -37,6 +37,7 @@ namespace GameFlow.Editor
 
         private void OnEnable()
         {
+            EditorApplication.update += OnUpdate;
             evenTexture = new Texture2D(1, 1);
             evenTexture.SetPixel(0, 0, new Color(0.4f, 0.4f, 0.4f, 0.4f));
             evenTexture.Apply();
@@ -46,8 +47,19 @@ namespace GameFlow.Editor
             oddTexture.Apply();
         }
 
+        private void OnUpdate()
+        {
+            if (!Application.isPlaying) return;
+            if (Time.frameCount % 3 != 0) return;
+            if (listView == null) return;
+            if (infoView == null) return;
+            listView.MarkDirtyRepaint();
+            infoView.MarkDirtyRepaint();
+        }
+
         private void OnDisable()
         {
+            EditorApplication.update -= OnUpdate;
             DestroyImmediate(evenTexture);
             DestroyImmediate(oddTexture);
         }
@@ -207,7 +219,7 @@ namespace GameFlow.Editor
         {
             EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
             EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, command), GameFlowViewerEditorWindow.labelStyle);
-            HandleMouseClick(GUILayoutUtility.GetLastRect());
+            HandleMouseClick(GUILayoutUtility.GetLastRect(), command);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -219,11 +231,11 @@ namespace GameFlow.Editor
                 : $"       {command.GetInfo()}";
         }
 
-        private static void HandleMouseClick(Rect rect)
+        private static void HandleMouseClick(Rect rect, Command command)
         {
             var e = Event.current;
             if (e.type != EventType.MouseDown || e.button != 0 || !rect.Contains(e.mousePosition)) return;
-            GameFlowViewerEditorWindow.infoView.MarkDirtyRepaint();
+            currentCommand = command;
         }
     }
 
@@ -281,7 +293,6 @@ namespace GameFlow.Editor
             if (e.type != EventType.MouseDown || e.button != 0 || !rect.Contains(e.mousePosition)) return;
             currentInfoType = type;
             currentCallback = callbackEvent;
-            GameFlowViewerEditorWindow.infoView.MarkDirtyRepaint();
         }
     }
 
@@ -325,7 +336,7 @@ namespace GameFlow.Editor
         {
             EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
             EditorGUILayout.LabelField(GetTitle(isUI, element), GameFlowViewerEditorWindow.labelStyle);
-            HandleMouseClick(GUILayoutUtility.GetLastRect());
+            HandleMouseClick(GUILayoutUtility.GetLastRect(), element);
             EditorGUILayout.EndHorizontal();
         }
 
@@ -336,11 +347,11 @@ namespace GameFlow.Editor
                 : $"       {element.GetInfo()}";
         }
 
-        private static void HandleMouseClick(Rect rect)
+        private static void HandleMouseClick(Rect rect, GameFlowElement element)
         {
             var e = Event.current;
             if (e.type != EventType.MouseDown || e.button != 0 || !rect.Contains(e.mousePosition)) return;
-            GameFlowViewerEditorWindow.infoView.MarkDirtyRepaint();
+            currentElement = element;
         }
     }
 }
