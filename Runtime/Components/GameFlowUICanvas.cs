@@ -16,7 +16,7 @@ namespace GameFlow.Component
         protected RectTransform rectTransform;
         private bool hasSafeView;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             canvas = GetComponent<Canvas>();
             canvasScale = GetComponent<CanvasScaler>();
