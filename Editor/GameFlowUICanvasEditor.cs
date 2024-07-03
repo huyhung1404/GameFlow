@@ -7,28 +7,35 @@ namespace GameFlow.Editor
     [CustomEditor(typeof(GameFlowUICanvas), true)]
     public class GameFlowUICanvasEditor : UnityEditor.Editor
     {
-        private static readonly string[] propertyToExclude = new string[]
-        {
-            "m_Script",
-            "element",
-            "safeView",
-            "safeAreaIgnore"
-        };
+        protected string[] propertyToExclude;
+        protected SerializedProperty elementProperty;
+        protected SerializedProperty safeViewProperty;
+        protected SerializedProperty safeAreaIgnoreProperty;
 
-        private SerializedProperty elementProperty;
-        private SerializedProperty safeViewProperty;
-        private SerializedProperty safeAreaIgnoreProperty;
-
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             elementProperty = serializedObject.FindProperty("element");
             safeViewProperty = serializedObject.FindProperty("safeView");
             safeAreaIgnoreProperty = serializedObject.FindProperty("safeAreaIgnore");
+            propertyToExclude = new string[]
+            {
+                "m_Script",
+                "element",
+                "safeView",
+                "safeAreaIgnore"
+            };
         }
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
+            serializedObject.UpdateIfRequiredOrScript();
+            DrawSafeViewContent();
+            DrawPropertiesExcluding(serializedObject, propertyToExclude);
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        protected void DrawSafeViewContent()
+        {
             EditorGUILayout.PropertyField(elementProperty, GUIContent.none);
             EditorGUILayout.Space(1);
             EditorGUILayout.BeginHorizontal();
@@ -37,33 +44,18 @@ namespace GameFlow.Editor
             EditorGUILayout.PropertyField(safeAreaIgnoreProperty, GUIContent.none, GUILayout.Width(80));
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.Space(1);
-            DrawPropertiesExcluding(serializedObject, propertyToExclude);
-            serializedObject.ApplyModifiedProperties();
         }
     }
 
     [CustomEditor(typeof(GameFlowUICanvasOnKeyBack), true)]
-    public class GameFlowUICanvasOnKeyBackEditor : UnityEditor.Editor
+    public class GameFlowUICanvasOnKeyBackEditor : GameFlowUICanvasEditor
     {
-        private static readonly string[] propertyToExclude = new string[]
-        {
-            "m_Script",
-            "element",
-            "safeView",
-            "safeAreaIgnore",
-            "onKeyBack",
-            "useDefaultKeyBack"
-        };
-
-        private SerializedProperty elementProperty;
-        private SerializedProperty safeViewProperty;
-        private SerializedProperty safeAreaIgnoreProperty;
         private SerializedProperty onKeyBackProperty;
         private SerializedProperty useDefaultProperty;
         private GUIContent useDefaultContent;
         private GUIContent onKeyBackContent;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
             elementProperty = serializedObject.FindProperty("element");
             safeViewProperty = serializedObject.FindProperty("safeView");
@@ -72,19 +64,21 @@ namespace GameFlow.Editor
             useDefaultProperty = serializedObject.FindProperty("useDefaultKeyBack");
             useDefaultContent = EditorGUIUtility.TrTextContent("Use Default");
             onKeyBackContent = new GUIContent("On Key Back");
+            propertyToExclude = new string[]
+            {
+                "m_Script",
+                "element",
+                "safeView",
+                "safeAreaIgnore",
+                "onKeyBack",
+                "useDefaultKeyBack"
+            };
         }
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-            EditorGUILayout.PropertyField(elementProperty, GUIContent.none);
-            EditorGUILayout.Space(1);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Safe View", GUILayout.Width(65));
-            EditorGUILayout.PropertyField(safeViewProperty, GUIContent.none);
-            EditorGUILayout.PropertyField(safeAreaIgnoreProperty, GUIContent.none, GUILayout.Width(80));
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.Space(1);
+            serializedObject.UpdateIfRequiredOrScript();
+            DrawSafeViewContent();
             EditorGUILayout.PropertyField(onKeyBackProperty, onKeyBackContent);
             var callbackRect = GUILayoutUtility.GetLastRect();
             var size = new Vector2(18, 18);
