@@ -46,7 +46,7 @@ namespace GameFlow.Component
             OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }
 
-        private void OnBannerUpdate(float height)
+        protected virtual void OnBannerUpdate(float height)
         {
             safeView.offsetMin = height == 0 ? Vector2.zero : height / Screen.height * rectTransform.rect.size.y * Vector2.up;
         }

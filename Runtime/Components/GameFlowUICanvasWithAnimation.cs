@@ -5,7 +5,6 @@ namespace GameFlow.Component
 {
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasScaler))]
-    [AddComponentMenu("Game Flow/UI Canvas With Animation")]
     public abstract class GameFlowUICanvasWithAnimation : GameFlowUICanvas
     {
         private ICommandReleaseHandle releaseHandle;
