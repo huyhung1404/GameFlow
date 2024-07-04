@@ -124,6 +124,13 @@ namespace GameFlow
             }
 
             baseElement.runtimeInstance = handle;
+            if (isPreload)
+            {
+                baseElement.runtimeInstance.SetActive(false);
+                OnLoadResult(baseElement.runtimeInstance);
+                return;
+            }
+
             ActiveElement();
         }
 

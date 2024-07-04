@@ -26,7 +26,7 @@ namespace GameFlow
 
         private void SetUpCanvasGroupIfNeed()
         {
-            if (canvasGroup != null) return;
+            if (!ReferenceEquals(canvasGroup, null)) return;
             canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.alpha = 0;
         }
