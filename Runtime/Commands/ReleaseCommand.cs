@@ -72,6 +72,11 @@ namespace GameFlow
         protected abstract void NoneRelease();
         protected abstract void OnLoadResult(bool canRelease);
 
+        internal override void OnRelease()
+        {
+            if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK) FlowObservable.ReleaseEvent(elementType);
+        }
+
         public override string GetFullInfo()
         {
             return $@"<b><size=11>isRelease:</size></b> {isRelease}
