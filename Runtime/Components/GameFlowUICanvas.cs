@@ -22,6 +22,8 @@ namespace GameFlow.Component
             canvasScale = GetComponent<CanvasScaler>();
             rectTransform = GetComponent<RectTransform>();
             hasSafeView = safeView != null;
+            canvas.worldCamera = FlowUICamera.instance;
+            HandleCanvasScaler();
         }
 
         protected virtual void OnEnable()
@@ -40,8 +42,6 @@ namespace GameFlow.Component
         {
             var sortingOrder = element.currentSortingOrder;
             canvas.sortingOrder = sortingOrder;
-            canvas.worldCamera = FlowUICamera.instance;
-            HandleCanvasScaler();
             if (hasSafeView) safeView.ApplySafeArea(Screen.safeArea, safeAreaIgnore);
             OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }

@@ -18,7 +18,6 @@ namespace GameFlow.Internal
 
         internal static void AddUserInterfaceElement(UserInterfaceFlowElement userInterfaceFlowElement)
         {
-            userInterfaceFlowElement.currentSortingOrder = GetSortingOrder();
             elementsRuntime.Add(userInterfaceFlowElement);
         }
 
@@ -28,7 +27,7 @@ namespace GameFlow.Internal
             return elementCount == 0 ? null : elementsRuntime[elementCount - 1].elementType;
         }
 
-        private static int GetSortingOrder()
+        internal static int GetSortingOrder()
         {
             var elementCount = elementsRuntime.Count;
             if (elementCount == 0) return 0;

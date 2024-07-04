@@ -11,6 +11,10 @@ namespace GameFlow
         {
         }
 
+        protected override void PreActive()
+        {
+        }
+
         protected override void ReActiveElement()
         {
             FlowObservable.Event(elementType).RaiseOnRelease(true);

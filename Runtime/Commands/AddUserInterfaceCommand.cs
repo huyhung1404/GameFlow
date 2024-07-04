@@ -12,6 +12,11 @@ namespace GameFlow
         {
         }
 
+        protected override void PreActive()
+        {
+            element.currentSortingOrder = UIElementsRuntimeManager.GetSortingOrder();
+        }
+
         protected override void ReActiveElement()
         {
             FlowObservable.Event(elementType).RaiseOnRelease(true);
