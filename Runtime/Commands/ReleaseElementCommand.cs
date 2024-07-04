@@ -41,7 +41,7 @@ namespace GameFlow
         protected override void OnLoadResult(bool canRelease)
         {
             onCompleted?.Invoke(canRelease);
-            if (isRelease && baseElement) ElementsRuntimeManager.RemoveElement(baseElement);
+            ElementsRuntimeManager.RemoveElement(baseElement);
             Release();
         }
     }
