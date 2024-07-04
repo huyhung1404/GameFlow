@@ -15,7 +15,7 @@ namespace GameFlow
 
         protected override void Awake()
         {
-            canvasGroup.GetComponent<CanvasGroup>();
+            canvasGroup = GetComponent<CanvasGroup>();
             base.Awake();
         }
 
