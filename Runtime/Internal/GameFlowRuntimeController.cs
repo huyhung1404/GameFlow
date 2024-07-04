@@ -18,6 +18,8 @@ namespace GameFlow.Internal
         internal static OnBannerUpdate onBannerUpdate;
         internal static bool updateBanner;
         private static GameFlowRuntimeController instance;
+        private static bool isLock;
+        private static bool disableKeyBack;
         private GameFlowManager manager;
         private Command current;
 #if UNITY_EDITOR
@@ -25,8 +27,16 @@ namespace GameFlow.Internal
 #else
         internal bool isActive;
 #endif
-        private bool isLock;
-        private bool disableKeyBack;
+
+        internal static void SetLock(bool value)
+        {
+            isLock = value;
+        }
+
+        internal static void SetDisableKeyBack(bool value)
+        {
+            disableKeyBack = value;
+        }
 
         internal static ElementCollection GetElements()
         {

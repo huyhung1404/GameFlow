@@ -27,10 +27,7 @@ namespace GameFlow
         {
             return type.IsSubclassOf(UIElementType) ? new ReleaseUserInterfaceElementCommand(type) : new ReleaseElementCommand(type);
         }
-    }
 
-    public static class GameLoading
-    {
         public static BaseLoadingTypeController LoadingOn(int i)
         {
             return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOn(i);
@@ -39,6 +36,26 @@ namespace GameFlow
         public static BaseLoadingTypeController LoadingOff(int i)
         {
             return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOff(i);
+        }
+
+        public static void LockFlow()
+        {
+            GameFlowRuntimeController.SetLock(true);
+        }
+
+        public static void UnlockFlow()
+        {
+            GameFlowRuntimeController.SetLock(false);
+        }
+
+        public static void EnableKeyBack()
+        {
+            GameFlowRuntimeController.SetDisableKeyBack(false);
+        }
+
+        public static void DisableKeyBack()
+        {
+            GameFlowRuntimeController.SetDisableKeyBack(true);
         }
     }
 
