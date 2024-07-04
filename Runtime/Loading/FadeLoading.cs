@@ -9,25 +9,26 @@ namespace GameFlow
     public class FadeLoading : BaseLoadingTypeController
     {
         [SerializeField] private float defaultFadeTime = 0.3f;
-
         private CanvasGroup canvasGroup;
         private bool isShowing;
         private bool isHiding;
         private float timeExecuteHide;
         private bool isCacheShowCallback;
 
-        private void Awake()
-        {
-            canvasGroup = GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0;
-        }
-
         protected override void OnShow()
         {
+            SetUpCanvasGroupIfNeed();
             timeExecute = defaultFadeTime;
             isShow = true;
             isShowing = true;
             isHiding = false;
+        }
+
+        private void SetUpCanvasGroupIfNeed()
+        {
+            if (canvasGroup != null) return;
+            canvasGroup = GetComponent<CanvasGroup>();
+            canvasGroup.alpha = 0;
         }
 
         protected override void OnHide()

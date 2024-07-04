@@ -15,14 +15,9 @@ namespace GameFlow
         private float lastTime;
         private bool isShowing;
 
-        private void Awake()
-        {
-            canvasGroup = GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0;
-        }
-
         protected override void OnShow()
         {
+            SetUpCanvasGroupIfNeed();
             ExecuteCallback();
             progressSlider.value = 0;
             currentProgress = targetProgress = 0;
@@ -30,6 +25,13 @@ namespace GameFlow
             lastTime = Time.realtimeSinceStartup;
             isShow = isShowing = true;
             timeExecute = hideSpeed;
+        }
+
+        private void SetUpCanvasGroupIfNeed()
+        {
+            if (canvasGroup != null) return;
+            canvasGroup = GetComponent<CanvasGroup>();
+            canvasGroup.alpha = 0;
         }
 
         protected override void OnHide()
