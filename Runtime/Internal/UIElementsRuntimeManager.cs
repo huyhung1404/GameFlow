@@ -18,6 +18,7 @@ namespace GameFlow.Internal
 
         internal static void AddUserInterfaceElement(UserInterfaceFlowElement userInterfaceFlowElement)
         {
+            userInterfaceFlowElement.currentSortingOrder = GetSortingOrder();
             elementsRuntime.Add(userInterfaceFlowElement);
         }
 

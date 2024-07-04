@@ -61,7 +61,6 @@ namespace GameFlow
                         return true;
                     }
 
-                    PreUpdate();
                     if (baseElement.runtimeInstance.activeSelf)
                     {
                         IsCanReActiveElement();
@@ -93,7 +92,6 @@ namespace GameFlow
         private void Loading()
         {
             BaseLoadingTypeController loading = null;
-            PreActive();
             if (loadingId >= 0) loading = LoadingController.instance.LoadingOn(loadingId);
             if (ReferenceEquals(loading, null))
             {
@@ -136,7 +134,6 @@ namespace GameFlow
             ActiveElement();
         }
 
-        protected abstract void PreActive();
         protected abstract void ReActiveElement();
         protected abstract void ActiveElement();
 
