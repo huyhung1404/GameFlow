@@ -56,6 +56,7 @@ namespace GameFlow
 
         internal override void OnRelease()
         {
+            base.OnRelease();
             var topElement = UIElementsRuntimeManager.GetTopElement();
             if (topElement == null) return;
             FlowObservable.UIEvent(elementType).RaiseOnReFocus();
