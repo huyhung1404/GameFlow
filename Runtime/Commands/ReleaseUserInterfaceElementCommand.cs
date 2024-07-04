@@ -59,7 +59,7 @@ namespace GameFlow
             base.OnRelease();
             var topElement = UIElementsRuntimeManager.GetTopElement();
             if (topElement == null) return;
-            FlowObservable.UIEvent(elementType).RaiseOnReFocus();
+            FlowObservable.UIEvent(topElement).RaiseOnReFocus();
         }
     }
 }
