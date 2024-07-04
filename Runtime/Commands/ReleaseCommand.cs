@@ -58,11 +58,6 @@ namespace GameFlow
 
         void IReleaseCompleted.UnloadCompleted(bool isSuccess)
         {
-            if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK)
-            {
-                FlowObservable.ReleaseEvent(elementType);
-            }
-
             if (isSuccess)
             {
                 baseElement.runtimeInstance = null;
@@ -76,7 +71,6 @@ namespace GameFlow
         protected abstract void ReleaseOnClose();
         protected abstract void NoneRelease();
         protected abstract void OnLoadResult(bool canRelease);
-
 
         public override string GetFullInfo()
         {
