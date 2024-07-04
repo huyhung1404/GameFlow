@@ -28,6 +28,7 @@ namespace GameFlow.Component
 
         protected virtual void OnEnable()
         {
+            canvas.enabled = false;
             SetUpCanvas();
             RegisterDelegates(FlowObservable.UIEvent(element.elementType));
             FlowBannerController.OnBannerUpdate += OnBannerUpdate;
@@ -35,7 +36,13 @@ namespace GameFlow.Component
 
         protected virtual void RegisterDelegates(UIElementCallbackEvent delegates)
         {
+            delegates.OnActive += OnActive;
             delegates.OnKeyBack += OnKeyBack;
+        }
+
+        protected virtual void OnActive()
+        {
+            canvas.enabled = true;
         }
 
         protected virtual void SetUpCanvas()
@@ -64,6 +71,7 @@ namespace GameFlow.Component
 
         protected virtual void UnregisterDelegates(UIElementCallbackEvent delegates)
         {
+            delegates.OnActive -= OnActive;
             delegates.OnKeyBack -= OnKeyBack;
         }
 
