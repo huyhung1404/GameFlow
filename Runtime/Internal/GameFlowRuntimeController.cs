@@ -103,7 +103,6 @@ namespace GameFlow.Internal
         private void Update()
         {
             if (!isActive) return;
-            if (isLock) return;
             if (!CommandHandle())
             {
                 LoadingController.EnableTransparent();
@@ -140,6 +139,7 @@ namespace GameFlow.Internal
                 current = null;
             }
 
+            if (isLock) return true;
             if (commands.Count == 0) return true;
             current = commands.Dequeue();
             current.PreUpdate();
@@ -162,8 +162,9 @@ namespace GameFlow.Internal
 
         private void KeyBackHandle()
         {
-            if (disableKeyBack) return;
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
+            if (disableKeyBack) return;
+            if (isLock) return;
             if (LoadingController.IsShow()) return;
             UIElementsRuntimeManager.OnKeyBack();
         }
