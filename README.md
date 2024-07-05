@@ -2,16 +2,12 @@ Game Flow
 ===
 * Game flow management system using Unity's addressable asset structure.
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
 - [Getting started](#getting-started)
 - [UPM Package](#upm-package)
   - [Install via git URL](#install-via-git-url)
 - [License](#license)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 Getting started
 ---
@@ -20,7 +16,14 @@ Install via [UPM package](#upm-package) with git reference.
 ```csharp
 void Demo()
 {
-
+    //Add New Element
+    GameCommand.Add<DemoElement>().Build();
+    
+    //Load User Interface Element
+    GameCommand.Load<DemoUIElement().Build();
+    
+    //Release Element
+    GameCommand.Release<DemoElement>().Build();
 }
 ```
 
@@ -42,12 +45,6 @@ the `dependencies` block:
   }
 }
 ```
-
-To update the package, change suffix `#{version}` to the target version.
-
-* e.g. `"com.huyhung1404.gameflow": "https://github.com/huyhung1404/GameFlow.git"#2.0.0",`
-
-Or, use [UpmGitExtension](https://github.com/huyhung1404/GameFlow.git) to install and update the package.
 
 License
 ---
