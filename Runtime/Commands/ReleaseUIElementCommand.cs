@@ -3,13 +3,13 @@ using GameFlow.Internal;
 
 namespace GameFlow
 {
-    public class ReleaseUserInterfaceElementCommand : ReleaseCommand, ICommandReleaseHandle
+    public class ReleaseUIElementCommand : ReleaseCommand, ICommandReleaseHandle
     {
-        private UserInterfaceFlowElement element;
-        protected override GameFlowElement baseElement { get => element; set => element = (UserInterfaceFlowElement)value; }
+        private UIFlowElement element;
+        protected override GameFlowElement baseElement { get => element; set => element = (UIFlowElement)value; }
         private readonly UIElementCallbackEvent delegates;
 
-        public ReleaseUserInterfaceElementCommand(Type elementType) : base(elementType)
+        public ReleaseUIElementCommand(Type elementType) : base(elementType)
         {
             delegates = FlowObservable.UIEvent(elementType);
         }

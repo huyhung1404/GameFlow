@@ -42,7 +42,7 @@ namespace GameFlow.Editor
             visualTreeAsset.CloneTree(editorWindow.rootVisualElement);
             editorWindow.rootVisualElement.Q<Label>("title").text = $"Add {(isUserInterface ? "User Interface" : "Game")} Flow Element";
             objectField = editorWindow.rootVisualElement.Q<ObjectField>("instance");
-            objectField.objectType = isUserInterface ? typeof(UserInterfaceFlowElement) : typeof(GameFlowElement);
+            objectField.objectType = isUserInterface ? typeof(UIFlowElement) : typeof(GameFlowElement);
             objectField.RegisterValueChangedCallback(ObjectCallback);
             debugViewButton = editorWindow.rootVisualElement.Q<VisualElement>("element_exits");
             debugViewButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);

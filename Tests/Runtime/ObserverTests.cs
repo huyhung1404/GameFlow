@@ -9,7 +9,7 @@ namespace GameFlow.Tests
             public static int timeRun;
         }
 
-        private class TestScript___EventCallback2 : UserInterfaceFlowElement
+        private class TestScript___EventCallback2 : UIFlowElement
         {
             public static int timeRun;
         }

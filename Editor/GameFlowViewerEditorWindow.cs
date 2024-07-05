@@ -326,7 +326,7 @@ namespace GameFlow.Editor
         {
             if (currentElement == null) return;
             scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
-            EditorGUILayout.LabelField(GetTitle(currentElement is UserInterfaceFlowElement, currentElement).Trim(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.LabelField(GetTitle(currentElement is UIFlowElement, currentElement).Trim(), GameFlowViewerEditorWindow.labelStyle);
             EditorGUILayout.Space(2);
             EditorGUILayout.TextArea(currentElement.GetFullInfo(), GameFlowViewerEditorWindow.labelStyle);
             EditorGUILayout.EndScrollView();

@@ -8,7 +8,7 @@ namespace GameFlow.Component
     [AddComponentMenu("Game Flow/UI Canvas")]
     public class GameFlowUICanvas : MonoBehaviour
     {
-        [SerializeField] protected UserInterfaceFlowElement element;
+        [SerializeField] protected UIFlowElement element;
         [SerializeField] protected RectTransform safeView;
         [SerializeField] protected SafeAreaIgnore safeAreaIgnore;
         protected Canvas canvas;

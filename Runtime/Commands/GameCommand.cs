@@ -5,15 +5,15 @@ namespace GameFlow
 {
     public static class GameCommand
     {
-        internal static readonly Type UIElementType = typeof(UserInterfaceFlowElement);
+        internal static readonly Type UIElementType = typeof(UIFlowElement);
 
         public static AddCommand Add<T>() where T : GameFlowElement
         {
             var type = typeof(T);
-            return type.IsSubclassOf(UIElementType) ? new AddUserInterfaceCommand(type) : new AddGameFlowCommand(type);
+            return type.IsSubclassOf(UIElementType) ? new AddUICommand(type) : new AddGameFlowCommand(type);
         }
 
-        public static LoadCommand Load<T>() where T : UserInterfaceFlowElement
+        public static LoadCommand Load<T>() where T : UIFlowElement
         {
             return new LoadCommand(typeof(T));
         }
@@ -25,7 +25,7 @@ namespace GameFlow
 
         internal static ReleaseCommand Release(Type type)
         {
-            return type.IsSubclassOf(UIElementType) ? new ReleaseUserInterfaceElementCommand(type) : new ReleaseElementCommand(type);
+            return type.IsSubclassOf(UIElementType) ? new ReleaseUIElementCommand(type) : new ReleaseElementCommand(type);
         }
 
         public static BaseLoadingTypeController LoadingOn(int i)

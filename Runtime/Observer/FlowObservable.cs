@@ -24,7 +24,7 @@ namespace GameFlow
             return elementEvent;
         }
 
-        public static UIElementCallbackEvent UIEvent<T>() where T : UserInterfaceFlowElement
+        public static UIElementCallbackEvent UIEvent<T>() where T : UIFlowElement
         {
             return (UIElementCallbackEvent)Event(typeof(T));
         }

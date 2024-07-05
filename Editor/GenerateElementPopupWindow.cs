@@ -133,7 +133,7 @@ namespace GameFlow.Editor
                 exitsElement = type != null;
                 if (exitsElement)
                 {
-                    if ((isUserInterface && type?.BaseType == typeof(UserInterfaceFlowElement))
+                    if ((isUserInterface && type?.BaseType == typeof(UIFlowElement))
                         || (!isUserInterface && type?.BaseType == typeof(GameFlowElement)))
                     {
                         instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);

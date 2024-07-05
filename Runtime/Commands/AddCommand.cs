@@ -164,7 +164,7 @@ namespace GameFlow
 <b><size=11>callbackOnRelease:</size></b> {callbackOnRelease}
 <b><size=11>isExecute:</size></b> {isExecute}
 <b><size=11>isLoadingOn:</size></b> {isLoadingOn}
-<b><size=11>isUserInterface:</size></b> {this is AddUserInterfaceCommand}";
+<b><size=11>isUserInterface:</size></b> {this is AddUICommand}";
         }
     }
 }

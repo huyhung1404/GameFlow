@@ -3,12 +3,12 @@ using GameFlow.Internal;
 
 namespace GameFlow
 {
-    public class AddUserInterfaceCommand : AddCommand
+    public class AddUICommand : AddCommand
     {
-        private UserInterfaceFlowElement element;
-        protected override GameFlowElement baseElement { get => element; set => element = (UserInterfaceFlowElement)value; }
+        private UIFlowElement element;
+        protected override GameFlowElement baseElement { get => element; set => element = (UIFlowElement)value; }
 
-        internal AddUserInterfaceCommand(Type elementType) : base(elementType)
+        internal AddUICommand(Type elementType) : base(elementType)
         {
         }
 

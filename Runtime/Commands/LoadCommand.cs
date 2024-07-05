@@ -2,7 +2,7 @@
 
 namespace GameFlow
 {
-    public class LoadCommand : AddUserInterfaceCommand
+    public class LoadCommand : AddUICommand
     {
         internal bool autoActive;
 

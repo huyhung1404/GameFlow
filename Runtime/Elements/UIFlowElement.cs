@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GameFlow
 {
     [Serializable]
-    public class UserInterfaceFlowElement : GameFlowElement
+    public class UIFlowElement : GameFlowElement
     {
         internal int currentSortingOrder;
         [SerializeField] internal bool fullScene;

@@ -4,7 +4,7 @@ namespace GameFlow.Component
 {
     public abstract class GameFlowUIAnimation : MonoBehaviour
     {
-        [SerializeField] protected UserInterfaceFlowElement element;
+        [SerializeField] protected UIFlowElement element;
         protected UIElementCallbackEvent delegates;
         private ICommandReleaseHandle releaseHandle;
 

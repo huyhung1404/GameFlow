@@ -6,17 +6,17 @@ namespace GameFlow.Internal
     internal static class UIElementsRuntimeManager
     {
 #if UNITY_EDITOR
-        internal static List<UserInterfaceFlowElement> elementsRuntime { get; }
+        internal static List<UIFlowElement> elementsRuntime { get; }
 #else
         private static List<UserInterfaceFlowElement> elementsRuntime;
 #endif
 
         static UIElementsRuntimeManager()
         {
-            elementsRuntime = new List<UserInterfaceFlowElement>();
+            elementsRuntime = new List<UIFlowElement>();
         }
 
-        internal static void AddUserInterfaceElement(UserInterfaceFlowElement userInterfaceFlowElement)
+        internal static void AddUserInterfaceElement(UIFlowElement userInterfaceFlowElement)
         {
             userInterfaceFlowElement.currentSortingOrder = GetSortingOrder();
             elementsRuntime.Add(userInterfaceFlowElement);
@@ -35,7 +35,7 @@ namespace GameFlow.Internal
             return elementsRuntime[elementCount - 1].currentSortingOrder + GameFlowRuntimeController.Manager().sortingOrderOffset;
         }
 
-        internal static UserInterfaceFlowElement GetElement(Type type)
+        internal static UIFlowElement GetElement(Type type)
         {
             for (var i = elementsRuntime.Count - 1; i >= 0; i--)
             {
@@ -46,7 +46,7 @@ namespace GameFlow.Internal
             return null;
         }
 
-        internal static void RemoveElement(UserInterfaceFlowElement element)
+        internal static void RemoveElement(UIFlowElement element)
         {
             elementsRuntime.Remove(element);
         }
@@ -61,7 +61,7 @@ namespace GameFlow.Internal
             }
         }
 
-        private static void ReleaseElement(UserInterfaceFlowElement element, ReleaseCount releaseCount)
+        private static void ReleaseElement(UIFlowElement element, ReleaseCount releaseCount)
         {
             FlowObservable.Event(element.GetType()).RaiseOnRelease(true);
             switch (element.releaseMode)

@@ -108,7 +108,7 @@ namespace GameFlow.Editor
             canReActive.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.canReActive)));
             if (isUserInterface)
             {
-                fullSceneElement.BindProperty(serializedObject.FindProperty(nameof(UserInterfaceFlowElement.fullScene)));
+                fullSceneElement.BindProperty(serializedObject.FindProperty(nameof(UIFlowElement.fullScene)));
                 fullSceneElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
             }
             else

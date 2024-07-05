@@ -82,7 +82,7 @@ namespace GameFlow
             return $@"<b><size=11>isRelease:</size></b> {isRelease}
 <b><size=11>onCompleted:</size></b> {onCompleted.Target}.{onCompleted.Method.Name}
 <b><size=11>isExecute:</size></b> {isExecute}
-<b><size=11>isUserInterface:</size></b> {this is ReleaseUserInterfaceElementCommand}";
+<b><size=11>isUserInterface:</size></b> {this is ReleaseUIElementCommand}";
         }
     }
 }

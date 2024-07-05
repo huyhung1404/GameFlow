@@ -131,7 +131,7 @@ namespace GameFlow
 
         private void HandleReferencePrefab(AddCommand command)
         {
-            InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer(command is AddUserInterfaceCommand)).Completed += handle =>
+            InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer(command is AddUICommand)).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {

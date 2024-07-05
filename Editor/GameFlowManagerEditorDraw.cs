@@ -126,7 +126,7 @@ namespace GameFlow.Editor
                 var elementProperty = property.GetArrayElementAtIndex(i);
                 if (elementProperty.objectReferenceValue == null) continue;
                 var type = elementProperty.objectReferenceValue.GetType();
-                var isUserInterface = type.IsSubclassOf(typeof(UserInterfaceFlowElement));
+                var isUserInterface = type.IsSubclassOf(typeof(UIFlowElement));
                 if (hasSearchKey)
                 {
                     if (!type.Name.Contains(searchKey)) continue;

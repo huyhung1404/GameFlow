@@ -106,7 +106,7 @@ namespace GameFlow.Editor
             var templateText = File.ReadAllText(PackagePath.ProjectTemplateScriptPath(PackagePath.PathType.FullPath));
             templateText = templateText.Replace("%NAMESPACE%", kScriptsNameSpace);
             templateText = templateText.Replace("%NAME%", string.Format(kScriptsElementNameFormat, elementName));
-            templateText = templateText.Replace("%BASE_CLASS_NAME%", isUserInterface ? nameof(UserInterfaceFlowElement) : nameof(GameFlowElement));
+            templateText = templateText.Replace("%BASE_CLASS_NAME%", isUserInterface ? nameof(UIFlowElement) : nameof(GameFlowElement));
             File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs", templateText);
             AssetDatabase.ImportAsset(scriptGeneratePath);
         }
