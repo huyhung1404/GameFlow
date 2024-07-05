@@ -1,11 +1,8 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace GameFlow.Component
 {
-    [RequireComponent(typeof(Canvas))]
-    [RequireComponent(typeof(CanvasScaler))]
     [AddComponentMenu("Game Flow/UI Canvas Key Back")]
     public class GameFlowUICanvasOnKeyBack : GameFlowUICanvas
     {

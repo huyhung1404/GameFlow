@@ -3,24 +3,23 @@ using UnityEngine.UI;
 
 namespace GameFlow.Component
 {
-    [RequireComponent(typeof(Canvas))]
-    [RequireComponent(typeof(CanvasScaler))]
     [AddComponentMenu("Game Flow/UI Canvas")]
     public class GameFlowUICanvas : MonoBehaviour
     {
+        [SerializeField] protected bool autoGetComponent = true;
         [SerializeField] protected UIFlowElement element;
         [SerializeField] protected RectTransform safeView;
         [SerializeField] protected SafeAreaIgnore safeAreaIgnore;
-        protected Canvas canvas;
+        [SerializeField] protected Canvas canvas;
         protected CanvasScaler canvasScale;
         protected RectTransform rectTransform;
         private bool hasSafeView;
 
         protected virtual void Awake()
         {
-            canvas = GetComponent<Canvas>();
-            canvasScale = GetComponent<CanvasScaler>();
-            rectTransform = GetComponent<RectTransform>();
+            if (autoGetComponent) canvas = GetComponent<Canvas>();
+            canvasScale = canvas.GetComponent<CanvasScaler>();
+            rectTransform = canvas.GetComponent<RectTransform>();
             hasSafeView = safeView != null;
             canvas.worldCamera = FlowUICamera.instance;
             HandleCanvasScaler();

@@ -8,7 +8,7 @@ namespace GameFlow.Internal
 #if UNITY_EDITOR
         internal static List<UIFlowElement> elementsRuntime { get; }
 #else
-        private static List<UserInterfaceFlowElement> elementsRuntime;
+        private static List<UIFlowElement> elementsRuntime;
 #endif
 
         static UIElementsRuntimeManager()

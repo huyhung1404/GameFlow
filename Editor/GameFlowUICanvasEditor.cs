@@ -11,18 +11,24 @@ namespace GameFlow.Editor
         protected SerializedProperty elementProperty;
         protected SerializedProperty safeViewProperty;
         protected SerializedProperty safeAreaIgnoreProperty;
+        protected SerializedProperty autoGetComponentProperty;
+        protected SerializedProperty canvasProperty;
 
         protected virtual void OnEnable()
         {
             elementProperty = serializedObject.FindProperty("element");
             safeViewProperty = serializedObject.FindProperty("safeView");
             safeAreaIgnoreProperty = serializedObject.FindProperty("safeAreaIgnore");
+            autoGetComponentProperty = serializedObject.FindProperty("autoGetComponent");
+            canvasProperty = serializedObject.FindProperty("canvas");
             propertyToExclude = new string[]
             {
                 "m_Script",
                 "element",
                 "safeView",
-                "safeAreaIgnore"
+                "safeAreaIgnore",
+                "autoGetComponent",
+                "canvas"
             };
         }
 
@@ -39,7 +45,15 @@ namespace GameFlow.Editor
             EditorGUILayout.PropertyField(elementProperty, GUIContent.none);
             EditorGUILayout.Space(1);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Safe View", GUILayout.Width(65));
+            EditorGUILayout.LabelField("Root Canvas", GUILayout.Width(80));
+            EditorGUILayout.PropertyField(autoGetComponentProperty, GUIContent.none, GUILayout.Width(20));
+            GUI.enabled = !autoGetComponentProperty.boolValue;
+            EditorGUILayout.PropertyField(canvasProperty, GUIContent.none);
+            GUI.enabled = true;
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(1);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Safe View", GUILayout.Width(80));
             EditorGUILayout.PropertyField(safeViewProperty, GUIContent.none);
             EditorGUILayout.PropertyField(safeAreaIgnoreProperty, GUIContent.none, GUILayout.Width(80));
             EditorGUILayout.EndHorizontal();
@@ -70,6 +84,8 @@ namespace GameFlow.Editor
                 "element",
                 "safeView",
                 "safeAreaIgnore",
+                "autoGetComponent",
+                "canvas",
                 "onKeyBack",
                 "useDefaultKeyBack"
             };

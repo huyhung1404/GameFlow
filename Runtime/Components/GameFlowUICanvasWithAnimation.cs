@@ -1,10 +1,5 @@
-using UnityEngine;
-using UnityEngine.UI;
-
 namespace GameFlow.Component
 {
-    [RequireComponent(typeof(Canvas))]
-    [RequireComponent(typeof(CanvasScaler))]
     public abstract class GameFlowUICanvasWithAnimation : GameFlowUICanvas
     {
         private ICommandReleaseHandle releaseHandle;
