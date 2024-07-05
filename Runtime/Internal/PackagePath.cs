@@ -78,10 +78,5 @@ namespace GameFlow.Internal
         {
             return AssetsFolderPath(type) + "/" + kAssetsUserInterfaceElementsFolderName;
         }
-
-        internal static string PackageTemplatesPath()
-        {
-            return "Packages/com.huyhung1404.gameflow/Templates";
-        }
     }
 }

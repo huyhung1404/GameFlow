@@ -1,6 +1,0 @@
-namespace %NAMESPACE%
-{
-    public class %NAME% : %BASE_CLASS_NAME%
-    {
-    }
-}
