@@ -22,7 +22,8 @@ namespace GameFlow.Editor
             if (controller == null) return;
             foreach (var uiCanvas in controller)
             {
-                var canvas = uiCanvas.GetComponent<Canvas>();
+                var canvas = uiCanvas.GetCanvas();
+                if (canvas == null) continue;
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
                 if (canvas.worldCamera != null) continue;
                 canvas.worldCamera = InitializationCamera(uiCanvas);

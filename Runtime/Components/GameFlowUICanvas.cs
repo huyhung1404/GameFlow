@@ -83,5 +83,10 @@ namespace GameFlow.Component
         {
             GameCommand.Release(element.elementType).Build();
         }
+
+        internal Canvas GetCanvas()
+        {
+            return autoGetComponent ? GetComponent<Canvas>() : canvas;
+        }
     }
 }
