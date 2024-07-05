@@ -9,13 +9,13 @@ namespace GameFlow
 #if UNITY_EDITOR
         public bool isShow { get; protected set; }
 #else
-        public bool isShow;
+        [NonSerialized] public bool isShow;
 #endif
 
 #if UNITY_EDITOR
         public bool isEnable { get; private set; }
 #else
-        public bool isEnable;
+        [NonSerialized] public bool isEnable;
 #endif
         protected Action callback;
         protected bool cacheCallback;
