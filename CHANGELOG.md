@@ -1,6 +1,12 @@
 # Code Package for Unity
 
+## [1.0.1] - 2024-07-05
+
+- Fix bug 1.0.0
+- Release package
+
 ## [1.0.0] - 2024-07-01
+
 - Load command
 - Key back command
 

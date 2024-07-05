@@ -1,6 +1,6 @@
 {
   "name": "com.huyhung1404.gameflow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Game Flow",
   "description": "Game flow management system using Unity's addressable asset structure.",
   "unity": "2019.1",
