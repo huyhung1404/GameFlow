@@ -75,6 +75,8 @@ namespace GameFlow.Editor
             safeViewProperty = serializedObject.FindProperty("safeView");
             safeAreaIgnoreProperty = serializedObject.FindProperty("safeAreaIgnore");
             onKeyBackProperty = serializedObject.FindProperty("onKeyBack");
+            autoGetComponentProperty = serializedObject.FindProperty("autoGetComponent");
+            canvasProperty = serializedObject.FindProperty("canvas");
             useDefaultProperty = serializedObject.FindProperty("useDefaultKeyBack");
             useDefaultContent = EditorGUIUtility.TrTextContent("Use Default");
             onKeyBackContent = new GUIContent("On Key Back");
