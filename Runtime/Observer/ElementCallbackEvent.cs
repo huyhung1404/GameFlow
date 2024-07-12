@@ -22,12 +22,11 @@ namespace GameFlow
         internal void RaiseOnActive()
         {
             if (onActive == null) return;
-            var count = onActive.Count;
-            for (var i = 0; i < count; i++)
+            foreach (var action in onActive)
             {
                 try
                 {
-                    onActive[i]?.Invoke();
+                    action?.Invoke();
                 }
                 catch (Exception e)
                 {
@@ -51,12 +50,11 @@ namespace GameFlow
         internal void RaiseOnActiveWithData(object data)
         {
             if (onActiveWithData == null) return;
-            var count = onActiveWithData.Count;
-            for (var i = 0; i < count; i++)
+            foreach (var action in onActiveWithData)
             {
                 try
                 {
-                    onActiveWithData[i]?.Invoke(data);
+                    action?.Invoke(data);
                 }
                 catch (Exception e)
                 {
@@ -80,12 +78,11 @@ namespace GameFlow
         internal void RaiseOnRelease(bool isReleaseImmediately)
         {
             if (onRelease == null) return;
-            var count = onRelease.Count;
-            for (var i = 0; i < count; i++)
+            foreach (var action in onRelease)
             {
                 try
                 {
-                    onRelease[i]?.Invoke(isReleaseImmediately);
+                    action?.Invoke(isReleaseImmediately);
                 }
                 catch (Exception e)
                 {
@@ -151,12 +148,11 @@ namespace GameFlow
         internal void RaiseOnShowCompleted()
         {
             if (onShowCompleted == null) return;
-            var count = onShowCompleted.Count;
-            for (var i = 0; i < count; i++)
+            foreach (var action in onShowCompleted)
             {
                 try
                 {
-                    onShowCompleted[i]?.Invoke();
+                    action?.Invoke();
                 }
                 catch (Exception e)
                 {
@@ -181,13 +177,12 @@ namespace GameFlow
         {
             if (onHide == null) return false;
             var result = false;
-            var count = onHide.Count;
-            for (var i = 0; i < count; i++)
+            foreach (var action in onHide)
             {
                 try
                 {
-                    if (onHide[i] == null) continue;
-                    onHide[i].Invoke(handle);
+                    if (action == null) continue;
+                    action.Invoke(handle);
                     result = true;
                 }
                 catch (Exception e)
@@ -214,12 +209,11 @@ namespace GameFlow
         internal void RaiseOnKeyBack()
         {
             if (onKeyBack == null) return;
-            var count = onKeyBack.Count;
-            for (var i = 0; i < count; i++)
+            foreach (var action in onKeyBack)
             {
                 try
                 {
-                    onKeyBack[i]?.Invoke();
+                    action?.Invoke();
                 }
                 catch (Exception e)
                 {
@@ -243,12 +237,11 @@ namespace GameFlow
         internal void RaiseOnReFocus()
         {
             if (onReFocus == null) return;
-            var count = onReFocus.Count;
-            for (var i = 0; i < count; i++)
+            foreach (var action in onReFocus)
             {
                 try
                 {
-                    onReFocus[i]?.Invoke();
+                    action?.Invoke();
                 }
                 catch (Exception e)
                 {
