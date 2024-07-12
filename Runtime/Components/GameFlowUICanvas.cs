@@ -64,8 +64,14 @@ namespace GameFlow.Component
 
         protected virtual void OnDisable()
         {
-            FlowObservable.UIEvent(element.elementType).ClearDelegates(this);
+            UnregisterDelegates(FlowObservable.UIEvent(element.elementType));
             FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
+        }
+
+        protected virtual void UnregisterDelegates(UIElementCallbackEvent delegates)
+        {
+            delegates.OnActive -= OnActive;
+            delegates.OnKeyBack -= OnKeyBack;
         }
 
         protected virtual void OnKeyBack()
