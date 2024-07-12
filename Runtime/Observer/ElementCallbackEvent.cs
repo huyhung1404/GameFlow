@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameFlow.Internal;
 
@@ -6,52 +7,103 @@ namespace GameFlow
 {
     public class ElementCallbackEvent
     {
-        protected Action onActive;
-        public event Action OnActive { add => onActive += value; remove => onActive -= value; }
+        protected List<OnActive> onActive;
+
+        public event OnActive OnActive
+        {
+            add
+            {
+                onActive ??= new List<OnActive>(3);
+                onActive.Add(value);
+            }
+            remove => onActive?.Remove(value);
+        }
 
         internal void RaiseOnActive()
         {
-            try
+            if (onActive == null) return;
+            foreach (var action in onActive)
             {
-                onActive?.Invoke();
-            }
-            catch (Exception e)
-            {
-                ErrorHandle.LogException(e, "Callback OnActive Error");
+                try
+                {
+                    action?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    ErrorHandle.LogException(e, "Callback OnActive Error");
+                }
             }
         }
 
-        protected Action<object> onActiveWithData;
-        public event Action<object> OnActiveWithData { add => onActiveWithData += value; remove => onActiveWithData -= value; }
+        protected List<OnActiveWithData> onActiveWithData;
+
+        public event OnActiveWithData OnActiveWithData
+        {
+            add
+            {
+                onActiveWithData ??= new List<OnActiveWithData>(1);
+                onActiveWithData.Add(value);
+            }
+            remove => onActiveWithData?.Remove(value);
+        }
 
         internal void RaiseOnActiveWithData(object data)
         {
-            try
+            if (onActiveWithData == null) return;
+            foreach (var action in onActiveWithData)
             {
-                onActiveWithData?.Invoke(data);
-            }
-            catch (Exception e)
-            {
-                ErrorHandle.LogException(e, "Callback OnActive With Data Error");
+                try
+                {
+                    action?.Invoke(data);
+                }
+                catch (Exception e)
+                {
+                    ErrorHandle.LogException(e, "Callback OnActive With Data Error");
+                }
             }
         }
 
-        protected Action<bool> onRelease;
+        protected List<OnRelease> onRelease;
 
-        /// <summary>
-        /// Return true if release immediately
-        /// </summary>
-        public event Action<bool> OnRelease { add => onRelease += value; remove => onRelease -= value; }
+        public event OnRelease OnRelease
+        {
+            add
+            {
+                onRelease ??= new List<OnRelease>(1);
+                onRelease.Add(value);
+            }
+            remove => onRelease?.Remove(value);
+        }
 
         internal void RaiseOnRelease(bool isReleaseImmediately)
         {
-            try
+            if (onRelease == null) return;
+            foreach (var action in onRelease)
             {
-                onRelease?.Invoke(isReleaseImmediately);
+                try
+                {
+                    action?.Invoke(isReleaseImmediately);
+                }
+                catch (Exception e)
+                {
+                    ErrorHandle.LogException(e, "Callback OnRelease Error");
+                }
             }
-            catch (Exception e)
+        }
+
+        public virtual void ClearDelegates(object target)
+        {
+            ClearDelegate(onActive, target);
+            ClearDelegate(onActiveWithData, target);
+            ClearDelegate(onRelease, target);
+        }
+
+        protected static void ClearDelegate<T>(List<T> delegates, object target) where T : Delegate
+        {
+            if (delegates == null) return;
+            for (var i = delegates.Count - 1; i >= 0; i--)
             {
-                ErrorHandle.LogException(e, "Callback OnRelease Error");
+                if (delegates[i].Target == target) delegates.RemoveAt(i);
             }
         }
 
@@ -66,14 +118,14 @@ namespace GameFlow
 
         public override string ToString()
         {
-            return $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnActiveWithData</size></b>    {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnRelease</size></b>                 {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
+            return $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive))}\n" +
+                   $"<b><size=11>OnActiveWithData</size></b>    {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData))}\n" +
+                   $"<b><size=11>OnRelease</size></b>                 {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease))}";
         }
 
-        protected static string GetDelegatesInfo(Delegate[] delegates)
+        protected static string GetDelegatesInfo<T>(List<T> delegates) where T : Delegate
         {
-            var result = $"Event: {delegates.Length}";
+            var result = $"Event: {delegates.Count}";
             return delegates.Aggregate(result, (current, variableDelegate)
                 => current + $"\n{variableDelegate.Target}.{variableDelegate.Method.Name}");
         }
@@ -81,67 +133,130 @@ namespace GameFlow
 
     public class UIElementCallbackEvent : ElementCallbackEvent
     {
-        private Action onShowCompleted;
-        public event Action OnShowCompleted { add => onShowCompleted += value; remove => onShowCompleted -= value; }
+        private List<OnShowCompleted> onShowCompleted;
+
+        public event OnShowCompleted OnShowCompleted
+        {
+            add
+            {
+                onShowCompleted ??= new List<OnShowCompleted>(1);
+                onShowCompleted.Add(value);
+            }
+            remove => onShowCompleted?.Remove(value);
+        }
 
         internal void RaiseOnShowCompleted()
         {
-            try
+            if (onShowCompleted == null) return;
+            foreach (var action in onShowCompleted)
             {
-                onShowCompleted?.Invoke();
-            }
-            catch (Exception e)
-            {
-                ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+                try
+                {
+                    action?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+                }
             }
         }
 
-        private Action<ICommandReleaseHandle> onHide;
-        public event Action<ICommandReleaseHandle> OnHide { add => onHide += value; remove => onHide -= value; }
+        private List<OnHide> onHide;
+
+        public event OnHide OnHide
+        {
+            add
+            {
+                onHide ??= new List<OnHide>(1);
+                onHide.Add(value);
+            }
+            remove => onHide?.Remove(value);
+        }
 
         internal bool RaiseOnHide(ICommandReleaseHandle handle)
         {
             if (onHide == null) return false;
-            try
+            var result = false;
+            foreach (var action in onHide)
             {
-                onHide.Invoke(handle);
-            }
-            catch (Exception e)
-            {
-                ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+                try
+                {
+                    if (action == null) continue;
+                    action.Invoke(handle);
+                    result = true;
+                }
+                catch (Exception e)
+                {
+                    ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+                }
             }
 
-            return true;
+            return result;
         }
 
-        private Action onKeyBack;
-        public event Action OnKeyBack { add => onKeyBack += value; remove => onKeyBack -= value; }
+        private List<OnKeyBack> onKeyBack;
+
+        public event OnKeyBack OnKeyBack
+        {
+            add
+            {
+                onKeyBack ??= new List<OnKeyBack>(1);
+                onKeyBack.Add(value);
+            }
+            remove => onKeyBack?.Remove(value);
+        }
 
         internal void RaiseOnKeyBack()
         {
-            try
+            if (onKeyBack == null) return;
+            foreach (var action in onKeyBack)
             {
-                onKeyBack?.Invoke();
-            }
-            catch (Exception e)
-            {
-                ErrorHandle.LogException(e, "Callback OnKeyBack Error");
+                try
+                {
+                    action?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    ErrorHandle.LogException(e, "Callback OnKeyBack Error");
+                }
             }
         }
 
-        private Action onReFocus;
-        public event Action OnReFocus { add => onReFocus += value; remove => onReFocus -= value; }
+        private List<OnReFocus> onReFocus;
+
+        public event OnReFocus OnReFocus
+        {
+            add
+            {
+                onReFocus ??= new List<OnReFocus>(1);
+                onReFocus.Add(value);
+            }
+            remove => onReFocus?.Remove(value);
+        }
 
         internal void RaiseOnReFocus()
         {
-            try
+            if (onReFocus == null) return;
+            foreach (var action in onReFocus)
             {
-                onReFocus?.Invoke();
+                try
+                {
+                    action?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    ErrorHandle.LogException(e, "Callback OnReFocus Error");
+                }
             }
-            catch (Exception e)
-            {
-                ErrorHandle.LogException(e, "Callback OnReFocus Error");
-            }
+        }
+
+        public override void ClearDelegates(object target)
+        {
+            base.ClearDelegates(target);
+            ClearDelegate(onShowCompleted, target);
+            ClearDelegate(onHide, target);
+            ClearDelegate(onKeyBack, target);
+            ClearDelegate(onReFocus, target);
         }
 
         internal override void GetInfo(out bool isUserInterface, out int callbackCount)
@@ -156,13 +271,13 @@ namespace GameFlow
 
         public override string ToString()
         {
-            return $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnActiveWithData</size></b>       {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnShowCompleted</size></b>     {(onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(onShowCompleted.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnHide</size></b>                          {(onHide == null ? "Event: 0" : GetDelegatesInfo(onHide.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnKeyBack</size></b>                    {(onKeyBack == null ? "Event: 0" : GetDelegatesInfo(onKeyBack.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnReFocus</size></b>                   {(onReFocus == null ? "Event: 0" : GetDelegatesInfo(onReFocus.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnRelease</size></b>                    {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
+            return $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive))}\n" +
+                   $"<b><size=11>OnActiveWithData</size></b>       {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData))}\n" +
+                   $"<b><size=11>OnShowCompleted</size></b>     {(onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(onShowCompleted))}\n" +
+                   $"<b><size=11>OnHide</size></b>                          {(onHide == null ? "Event: 0" : GetDelegatesInfo(onHide))}\n" +
+                   $"<b><size=11>OnKeyBack</size></b>                    {(onKeyBack == null ? "Event: 0" : GetDelegatesInfo(onKeyBack))}\n" +
+                   $"<b><size=11>OnReFocus</size></b>                   {(onReFocus == null ? "Event: 0" : GetDelegatesInfo(onReFocus))}\n" +
+                   $"<b><size=11>OnRelease</size></b>                    {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease))}";
         }
     }
 }
