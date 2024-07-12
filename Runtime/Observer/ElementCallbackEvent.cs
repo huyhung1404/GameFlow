@@ -102,16 +102,18 @@ namespace GameFlow
         internal bool RaiseOnHide(ICommandReleaseHandle handle)
         {
             if (onHide == null) return false;
+            var result = false;
             try
             {
                 onHide.Invoke(handle);
+                result = true;
             }
             catch (Exception e)
             {
                 ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
             }
 
-            return true;
+            return result;
         }
 
         private Action onKeyBack;
