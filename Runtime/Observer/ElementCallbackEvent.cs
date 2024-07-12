@@ -16,14 +16,7 @@ namespace GameFlow
                 onActive ??= new List<OnActive>(3);
                 onActive.Add(value);
             }
-            remove
-            {
-                if (onActive == null) return;
-                for (var i = onActive.Count - 1; i >= 0; i--)
-                {
-                    if (onActive[i] == value) onActive.RemoveAt(i);
-                }
-            }
+            remove => onActive?.Remove(value);
         }
 
         internal void RaiseOnActive()
@@ -52,14 +45,7 @@ namespace GameFlow
                 onActiveWithData ??= new List<OnActiveWithData>(1);
                 onActiveWithData.Add(value);
             }
-            remove
-            {
-                if (onActiveWithData == null) return;
-                for (var i = onActiveWithData.Count - 1; i >= 0; i--)
-                {
-                    if (onActiveWithData[i] == value) onActiveWithData.RemoveAt(i);
-                }
-            }
+            remove => onActiveWithData?.Remove(value);
         }
 
         internal void RaiseOnActiveWithData(object data)
@@ -88,14 +74,7 @@ namespace GameFlow
                 onRelease ??= new List<OnRelease>(1);
                 onRelease.Add(value);
             }
-            remove
-            {
-                if (onRelease == null) return;
-                for (var i = onRelease.Count - 1; i >= 0; i--)
-                {
-                    if (onRelease[i] == value) onRelease.RemoveAt(i);
-                }
-            }
+            remove => onRelease?.Remove(value);
         }
 
         internal void RaiseOnRelease(bool isReleaseImmediately)
@@ -166,14 +145,7 @@ namespace GameFlow
                 onShowCompleted ??= new List<OnShowCompleted>(1);
                 onShowCompleted.Add(value);
             }
-            remove
-            {
-                if (onShowCompleted == null) return;
-                for (var i = onShowCompleted.Count - 1; i >= 0; i--)
-                {
-                    if (onShowCompleted[i] == value) onShowCompleted.RemoveAt(i);
-                }
-            }
+            remove => onShowCompleted?.Remove(value);
         }
 
         internal void RaiseOnShowCompleted()
@@ -202,14 +174,7 @@ namespace GameFlow
                 onHide ??= new List<OnHide>(1);
                 onHide.Add(value);
             }
-            remove
-            {
-                if (onHide == null) return;
-                for (var i = onHide.Count - 1; i >= 0; i--)
-                {
-                    if (onHide[i] == value) onHide.RemoveAt(i);
-                }
-            }
+            remove => onHide?.Remove(value);
         }
 
         internal bool RaiseOnHide(ICommandReleaseHandle handle)
@@ -243,14 +208,7 @@ namespace GameFlow
                 onKeyBack ??= new List<OnKeyBack>(1);
                 onKeyBack.Add(value);
             }
-            remove
-            {
-                if (onKeyBack == null) return;
-                for (var i = onKeyBack.Count - 1; i >= 0; i--)
-                {
-                    if (onKeyBack[i] == value) onKeyBack.RemoveAt(i);
-                }
-            }
+            remove => onKeyBack?.Remove(value);
         }
 
         internal void RaiseOnKeyBack()
@@ -279,14 +237,7 @@ namespace GameFlow
                 onReFocus ??= new List<OnReFocus>(1);
                 onReFocus.Add(value);
             }
-            remove
-            {
-                if (onReFocus == null) return;
-                for (var i = onReFocus.Count - 1; i >= 0; i--)
-                {
-                    if (onReFocus[i] == value) onReFocus.RemoveAt(i);
-                }
-            }
+            remove => onReFocus?.Remove(value);
         }
 
         internal void RaiseOnReFocus()
