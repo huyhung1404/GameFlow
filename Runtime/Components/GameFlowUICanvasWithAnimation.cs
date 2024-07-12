@@ -10,12 +10,6 @@ namespace GameFlow.Component
             delegates.OnHide += OnHide;
         }
 
-        protected override void UnregisterDelegates(UIElementCallbackEvent delegates)
-        {
-            base.UnregisterDelegates(delegates);
-            delegates.OnHide -= OnHide;
-        }
-
         protected override void OnActive()
         {
             base.OnActive();
