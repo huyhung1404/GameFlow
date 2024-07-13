@@ -9,7 +9,7 @@ namespace GameFlow.Component
         [SerializeField] protected UnityEvent onKeyBack;
         [SerializeField] protected bool useDefaultKeyBack;
 
-        protected override void OnKeyBack()
+        public override void OnKeyBack()
         {
             if (useDefaultKeyBack) base.OnKeyBack();
             onKeyBack?.Invoke();

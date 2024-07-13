@@ -4,19 +4,21 @@ using UnityEngine.UI;
 namespace GameFlow.Component
 {
     [AddComponentMenu("Game Flow/UI Canvas")]
-    public class GameFlowUICanvas : MonoBehaviour
+    public class GameFlowUICanvas : FlowListenerMonoBehaviour
     {
         [SerializeField] protected bool autoGetComponent = true;
         [SerializeField] protected UIFlowElement element;
         [SerializeField] protected RectTransform safeView;
         [SerializeField] protected SafeAreaIgnore safeAreaIgnore;
         [SerializeField] protected Canvas canvas;
+        protected UIElementCallbackEvent delegates;
         protected CanvasScaler canvasScale;
         protected RectTransform rectTransform;
         private bool hasSafeView;
 
         protected virtual void Awake()
         {
+            delegates = FlowObservable.UIEvent(element.elementType);
             if (autoGetComponent) canvas = GetComponent<Canvas>();
             canvasScale = canvas.GetComponent<CanvasScaler>();
             rectTransform = canvas.GetComponent<RectTransform>();
@@ -28,17 +30,11 @@ namespace GameFlow.Component
         protected virtual void OnEnable()
         {
             canvas.enabled = false;
-            RegisterDelegates(FlowObservable.UIEvent(element.elementType));
+            delegates.RegisterListener(this);
             FlowBannerController.OnBannerUpdate += OnBannerUpdate;
         }
 
-        protected virtual void RegisterDelegates(UIElementCallbackEvent delegates)
-        {
-            delegates.OnActive += OnActive;
-            delegates.OnKeyBack += OnKeyBack;
-        }
-
-        protected virtual void OnActive()
+        public override void OnActive()
         {
             canvas.enabled = true;
             SetUpCanvas();
@@ -64,17 +60,11 @@ namespace GameFlow.Component
 
         protected virtual void OnDisable()
         {
-            UnregisterDelegates(FlowObservable.UIEvent(element.elementType));
+            delegates.UnregisterListener(this);
             FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
         }
 
-        protected virtual void UnregisterDelegates(UIElementCallbackEvent delegates)
-        {
-            delegates.OnActive -= OnActive;
-            delegates.OnKeyBack -= OnKeyBack;
-        }
-
-        protected virtual void OnKeyBack()
+        public override void OnKeyBack()
         {
             ReleaseCanvas();
         }

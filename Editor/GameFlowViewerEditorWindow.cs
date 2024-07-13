@@ -273,10 +273,10 @@ namespace GameFlow.Editor
         private static void DrawElement(int index, Type type, ElementCallbackEvent callbackEvent)
         {
             EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
-            callbackEvent.GetInfo(out var isUserInterface, out var eventCount);
+            callbackEvent.GetInfo(out var isUserInterface, out var eventCount, out var listenerCount);
             EditorGUILayout.LabelField(GetTitle(isUserInterface, type), GameFlowViewerEditorWindow.labelStyle);
             HandleMouseClick(GUILayoutUtility.GetLastRect(), type, callbackEvent);
-            EditorGUILayout.LabelField($"Enable: {eventCount}", GameFlowViewerEditorWindow.labelStyle, GUILayout.Width(60));
+            EditorGUILayout.LabelField($"Enable: {eventCount} | {listenerCount}", GameFlowViewerEditorWindow.labelStyle, GUILayout.Width(65));
             EditorGUILayout.EndHorizontal();
         }
 

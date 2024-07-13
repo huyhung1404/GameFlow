@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameFlow.Internal;
 
@@ -6,14 +7,36 @@ namespace GameFlow
 {
     public class ElementCallbackEvent
     {
-        protected Action onActive;
-        public event Action OnActive { add => onActive += value; remove => onActive -= value; }
+        protected List<FlowListenerMonoBehaviour> listeners;
+        protected OnActive onActive;
+        protected OnActiveWithData onActiveWithData;
+        protected OnRelease onRelease;
+        public event OnActive OnActive { add => onActive += value; remove => onActive -= value; }
+        public event OnActiveWithData OnActiveWithData { add => onActiveWithData += value; remove => onActiveWithData -= value; }
+        public event OnRelease OnRelease { add => onRelease += value; remove => onRelease -= value; }
+
+        public void RegisterListener(FlowListenerMonoBehaviour listener)
+        {
+            listeners ??= new List<FlowListenerMonoBehaviour>();
+            listeners.Add(listener);
+        }
+
+        public void UnregisterListener(FlowListenerMonoBehaviour listener)
+        {
+            listeners?.Remove(listener);
+        }
 
         internal void RaiseOnActive()
         {
             try
             {
                 onActive?.Invoke();
+                if (listeners == null) return;
+                var count = listeners.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    listeners[i].OnActive();
+                }
             }
             catch (Exception e)
             {
@@ -21,14 +44,17 @@ namespace GameFlow
             }
         }
 
-        protected Action<object> onActiveWithData;
-        public event Action<object> OnActiveWithData { add => onActiveWithData += value; remove => onActiveWithData -= value; }
-
         internal void RaiseOnActiveWithData(object data)
         {
             try
             {
                 onActiveWithData?.Invoke(data);
+                if (listeners == null) return;
+                var count = listeners.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    listeners[i].OnActiveWithData(data);
+                }
             }
             catch (Exception e)
             {
@@ -36,18 +62,17 @@ namespace GameFlow
             }
         }
 
-        protected Action<bool> onRelease;
-
-        /// <summary>
-        /// Return true if release immediately
-        /// </summary>
-        public event Action<bool> OnRelease { add => onRelease += value; remove => onRelease -= value; }
-
         internal void RaiseOnRelease(bool isReleaseImmediately)
         {
             try
             {
                 onRelease?.Invoke(isReleaseImmediately);
+                if (listeners == null) return;
+                var count = listeners.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    listeners[i].OnRelease(isReleaseImmediately);
+                }
             }
             catch (Exception e)
             {
@@ -55,10 +80,11 @@ namespace GameFlow
             }
         }
 
-        internal virtual void GetInfo(out bool isUserInterface, out int callbackCount)
+        internal virtual void GetInfo(out bool isUserInterface, out int callbackCount, out int listenerCount)
         {
             isUserInterface = false;
             callbackCount = 0;
+            listenerCount = listeners?.Count ?? 0;
             if (onActive != null) callbackCount++;
             if (onActiveWithData != null) callbackCount++;
             if (onRelease != null) callbackCount++;
@@ -66,9 +92,22 @@ namespace GameFlow
 
         public override string ToString()
         {
-            return $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
+            return GetListenerInfo() + $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
                    $"<b><size=11>OnActiveWithData</size></b>    {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
                    $"<b><size=11>OnRelease</size></b>                 {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
+        }
+
+        protected string GetListenerInfo()
+        {
+            var info = "<b><size=11>Listener:</size></b>\n";
+            if (listeners == null) return info;
+            for (var i = 0; i < listeners.Count; i++)
+            {
+                var listener = listeners[i];
+                info += $"[{i}] {listener.name}\n";
+            }
+
+            return info;
         }
 
         protected static string GetDelegatesInfo(Delegate[] delegates)
@@ -81,8 +120,14 @@ namespace GameFlow
 
     public class UIElementCallbackEvent : ElementCallbackEvent
     {
-        private Action onShowCompleted;
-        public event Action OnShowCompleted { add => onShowCompleted += value; remove => onShowCompleted -= value; }
+        private OnShowCompleted onShowCompleted;
+        private OnHide onHide;
+        private OnKeyBack onKeyBack;
+        private OnReFocus onReFocus;
+        public event OnShowCompleted OnShowCompleted { add => onShowCompleted += value; remove => onShowCompleted -= value; }
+        public event OnHide OnHide { add => onHide += value; remove => onHide -= value; }
+        public event OnKeyBack OnKeyBack { add => onKeyBack += value; remove => onKeyBack -= value; }
+        public event OnReFocus OnReFocus { add => onReFocus += value; remove => onReFocus -= value; }
 
         internal void RaiseOnShowCompleted()
         {
@@ -96,34 +141,33 @@ namespace GameFlow
             }
         }
 
-        private Action<ICommandReleaseHandle> onHide;
-        public event Action<ICommandReleaseHandle> OnHide { add => onHide += value; remove => onHide -= value; }
-
         internal bool RaiseOnHide(ICommandReleaseHandle handle)
         {
             if (onHide == null) return false;
-            var result = false;
             try
             {
                 onHide.Invoke(handle);
-                result = true;
+                return true;
             }
             catch (Exception e)
             {
                 ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
             }
 
-            return result;
+            return false;
         }
-
-        private Action onKeyBack;
-        public event Action OnKeyBack { add => onKeyBack += value; remove => onKeyBack -= value; }
 
         internal void RaiseOnKeyBack()
         {
             try
             {
                 onKeyBack?.Invoke();
+                if (listeners == null) return;
+                var count = listeners.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    listeners[i].OnKeyBack();
+                }
             }
             catch (Exception e)
             {
@@ -131,14 +175,18 @@ namespace GameFlow
             }
         }
 
-        private Action onReFocus;
-        public event Action OnReFocus { add => onReFocus += value; remove => onReFocus -= value; }
 
         internal void RaiseOnReFocus()
         {
             try
             {
                 onReFocus?.Invoke();
+                if (listeners == null) return;
+                var count = listeners.Count;
+                for (var i = 0; i < count; i++)
+                {
+                    listeners[i].OnReFocus();
+                }
             }
             catch (Exception e)
             {
@@ -146,9 +194,9 @@ namespace GameFlow
             }
         }
 
-        internal override void GetInfo(out bool isUserInterface, out int callbackCount)
+        internal override void GetInfo(out bool isUserInterface, out int callbackCount, out int listenerCount)
         {
-            base.GetInfo(out isUserInterface, out callbackCount);
+            base.GetInfo(out isUserInterface, out callbackCount, out listenerCount);
             isUserInterface = true;
             if (onShowCompleted != null) callbackCount++;
             if (onHide != null) callbackCount++;
@@ -158,7 +206,7 @@ namespace GameFlow
 
         public override string ToString()
         {
-            return $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
+            return GetListenerInfo() + $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
                    $"<b><size=11>OnActiveWithData</size></b>       {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
                    $"<b><size=11>OnShowCompleted</size></b>     {(onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(onShowCompleted.GetInvocationList()))}\n" +
                    $"<b><size=11>OnHide</size></b>                          {(onHide == null ? "Event: 0" : GetDelegatesInfo(onHide.GetInvocationList()))}\n" +
