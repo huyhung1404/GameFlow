@@ -50,12 +50,18 @@ namespace GameFlow
         protected override void OnLoadResult(bool canRelease)
         {
             onCompleted?.Invoke(canRelease);
-            UIElementsRuntimeManager.RemoveElement(element);
+            if (canRelease)
+            {
+                callbackOnRelease = true;
+                UIElementsRuntimeManager.RemoveElement(element);
+            }
+
             Release();
         }
 
         internal override void OnRelease()
         {
+            if (!callbackOnRelease) return;
             base.OnRelease();
             var topElement = UIElementsRuntimeManager.GetTopElement();
             if (topElement == null) return;

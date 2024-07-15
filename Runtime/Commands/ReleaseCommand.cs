@@ -8,6 +8,7 @@ namespace GameFlow
     public abstract class ReleaseCommand : Command, IReleaseCompleted
     {
         protected bool isExecute;
+        protected bool callbackOnRelease;
         internal OnReleaseCommandCompleted onCompleted;
         protected abstract GameFlowElement baseElement { get; set; }
 
@@ -74,6 +75,7 @@ namespace GameFlow
 
         internal override void OnRelease()
         {
+            if (!callbackOnRelease) return;
             if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK) FlowObservable.ReleaseEvent(elementType);
         }
 
