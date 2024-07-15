@@ -23,17 +23,10 @@ namespace GameFlow
         public virtual void OnReFocus()
         {
         }
-    }
 
-    public class FlowListenerMonoBehaviour<T> : FlowListenerMonoBehaviour
-    {
-        public override void OnActiveWithData(object data)
+        protected T Convert<T>(object data)
         {
-            OnActiveWithData((T)data);
-        }
-
-        public virtual void OnActiveWithData(T data)
-        {
+            return (T)data;
         }
     }
 }
