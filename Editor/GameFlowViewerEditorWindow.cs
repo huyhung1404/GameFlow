@@ -276,7 +276,7 @@ namespace GameFlow.Editor
             callbackEvent.GetInfo(out var isUserInterface, out var eventCount, out var listenerCount);
             EditorGUILayout.LabelField(GetTitle(isUserInterface, type), GameFlowViewerEditorWindow.labelStyle);
             HandleMouseClick(GUILayoutUtility.GetLastRect(), type, callbackEvent);
-            EditorGUILayout.LabelField($"Enable: {eventCount} | {listenerCount}", GameFlowViewerEditorWindow.labelStyle, GUILayout.Width(65));
+            EditorGUILayout.LabelField($"Enable: {eventCount} | {listenerCount}", GameFlowViewerEditorWindow.labelStyle, GUILayout.Width(80));
             EditorGUILayout.EndHorizontal();
         }
 
