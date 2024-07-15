@@ -7,7 +7,7 @@ namespace GameFlow
 {
     public class ElementCallbackEvent
     {
-        protected List<FlowListenerMonoBehaviour> listeners;
+        protected List<IFlowListener> listeners;
         protected OnActive onActive;
         protected OnActiveWithData onActiveWithData;
         protected OnRelease onRelease;
@@ -15,13 +15,13 @@ namespace GameFlow
         public event OnActiveWithData OnActiveWithData { add => onActiveWithData += value; remove => onActiveWithData -= value; }
         public event OnRelease OnRelease { add => onRelease += value; remove => onRelease -= value; }
 
-        public void RegisterListener(FlowListenerMonoBehaviour listener)
+        public void RegisterListener(IFlowListener listener)
         {
-            listeners ??= new List<FlowListenerMonoBehaviour>();
+            listeners ??= new List<IFlowListener>();
             listeners.Add(listener);
         }
 
-        public void UnregisterListener(FlowListenerMonoBehaviour listener)
+        public void UnregisterListener(IFlowListener listener)
         {
             listeners?.Remove(listener);
         }
@@ -92,7 +92,8 @@ namespace GameFlow
 
         public override string ToString()
         {
-            return GetListenerInfo() + $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
+            return GetListenerInfo() +
+                   $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
                    $"<b><size=11>OnActiveWithData</size></b>    {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
                    $"<b><size=11>OnRelease</size></b>                 {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
         }
@@ -104,7 +105,7 @@ namespace GameFlow
             for (var i = 0; i < listeners.Count; i++)
             {
                 var listener = listeners[i];
-                info += $"[{i}] {listener.name}\n";
+                info += $"[{i}] {listener}\n";
             }
 
             return info;
@@ -206,7 +207,8 @@ namespace GameFlow
 
         public override string ToString()
         {
-            return GetListenerInfo() + $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
+            return GetListenerInfo() +
+                   $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
                    $"<b><size=11>OnActiveWithData</size></b>       {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
                    $"<b><size=11>OnShowCompleted</size></b>     {(onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(onShowCompleted.GetInvocationList()))}\n" +
                    $"<b><size=11>OnHide</size></b>                          {(onHide == null ? "Event: 0" : GetDelegatesInfo(onHide.GetInvocationList()))}\n" +

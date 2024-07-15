@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace GameFlow
 {
-    public class FlowListenerMonoBehaviour : MonoBehaviour
+    public class FlowListenerMonoBehaviour : MonoBehaviour, IFlowListener
     {
         public virtual void OnActive()
         {
