@@ -15,22 +15,23 @@ namespace GameFlow.Component
         protected CanvasScaler canvasScale;
         protected RectTransform rectTransform;
         private bool hasSafeView;
+        private bool isGotComponents;
 
-        protected Canvas RootCanvas()
+        protected void GetComponentsIfNeed()
         {
-            if (!autoGetComponent) return canvas;
-            canvas ??= GetComponent<Canvas>();
-            return canvas;
-        }
-
-        protected virtual void Awake()
-        {
+            if (isGotComponents) return;
             delegates = FlowObservable.UIEvent(element.elementType);
             if (autoGetComponent) canvas = GetComponent<Canvas>();
             canvasScale = canvas.GetComponent<CanvasScaler>();
             rectTransform = canvas.GetComponent<RectTransform>();
             hasSafeView = safeView != null;
             canvas.worldCamera = FlowUICamera.instance;
+            isGotComponents = true;
+        }
+
+        protected virtual void Awake()
+        {
+            GetComponentsIfNeed();
             HandleCanvasScaler();
         }
 
@@ -43,7 +44,8 @@ namespace GameFlow.Component
 
         public override void OnActive()
         {
-            RootCanvas().enabled = true;
+            GetComponentsIfNeed();
+            canvas.enabled = true;
             SetUpCanvas();
         }
 
@@ -57,6 +59,7 @@ namespace GameFlow.Component
 
         protected virtual void OnBannerUpdate(float height)
         {
+            GetComponentsIfNeed();
             safeView.offsetMin = height == 0 ? Vector2.zero : height / Screen.height * rectTransform.rect.size.y * Vector2.up;
         }
 
