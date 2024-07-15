@@ -16,6 +16,13 @@ namespace GameFlow.Component
         protected RectTransform rectTransform;
         private bool hasSafeView;
 
+        protected Canvas RootCanvas()
+        {
+            if (!autoGetComponent) return canvas;
+            canvas ??= GetComponent<Canvas>();
+            return canvas;
+        }
+
         protected virtual void Awake()
         {
             delegates = FlowObservable.UIEvent(element.elementType);
@@ -36,7 +43,7 @@ namespace GameFlow.Component
 
         public override void OnActive()
         {
-            canvas.enabled = true;
+            RootCanvas().enabled = true;
             SetUpCanvas();
         }
 
