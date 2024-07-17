@@ -1,3 +1,4 @@
+using GameFlow.Internal;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,11 +7,11 @@ namespace GameFlow.Component
     [AddComponentMenu("Game Flow/UI Canvas")]
     public class GameFlowUICanvas : FlowListenerMonoBehaviour
     {
-        [SerializeField] protected bool autoGetComponent = true;
-        [SerializeField] protected UIFlowElement element;
-        [SerializeField] protected RectTransform safeView;
-        [SerializeField] protected SafeAreaIgnore safeAreaIgnore;
-        [SerializeField] protected Canvas canvas;
+        [SerializeField, InternalDraw(DrawType.Element)] protected UIFlowElement element;
+        [SerializeField, InternalDraw(DrawType.Canvas)] protected Canvas canvas;
+        [SerializeField, HideInInspector] protected bool autoGetComponent = true;
+        [SerializeField, InternalDraw(DrawType.SafeView)] protected RectTransform safeView;
+        [SerializeField, HideInInspector] protected SafeAreaIgnore safeAreaIgnore;
         protected UIElementCallbackEvent delegates;
         protected CanvasScaler canvasScale;
         protected RectTransform rectTransform;
