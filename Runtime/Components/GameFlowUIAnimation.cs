@@ -1,10 +1,11 @@
+using GameFlow.Internal;
 using UnityEngine;
 
 namespace GameFlow.Component
 {
     public abstract class GameFlowUIAnimation : MonoBehaviour
     {
-        [SerializeField] protected UIFlowElement element;
+        [SerializeField, InternalDraw(DrawType.Element)] protected UIFlowElement element;
         protected UIElementCallbackEvent delegates;
         private ICommandReleaseHandle releaseHandle;
 
