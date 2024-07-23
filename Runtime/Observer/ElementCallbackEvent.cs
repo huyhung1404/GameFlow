@@ -40,7 +40,7 @@ namespace GameFlow
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, "Callback OnActive Error");
+                LogError(e, "OnActive", onActive?.GetInvocationList());
             }
         }
 
@@ -58,7 +58,7 @@ namespace GameFlow
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, "Callback OnActive With Data Error");
+                LogError(e, "OnActiveWithData", onActiveWithData?.GetInvocationList());
             }
         }
 
@@ -76,7 +76,7 @@ namespace GameFlow
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, "Callback OnRelease Error");
+                LogError(e, "OnRelease", onRelease?.GetInvocationList());
             }
         }
 
@@ -117,6 +117,28 @@ namespace GameFlow
             return delegates.Aggregate(result, (current, variableDelegate)
                 => current + $"\n{variableDelegate.Target}.{variableDelegate.Method.Name}");
         }
+
+        protected void LogError(Exception e, string methodName, Delegate[] delegates)
+        {
+            var errorMessage = $"{methodName}:\n";
+            if (delegates != null)
+            {
+                foreach (var method in delegates)
+                {
+                    errorMessage += $"Delegates: {method.Method}/{method.Target}\n";
+                }
+            }
+
+            if (listeners != null)
+            {
+                foreach (var listener in listeners)
+                {
+                    errorMessage += $"Listener: {listener}";
+                }
+            }
+
+            ErrorHandle.LogException(e, errorMessage);
+        }
     }
 
     public class UIElementCallbackEvent : ElementCallbackEvent
@@ -138,7 +160,7 @@ namespace GameFlow
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+                LogError(e, "OnShowCompleted", onShowCompleted?.GetInvocationList());
             }
         }
 
@@ -152,7 +174,7 @@ namespace GameFlow
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, "Callback OnShowCompleted Error");
+                LogError(e, "OnHide", onHide?.GetInvocationList());
             }
 
             return false;
@@ -172,7 +194,7 @@ namespace GameFlow
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, "Callback OnKeyBack Error");
+                LogError(e, "OnKeyBack", onKeyBack?.GetInvocationList());
             }
         }
 
@@ -191,7 +213,7 @@ namespace GameFlow
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, "Callback OnReFocus Error");
+                LogError(e, "OnReFocus", onReFocus?.GetInvocationList());
             }
         }
 
