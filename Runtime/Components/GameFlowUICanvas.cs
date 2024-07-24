@@ -64,7 +64,7 @@ namespace GameFlow.Component
             safeView.offsetMin = height == 0 ? Vector2.zero : height / Screen.height * rectTransform.rect.size.y * Vector2.up;
         }
 
-        private void HandleCanvasScaler()
+        protected virtual void HandleCanvasScaler()
         {
             canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < canvasScale.referenceResolution.x / canvasScale.referenceResolution.y ? 0 : 1;
         }
