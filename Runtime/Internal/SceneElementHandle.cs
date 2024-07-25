@@ -5,12 +5,13 @@ namespace GameFlow.Internal
     [AddComponentMenu("")]
     internal class SceneElementHandle : MonoBehaviour
     {
-        internal static SceneElementHandle Create()
+        internal static SceneElementHandle Create(ElementReleaseMode releaseMode)
         {
             var handle = new GameObject().AddComponent<SceneElementHandle>();
 #if UNITY_EDITOR
             handle.name = "Scene Handle";
 #endif
+            handle.releaseMode = releaseMode;
             return handle;
         }
 
@@ -21,9 +22,11 @@ namespace GameFlow.Internal
         }
 
         private ActiveData[] activeData;
+        private ElementReleaseMode releaseMode;
 
-        internal void GetRootsGameObject()
+        internal void GetRootsGameObjectIfNeed()
         {
+            if (activeData == null) return;
             var root = gameObject.scene.GetRootGameObjects();
             var rootLength = root.Length;
             activeData = new ActiveData[rootLength - 1];
@@ -52,6 +55,7 @@ namespace GameFlow.Internal
 
         private void OnDisable()
         {
+            if (releaseMode == ElementReleaseMode.NONE_RELEASE) GetRootsGameObjectIfNeed();
             if (activeData == null) return;
             for (var i = activeData.Length - 1; i >= 0; i--)
             {

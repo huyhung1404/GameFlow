@@ -94,7 +94,7 @@ namespace GameFlow
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    var elementHandle = MoveGameObjectToScene(handle);
+                    var elementHandle = MoveGameObjectToScene(handle, command.ReleaseMode());
                     command.HandleReferencePrefab(elementHandle.gameObject);
                     return;
                 }
@@ -110,7 +110,7 @@ namespace GameFlow
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    var elementHandle = MoveGameObjectToScene(handle);
+                    var elementHandle = MoveGameObjectToScene(handle, command.ReleaseMode());
                     command.activeHandle.OnHandleLoadCompleted(handle.Result, elementHandle.gameObject);
                     return;
                 }
@@ -121,11 +121,10 @@ namespace GameFlow
             };
         }
 
-        private static SceneElementHandle MoveGameObjectToScene(AsyncOperationHandle<SceneInstance> handle)
+        private static SceneElementHandle MoveGameObjectToScene(AsyncOperationHandle<SceneInstance> handle, ElementReleaseMode releaseMode)
         {
-            var elementHandle = SceneElementHandle.Create();
+            var elementHandle = SceneElementHandle.Create(releaseMode);
             SceneManager.MoveGameObjectToScene(elementHandle.gameObject, handle.Result.Scene);
-            elementHandle.GetRootsGameObject();
             return elementHandle;
         }
 

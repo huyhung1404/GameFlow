@@ -18,6 +18,7 @@ namespace GameFlow
         private bool isLoadingOn;
 
         protected abstract GameFlowElement baseElement { get; set; }
+        internal ElementReleaseMode ReleaseMode() => baseElement.releaseMode;
 
         internal AddCommand(Type elementType) : base(elementType)
         {
