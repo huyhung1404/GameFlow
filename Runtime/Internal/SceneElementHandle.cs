@@ -26,7 +26,7 @@ namespace GameFlow.Internal
 
         internal void GetRootsGameObjectIfNeed()
         {
-            if (activeData == null) return;
+            if (activeData != null) return;
             var root = gameObject.scene.GetRootGameObjects();
             var rootLength = root.Length;
             activeData = new ActiveData[rootLength - 1];
