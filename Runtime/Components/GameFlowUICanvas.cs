@@ -10,6 +10,7 @@ namespace GameFlow.Component
         [SerializeField, InternalDraw(DrawType.Element)] protected UIFlowElement element;
         [SerializeField, InternalDraw(DrawType.Canvas)] protected Canvas canvas;
         [SerializeField, HideInInspector] protected bool autoGetComponent = true;
+        [SerializeField, HideInInspector] protected int offsetCanvasGroup;
         [SerializeField, InternalDraw(DrawType.SafeView)] protected RectTransform safeView;
         [SerializeField, HideInInspector] protected SafeAreaIgnore safeAreaIgnore;
         protected UIElementCallbackEvent delegates;
@@ -53,7 +54,7 @@ namespace GameFlow.Component
         protected virtual void SetUpCanvas()
         {
             var sortingOrder = element.currentSortingOrder;
-            canvas.sortingOrder = sortingOrder;
+            canvas.sortingOrder = sortingOrder + offsetCanvasGroup;
             if (hasSafeView) safeView.ApplySafeArea(Screen.safeArea, safeAreaIgnore);
             OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }

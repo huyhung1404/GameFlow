@@ -39,11 +39,13 @@ namespace GameFlow.Editor
         private static void DrawCanvas(Rect position, SerializedProperty property)
         {
             var autoGetComponentProperty = property.serializedObject.FindProperty("autoGetComponent");
+            var offsetCanvasGroup = property.serializedObject.FindProperty("offsetCanvasGroup");
             EditorGUI.LabelField(new Rect(position.x, position.y, 80, position.height), "Root Canvas");
             EditorGUI.PropertyField(new Rect(position.x + 80, position.y, 20, position.height), autoGetComponentProperty, GUIContent.none);
             GUI.enabled = !autoGetComponentProperty.boolValue;
-            EditorGUI.PropertyField(new Rect(position.x + 100, position.y, position.width - 100, position.height), property, GUIContent.none);
+            EditorGUI.PropertyField(new Rect(position.x + 100, position.y, position.width - 135, position.height), property, GUIContent.none);
             GUI.enabled = true;
+            EditorGUI.PropertyField(new Rect(position.x + position.width - 30, position.y, 30, position.height), offsetCanvasGroup, GUIContent.none);
         }
 
         private static void DrawSafeView(Rect position, SerializedProperty property)
