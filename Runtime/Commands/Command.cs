@@ -60,6 +60,6 @@ namespace GameFlow
             return $"{GetType().Name}:  {elementType.Namespace}.<b>{elementType.Name}</b>";
         }
 
-        public abstract string GetFullInfo();
+        internal abstract string GetFullInfo();
     }
 }

@@ -20,7 +20,7 @@ namespace GameFlow
             activeHandle.ActiveScene();
         }
 
-        public override string GetFullInfo()
+        internal override string GetFullInfo()
         {
             return base.GetFullInfo() + $"\n<b><size=11>autoActive:</size></b> {autoActive}";
         }

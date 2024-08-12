@@ -95,7 +95,7 @@ namespace GameFlow.Tests
                 ResourcesInstance.runtimeController.StartCoroutine(IERelease());
             }
 
-            public override string GetFullInfo()
+            internal override string GetFullInfo()
             {
                 return null;
             }

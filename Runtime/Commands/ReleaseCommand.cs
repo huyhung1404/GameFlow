@@ -80,7 +80,7 @@ namespace GameFlow
             if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK) FlowObservable.ReleaseEvent(elementType);
         }
 
-        public override string GetFullInfo()
+        internal override string GetFullInfo()
         {
             return $@"<b><size=11>isRelease:</size></b> {isRelease}
 <b><size=11>onCompleted:</size></b> {onCompleted.Target}.{onCompleted.Method.Name}

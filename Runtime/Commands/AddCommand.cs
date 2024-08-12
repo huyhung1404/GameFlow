@@ -154,7 +154,7 @@ namespace GameFlow
             if (!ReferenceEquals(activeData, null)) delegates.RaiseOnActiveWithData(activeData);
         }
 
-        public override string GetFullInfo()
+        internal override string GetFullInfo()
         {
             return $@"<b><size=11>isRelease:</size></b> {isRelease}
 <b><size=11>loadingId:</size></b> {loadingId}
