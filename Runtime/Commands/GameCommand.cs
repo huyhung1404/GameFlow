@@ -119,5 +119,11 @@ namespace GameFlow
             command.onCompleted = completed;
             return command;
         }
+
+        public static ReleaseCommand IgnoreAnimationHide(this ReleaseCommand command)
+        {
+            command.ignoreAnimationHide = true;
+            return command;
+        }
     }
 }

@@ -25,7 +25,11 @@ namespace GameFlow
 
         protected override void HandleRelease()
         {
-            if (delegates.RaiseOnHide(this)) return;
+            if (!ignoreAnimationHide && delegates.RaiseOnHide(this))
+            {
+                return;
+            }
+
             Next();
         }
 

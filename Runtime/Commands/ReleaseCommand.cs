@@ -10,6 +10,7 @@ namespace GameFlow
         protected bool isExecute;
         protected bool callbackOnRelease;
         internal OnReleaseCommandCompleted onCompleted;
+        internal bool ignoreAnimationHide;
         protected abstract GameFlowElement baseElement { get; set; }
 
         internal ReleaseCommand(Type elementType) : base(elementType)
