@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 namespace GameFlow
 {
     [AddComponentMenu("Game Flow/Loading/Progress")]
     [RequireComponent(typeof(CanvasGroup))]
-    public class ProgressLoading : BaseLoadingTypeController
+    public abstract class ProgressLoading : BaseLoadingTypeController
     {
-        [SerializeField] internal Slider progressSlider;
         [SerializeField] private float hideSpeed = 0.15f;
         private CanvasGroup canvasGroup;
         private float currentProgress;
@@ -19,7 +17,7 @@ namespace GameFlow
         {
             SetUpCanvasGroupIfNeed();
             ExecuteCallback();
-            progressSlider.value = 0;
+            SetValue(0);
             currentProgress = targetProgress = 0;
             canvasGroup.alpha = 1;
             lastTime = Time.realtimeSinceStartup;
@@ -36,7 +34,7 @@ namespace GameFlow
         protected override void OnHide()
         {
             isShowing = false;
-            progressSlider.value = 1;
+            SetValue(1);
         }
 
         private void LateUpdate()
@@ -55,7 +53,7 @@ namespace GameFlow
             }
 
             currentProgress = Mathf.Lerp(currentProgress, targetProgress, (Time.realtimeSinceStartup - lastTime) * 0.9f);
-            progressSlider.value = currentProgress;
+            SetValue(currentProgress);
             lastTime = targetProgress < 1 ? Time.realtimeSinceStartup : -1;
             if (currentProgress < 1) return;
             OnHide();
@@ -65,5 +63,7 @@ namespace GameFlow
         {
             targetProgress = value;
         }
+
+        protected abstract void SetValue(float value);
     }
 }
