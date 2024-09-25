@@ -63,7 +63,7 @@ namespace GameFlow
     {
         public static int CurrentCanvasCount()
         {
-            return UIElementsRuntimeManager.elementsRuntime.Count;
+            return UIElementsRuntimeManager.Count;
         }
     }
 
