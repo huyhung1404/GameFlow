@@ -59,6 +59,14 @@ namespace GameFlow
         }
     }
 
+    public static class FlowInfo
+    {
+        public static int CurrentCanvasCount()
+        {
+            return UIElementsRuntimeManager.elementsRuntime.Count;
+        }
+    }
+
     public static class AddCommandBuilder
     {
         /// <summary>
