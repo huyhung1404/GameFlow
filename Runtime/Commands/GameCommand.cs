@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using GameFlow.Internal;
 
 namespace GameFlow
@@ -63,7 +64,29 @@ namespace GameFlow
     {
         public static int CurrentCanvasCount()
         {
-            return UIElementsRuntimeManager.Count;
+            return UIElementsRuntimeManager.elementsRuntime.Count;
+        }
+
+        public static bool IsTopCanvas<T>() where T : UIFlowElement
+        {
+            if (CurrentCanvasCount() == 0) return false;
+            return UIElementsRuntimeManager.elementsRuntime[^1].GetType() == typeof(T);
+        }
+
+        public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame)
+        {
+            while (CurrentCanvasCount() != totalCanvas)
+            {
+                for (var i = 0; i < delayFrame; i++) yield return null;
+            }
+        }
+
+        public static IEnumerator IEWaitingTopCanvasIs<T>(int delayFrame) where T : UIFlowElement
+        {
+            while (!IsTopCanvas<T>())
+            {
+                for (var i = 0; i < delayFrame; i++) yield return null;
+            }
         }
     }
 

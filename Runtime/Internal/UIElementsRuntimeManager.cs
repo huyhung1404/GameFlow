@@ -5,13 +5,14 @@ namespace GameFlow.Internal
 {
     public static class UIElementsRuntimeManager
     {
+        internal static List<UIFlowElement> elementsRuntime
 #if UNITY_EDITOR
-        internal static List<UIFlowElement> elementsRuntime { get; }
+        {
+            get;
+        }
 #else
-        private static List<UIFlowElement> elementsRuntime;
+        ;
 #endif
-
-        public static int Count => elementsRuntime.Count;
 
         static UIElementsRuntimeManager()
         {
