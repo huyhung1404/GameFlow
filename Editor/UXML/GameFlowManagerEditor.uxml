@@ -14,6 +14,7 @@
                 <ui:Label text="No elements were found in the manager." display-tooltip-when-elided="true" name="ui_flow_content" style="-unity-font-style: normal; font-size: 10px; white-space: normal;" />
                 <ui:VisualElement name="ui_flow_container" />
                 <ui:Foldout text="Settings" value="false" style="font-size: 10px; margin-left: 13px; margin-top: 5px;">
+                    <uie:IntegerField label="Plane Distance" value="0" binding-path="planeDistance" name="plane_distance" />
                     <uie:IntegerField label="Sorting Order Offset" value="0" binding-path="sortingOrderOffset" name="sorting_order_offset" />
                     <uie:IntegerField label="Loading Shield Sorting Order" value="42" name="loading_shield_sorting_order" />
                 </ui:Foldout>

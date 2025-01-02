@@ -6,6 +6,7 @@ namespace GameFlow.Internal
     {
         [SerializeField] internal ElementCollection elementCollection;
         [SerializeField] internal int sortingOrderOffset = 5;
+        [SerializeField] internal int planeDistance = 100;
         [SerializeField] internal int loadingShieldSortingOrder = 100;
     }
 }

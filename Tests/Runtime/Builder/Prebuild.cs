@@ -5,7 +5,6 @@ using System.Linq;
 using GameFlow.Component;
 using GameFlow.Internal;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using UnityEditor.AddressableAssets;
@@ -29,7 +28,6 @@ namespace GameFlow.Tests.Build
         private static LoadingController loadingController;
         private static DisplayLoading imageLoading;
         private static FadeLoading fadeLoading;
-        private static ProgressLoading progressLoading;
 
         public static void PresetResources()
         {
@@ -61,7 +59,6 @@ namespace GameFlow.Tests.Build
             loadingController = null;
             imageLoading = null;
             fadeLoading = null;
-            progressLoading = null;
             if (File.Exists(kScenePath)) return;
             CreateSceneManager();
             CreateManager();
@@ -115,10 +112,7 @@ namespace GameFlow.Tests.Build
             imageLoading.transform.SetParent(loadingController.transform);
             fadeLoading = new GameObject("Fade").AddComponent<FadeLoading>();
             fadeLoading.transform.SetParent(loadingController.transform);
-            progressLoading = new GameObject("Progress").AddComponent<ProgressLoading>();
-            progressLoading.transform.SetParent(loadingController.transform);
-            progressLoading.progressSlider = progressLoading.gameObject.AddComponent<Slider>();
-            loadingController.RegisterControllers(false, imageLoading, fadeLoading, progressLoading);
+            loadingController.RegisterControllers(false, imageLoading, fadeLoading);
         }
 
         private static void CreateCamera()

@@ -59,6 +59,7 @@ namespace GameFlow.Internal
             loadingController.GetComponent<Image>().color = Color.clear;
             var canvas = loadingController.GetComponent<Canvas>();
             canvas.sortingOrder = 100;
+            canvas.planeDistance = manager.planeDistance;
             UnityEditor.EditorUtility.SetDirty(gameObject);
             elementContainer = new GameObject("Elements").transform;
             elementContainer.SetParent(transform);
