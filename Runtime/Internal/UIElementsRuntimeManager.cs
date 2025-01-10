@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace GameFlow.Internal
 {
@@ -58,11 +57,15 @@ namespace GameFlow.Internal
         internal static void ReleaseAllElement(Action onReleaseCompleted)
         {
             var elementCount = elementsRuntime.Count;
-            Debug.LogError(elementsRuntime.Count);
+            if (elementCount == 0)
+            {
+                onReleaseCompleted?.Invoke();
+                return;
+            }
+
             var releaseCount = new ReleaseCount(onReleaseCompleted, elementCount);
             for (var i = elementsRuntime.Count - 1; i >= 0; i--)
             {
-                Debug.LogError(elementsRuntime[i].GetFullInfo());
                 ReleaseElement(elementsRuntime[i], releaseCount);
             }
         }
