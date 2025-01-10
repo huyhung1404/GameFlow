@@ -160,7 +160,7 @@ namespace GameFlow
 <b><size=11>loadingId:</size></b> {loadingId}
 <b><size=11>isPreload:</size></b> {isPreload}
 <b><size=11>activeData:</size></b> {activeData}
-<b><size=11>onCompleted:</size></b> {onCompleted.Target}.{onCompleted.Method.Name}
+<b><size=11>onCompleted:</size></b> {onCompleted?.Target}.{onCompleted?.Method.Name}
 <b><size=11>activeHandle:</size></b> {activeHandle}
 <b><size=11>callbackOnRelease:</size></b> {callbackOnRelease}
 <b><size=11>isExecute:</size></b> {isExecute}
