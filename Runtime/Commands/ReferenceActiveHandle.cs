@@ -73,8 +73,8 @@ namespace GameFlow
 
         public override string ToString()
         {
-            return $"Status:{status} Scene:{resultInstance.Scene.name} Handle:{elementHandle?.name} " +
-                   $"OnCompeted{onCompleted?.Target}.{onCompleted?.Method.Name} OnLoadResult:{onLoadResult?.Target}.{onLoadResult?.Method}";
+            return $"[Status:{status}] [Scene:{resultInstance.Scene.name}] [Handle:{elementHandle?.name}] " +
+                   $"[OnCompeted:{onCompleted?.Target}.{onCompleted?.Method.Name}] [OnLoadResult:{onLoadResult?.Target}.{onLoadResult?.Method}]";
         }
     }
 
