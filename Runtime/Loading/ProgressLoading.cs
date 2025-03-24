@@ -64,6 +64,12 @@ namespace GameFlow
             targetProgress = value;
         }
 
+        public void ForceHide()
+        {
+            targetProgress = currentProgress = 1;
+            OnHide();
+        }
+
         protected abstract void SetValue(float value);
     }
 }
