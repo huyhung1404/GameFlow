@@ -67,7 +67,10 @@ namespace GameFlow
         public void ForceHide()
         {
             targetProgress = currentProgress = 1;
-            OnHide();
+            isShowing = false;
+            isShow = false;
+            ExecuteCallback();
+            gameObject.SetActive(false);
         }
 
         protected abstract void SetValue(float value);
