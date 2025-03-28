@@ -150,8 +150,8 @@ namespace GameFlow
             if (!callbackOnRelease) return;
             OnLoadResult(baseElement.runtimeInstance);
             var delegates = FlowObservable.Event(elementType);
-            delegates.RaiseOnActive();
             if (!ReferenceEquals(activeData, null)) delegates.RaiseOnActiveWithData(activeData);
+            delegates.RaiseOnActive();
         }
 
         internal override string GetFullInfo()
