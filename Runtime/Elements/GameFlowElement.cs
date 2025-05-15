@@ -11,7 +11,7 @@ namespace GameFlow
         [SerializeField, HideInInspector] internal bool includeInBuild = true;
         [SerializeField] internal AssetReferenceElement reference;
         [SerializeField] internal ElementReleaseMode releaseMode;
-        [SerializeField] internal ElementActiveMode activeMode;
+        [SerializeField] internal ElementActiveMode activeMode = ElementActiveMode.RE_ACTIVE;
 
         private void OnEnable()
         {
