@@ -118,6 +118,7 @@ namespace GameFlow
                     return;
                 case ElementActiveMode.MULTI_INSTANCE:
                     new CloneCommand(elementType, this).BuildClone();
+                    if (loadingId >= 0 && isLoadingOn) LoadingController.instance.LoadingOff(loadingId);
                     Release();
                     return;
             }
