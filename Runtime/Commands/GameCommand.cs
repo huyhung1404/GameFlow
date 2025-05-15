@@ -73,6 +73,19 @@ namespace GameFlow
             return UIElementsRuntimeManager.elementsRuntime[^1].GetType() == typeof(T);
         }
 
+        public static UnityEngine.Canvas GetCanvas<T>() where T : UIFlowElement
+        {
+            if (CurrentCanvasCount() == 0) return null;
+            var type = typeof(T);
+            for (var i = UIElementsRuntimeManager.elementsRuntime.Count - 1; i >= 0; i--)
+            {
+                var element = UIElementsRuntimeManager.elementsRuntime[i];
+                if (element.GetType() == type) return element.runtimeInstance.GetComponent<UnityEngine.Canvas>();
+            }
+
+            return null;
+        }
+
         public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame)
         {
             while (CurrentCanvasCount() != totalCanvas)
