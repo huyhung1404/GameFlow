@@ -9,9 +9,9 @@ namespace GameFlow
         internal GameObject runtimeInstance;
         internal Type elementType;
         [SerializeField, HideInInspector] internal bool includeInBuild = true;
-        [SerializeField] internal bool canReActive = true;
         [SerializeField] internal AssetReferenceElement reference;
         [SerializeField] internal ElementReleaseMode releaseMode;
+        [SerializeField] internal ElementActiveMode activeMode;
 
         private void OnEnable()
         {
@@ -28,7 +28,7 @@ namespace GameFlow
         {
             return $@"<b><size=11>runtimeInstance:</size></b> {runtimeInstance?.name}
 <b><size=11>includeInBuild:</size></b> {includeInBuild}
-<b><size=11>canReActive:</size></b> {canReActive}
+<b><size=11>canReActive:</size></b> {activeMode}
 <b><size=11>reference is scene:</size></b> {reference.IsScene()}
 <b><size=11>releaseMode:</size></b> {releaseMode}
 ";

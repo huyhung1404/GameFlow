@@ -7,6 +7,5 @@ namespace GameFlow
     public class UIFlowElement : GameFlowElement
     {
         internal int currentSortingOrder;
-        [SerializeField] internal bool fullScene;
     }
 }

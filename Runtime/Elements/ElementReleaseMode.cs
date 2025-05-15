@@ -1,5 +1,8 @@
-﻿namespace GameFlow
+﻿using System;
+
+namespace GameFlow
 {
+    [Serializable]
     public enum ElementReleaseMode
     {
         RELEASE_ON_CLOSE,

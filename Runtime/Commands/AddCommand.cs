@@ -64,7 +64,7 @@ namespace GameFlow
 
                     if (baseElement.runtimeInstance.activeSelf)
                     {
-                        IsCanReActiveElement();
+                        HandleActiveMode();
                         return true;
                     }
 
@@ -104,16 +104,21 @@ namespace GameFlow
             loading.OnCompleted(() => baseElement.reference.LoadGameObjectHandle(this));
         }
 
-        private void IsCanReActiveElement()
+        private void HandleActiveMode()
         {
-            if (!baseElement.canReActive)
+            switch (baseElement.activeMode)
             {
-                ErrorHandle.LogWarning("Element already exists, to re active please adjust in manager editor");
-                OnLoadResult(null);
-                return;
+                default:
+                case ElementActiveMode.SINGLETON:
+                    ErrorHandle.LogWarning("Element already exists, to re active please adjust in manager editor");
+                    OnLoadResult(null);
+                    return;
+                case ElementActiveMode.RE_ACTIVE:
+                    ReActiveElement();
+                    return;
+                case ElementActiveMode.MULTI_INSTANCE:
+                    return;
             }
-
-            ReActiveElement();
         }
 
         internal void HandleReferencePrefab(GameObject handle)

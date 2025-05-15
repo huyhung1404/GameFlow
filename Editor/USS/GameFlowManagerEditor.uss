@@ -79,19 +79,3 @@
     left: auto;
     top: 1px;
 }
-
-Toggle#full_scene > VisualElement > VisualElement#unity-checkmark {
-    position: relative;
-    left: auto;
-    top: auto;
-    right: auto;
-    bottom: auto;
-}
-
-Toggle#canReActive > VisualElement > VisualElement#unity-checkmark {
-    position: relative;
-    left: auto;
-    top: auto;
-    right: auto;
-    bottom: auto;
-}

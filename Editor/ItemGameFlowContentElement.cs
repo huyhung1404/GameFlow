@@ -16,8 +16,7 @@ namespace GameFlow.Editor
         private SerializedProperty includeInBuild;
         private SerializedProperty reference;
         private readonly EnumField releaseModeElement;
-        private readonly Toggle fullSceneElement;
-        private readonly Toggle canReActive;
+        private readonly EnumField activeModeElement;
         private Action<int> removeAtIndex;
         private bool showDialog;
         private bool isActive;
@@ -30,8 +29,7 @@ namespace GameFlow.Editor
             root.Q<IMGUIContainer>("title_gui").onGUIHandler = DrawTitleGUI;
             root.Q<Button>("remove_button").RegisterCallback<ClickEvent>(OnClickRemove);
             releaseModeElement = root.Q<EnumField>("release_mode");
-            fullSceneElement = root.Q<Toggle>("full_scene");
-            canReActive = root.Q<Toggle>("canReActive");
+            activeModeElement = root.Q<EnumField>("active_mode");
             Add(root);
         }
 
@@ -96,7 +94,7 @@ namespace GameFlow.Editor
             removeAtIndex?.Invoke(index.Value);
         }
 
-        public void UpdateGraphic(bool isUserInterface, SerializedProperty serialized, Action<int> removeAt)
+        public void UpdateGraphic(SerializedProperty serialized, Action<int> removeAt)
         {
             serializedProperty = serialized;
             removeAtIndex = removeAt;
@@ -105,18 +103,7 @@ namespace GameFlow.Editor
             includeInBuild = serializedObject.FindProperty(nameof(GameFlowElement.includeInBuild));
             reference = serializedObject.FindProperty(nameof(GameFlowElement.reference));
             releaseModeElement.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.releaseMode)));
-            canReActive.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.canReActive)));
-            if (isUserInterface)
-            {
-                fullSceneElement.BindProperty(serializedObject.FindProperty(nameof(UIFlowElement.fullScene)));
-                fullSceneElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-            }
-            else
-            {
-                fullSceneElement.Unbind();
-                fullSceneElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-            }
-
+            activeModeElement.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.activeMode)));
             isActive = true;
         }
 
