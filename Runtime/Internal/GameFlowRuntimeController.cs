@@ -137,6 +137,16 @@ namespace GameFlow.Internal
         }
 
         /// <summary>
+        /// Call before release old command
+        /// </summary>
+        /// <param name="command"></param>
+        internal static void OverriderCommand(CloneCommand command)
+        {
+            instance.current = command;
+            instance.current.PreUpdate();
+        }
+
+        /// <summary>
         /// Handle command
         /// </summary>
         /// <returns>True is can handle key back action</returns>

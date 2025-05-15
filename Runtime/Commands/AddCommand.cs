@@ -117,6 +117,8 @@ namespace GameFlow
                     ReActiveElement();
                     return;
                 case ElementActiveMode.MULTI_INSTANCE:
+                    new CloneCommand(elementType, this).BuildClone();
+                    Release();
                     return;
             }
         }
