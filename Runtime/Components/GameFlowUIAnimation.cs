@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameFlow.Component
 {
-    public abstract class GameFlowUIAnimation : MonoBehaviour
+    public abstract class GameFlowUIAnimation : ElementMonoBehaviours
     {
         [SerializeField, InternalDraw(DrawType.Element)] protected UIFlowElement element;
         protected UIElementCallbackEvent delegates;
@@ -45,6 +45,13 @@ namespace GameFlow.Component
             if (releaseHandle == null) return;
             releaseHandle.Next();
             releaseHandle = null;
+        }
+
+        internal override void SetElement(GameFlowElement value, System.Type type)
+        {
+            if (element != null && type != element.GetType()) return;
+            if (value is not UIFlowElement uiElement) return;
+            element = uiElement;
         }
     }
 }

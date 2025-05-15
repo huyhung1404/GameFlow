@@ -1,6 +1,8 @@
 ﻿using System;
 using GameFlow.Internal;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace GameFlow
 {
@@ -44,6 +46,15 @@ namespace GameFlow
         {
             try
             {
+                var reference = clone.CloneElementInstance().reference;
+                if (!reference.IsReady()) return false;
+                if (reference.IsScene())
+                {
+                    OnLoadResult(null);
+                    ErrorHandle.LogError("Multi Instance Not Support Scene!");
+                    return true;
+                }
+
                 Loading();
                 return true;
             }
@@ -61,15 +72,30 @@ namespace GameFlow
             if (baseCommand.loadingId >= 0) loading = LoadingController.instance.LoadingOn(baseCommand.loadingId);
             if (ReferenceEquals(loading, null))
             {
-                HandleReferencePrefab(clone.Instance());
+                HandleReferencePrefab();
                 return;
             }
 
             isLoadingOn = true;
-            loading.OnCompleted(() => HandleReferencePrefab(clone.Instance()));
+            loading.OnCompleted(HandleReferencePrefab);
         }
 
-        internal void HandleReferencePrefab(GameObject handle)
+        private void HandleReferencePrefab()
+        {
+            clone.CloneElementInstance().reference.InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer(baseCommand is AddUICommand)).Completed += handle =>
+            {
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    HandleReferencePrefab(handle.Result);
+                    return;
+                }
+
+                Addressables.Release(handle);
+                HandleReferencePrefab(null);
+            };
+        }
+
+        private void HandleReferencePrefab(GameObject handle)
         {
             if (ReferenceEquals(handle, null))
             {
@@ -77,6 +103,8 @@ namespace GameFlow
                 return;
             }
 
+            clone.CloneElementInstance().runtimeInstance = handle;
+            clone.ReplaceElement();
             clone.ActiveElement();
             callbackOnRelease = true;
             Release();

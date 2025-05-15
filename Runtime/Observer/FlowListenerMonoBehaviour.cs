@@ -1,8 +1,8 @@
-using UnityEngine;
+using GameFlow.Component;
 
 namespace GameFlow
 {
-    public class FlowListenerMonoBehaviour : MonoBehaviour, IFlowListener
+    public abstract class FlowListenerMonoBehaviour : ElementMonoBehaviours, IFlowListener
     {
         public virtual void OnActive()
         {

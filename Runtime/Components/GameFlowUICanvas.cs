@@ -91,5 +91,12 @@ namespace GameFlow.Component
         {
             return autoGetComponent ? GetComponent<Canvas>() : canvas;
         }
+
+        internal override void SetElement(GameFlowElement value, System.Type type)
+        {
+            if (element != null && type != element.GetType()) return;
+            if (value is not UIFlowElement uiElement) return;
+            element = uiElement;
+        }
     }
 }

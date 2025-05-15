@@ -1,24 +1,21 @@
-﻿using UnityEngine;
+﻿using GameFlow.Component;
+using UnityEngine;
 
 namespace GameFlow.Internal
 {
     public abstract class CloneElement
     {
-        internal CloneElement(GameFlowElement baseElement)
-        {
-            //Tao element
-            //SInh instance
-            //Doi element
-        }
+        internal abstract GameFlowElement CloneElementInstance();
 
-        internal GameObject Instance()
-        {
-            return null;
-        }
+        internal GameObject RuntimeInstance() => CloneElementInstance().runtimeInstance;
 
-        internal GameObject RuntimeInstance()
+        internal void ReplaceElement()
         {
-            return null;
+            var type = CloneElementInstance().elementType;
+            foreach (var child in RuntimeInstance().GetComponentsInChildren<ElementMonoBehaviours>())
+            {
+                child.SetElement(CloneElementInstance(), type);
+            }
         }
 
         internal abstract void ActiveElement();
