@@ -12,7 +12,7 @@ namespace GameFlow.Internal
         internal void ReplaceElement()
         {
             var type = CloneElementInstance().elementType;
-            foreach (var child in RuntimeInstance().GetComponentsInChildren<ElementMonoBehaviours>())
+            foreach (var child in RuntimeInstance().GetComponentsInChildren<ElementMonoBehaviours>(true))
             {
                 child.SetElement(CloneElementInstance(), type);
             }

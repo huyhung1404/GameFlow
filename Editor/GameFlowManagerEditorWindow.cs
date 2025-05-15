@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using GameFlow.Component;
 using GameFlow.Internal;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
@@ -29,6 +30,7 @@ namespace GameFlow.Editor
         private string scriptGeneratePath;
         private GameObject prefabGenerate;
         private string elementNameGenerate;
+        private GameFlowElement elementGenerate;
 
         public static void OpenWindow()
         {
@@ -107,7 +109,8 @@ namespace GameFlow.Editor
             templateText = templateText.Replace("%NAMESPACE%", kScriptsNameSpace);
             templateText = templateText.Replace("%NAME%", string.Format(kScriptsElementNameFormat, elementName));
             templateText = templateText.Replace("%BASE_CLASS_NAME%", isUserInterface ? nameof(UIFlowElement) : nameof(GameFlowElement));
-            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs", templateText);
+            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs",
+                templateText);
             AssetDatabase.ImportAsset(scriptGeneratePath);
         }
 
@@ -159,18 +162,19 @@ namespace GameFlow.Editor
             var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
             var type = GetAssemblyType(string.Format(kScriptsElementNameFormat, elementNameGenerate));
             if (type == null) throw new Exception("Type generate not exits");
-            var instance = (GameFlowElement)CreateInstance(type);
-            instance.includeInBuild = true;
-            instance.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
-            instance.reference = assetReferenceGenerate;
-            manager.elementCollection.GenerateElement(instance);
+            elementGenerate = (GameFlowElement)CreateInstance(type);
+            elementGenerate.includeInBuild = true;
+            elementGenerate.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
+            elementGenerate.reference = assetReferenceGenerate;
+            manager.elementCollection.GenerateElement(elementGenerate);
             if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
             {
                 Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());
             }
 
-            AssetDatabase.CreateAsset(instance, PackagePath.AssetsScriptableObjectFolderPath() + $"/{string.Format(kScriptsElementNameFormat, elementNameGenerate)}.asset");
-            AddressableUtility.AddAddressableGroupController(AssetDatabase.GetAssetPath(instance));
+            AssetDatabase.CreateAsset(elementGenerate,
+                PackagePath.AssetsScriptableObjectFolderPath() + $"/{string.Format(kScriptsElementNameFormat, elementNameGenerate)}.asset");
+            AddressableUtility.AddAddressableGroupController(AssetDatabase.GetAssetPath(elementGenerate));
             EditorUtility.SetDirty(manager);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
@@ -179,15 +183,28 @@ namespace GameFlow.Editor
         private static Type GetAssemblyType(string typeName)
         {
             typeName = kScriptsNameSpace + "." + typeName;
-            return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly?.GetType(typeName)).FirstOrDefault(type => type != null && type.IsSubclassOf(typeof(GameFlowElement)));
+            return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly?.GetType(typeName))
+                .FirstOrDefault(type => type != null && type.IsSubclassOf(typeof(GameFlowElement)));
         }
 
         private void SaveGenerateAssets()
         {
+            var type = elementGenerate.GetType();
             if (prefabGenerate != null)
             {
+                foreach (var child in prefabGenerate.GetComponentsInChildren<ElementMonoBehaviours>(true))
+                {
+                    child.SetElement(elementGenerate, type);
+                }
+
+                EditorUtility.SetDirty(prefabGenerate);
                 Selection.activeObject = prefabGenerate;
                 return;
+            }
+
+            foreach (var child in FindObjectsOfType<ElementMonoBehaviours>(true))
+            {
+                child.SetElement(elementGenerate, type);
             }
 
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
@@ -233,7 +250,7 @@ namespace GameFlow.Editor
                 }
                 catch (Exception)
                 {
-                    return;
+                    // ignored
                 }
 
                 return;
