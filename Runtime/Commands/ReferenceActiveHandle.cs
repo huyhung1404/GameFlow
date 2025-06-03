@@ -71,6 +71,11 @@ namespace GameFlow
             return reference.OperationHandle.PercentComplete;
         }
 
+        public bool IsDone()
+        {
+            return reference != null && reference.OperationHandle.IsDone;
+        }
+
         public override string ToString()
         {
             return $"[Status:{status}] [Scene:{resultInstance.Scene.name}] [Handle:{elementHandle?.name}] " +
