@@ -101,6 +101,11 @@ namespace GameFlow.Internal
             return null;
         }
 
+        internal BaseLoadingTypeController Get(int i)
+        {
+            return i < totalController ? controllers[i] : null;
+        }
+
         private void LateUpdate()
         {
             for (var i = 0; i < totalController; i++)

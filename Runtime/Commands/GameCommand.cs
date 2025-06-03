@@ -38,6 +38,11 @@ namespace GameFlow
         {
             return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOff(i);
         }
+        
+        public static BaseLoadingTypeController Get(int i)
+        {
+            return !LoadingController.isInitialization ? null : LoadingController.instance.Get(i);
+        }
 
         public static void LockFlow()
         {
