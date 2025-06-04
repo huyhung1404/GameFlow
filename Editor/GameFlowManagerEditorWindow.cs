@@ -161,7 +161,7 @@ namespace GameFlow.Editor
         {
             var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
             var type = GetAssemblyType(string.Format(kScriptsElementNameFormat, elementNameGenerate));
-            if (type == null) throw new Exception("Type generate not exits");
+            if (type == null) throw new Exception("Type generate not exists");
             elementGenerate = (GameFlowElement)CreateInstance(type);
             elementGenerate.includeInBuild = true;
             elementGenerate.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;

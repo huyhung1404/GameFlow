@@ -96,8 +96,7 @@ namespace GameFlow
 
             if (!isShowing || !isHiding || callback == null)
             {
-                ExecuteCallback();
-                ExecuteCallback();
+                if (ExecuteCallback()) ExecuteCallback();
                 callback = onCompleted;
                 return this;
             }

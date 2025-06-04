@@ -15,7 +15,7 @@ namespace GameFlow
         {
             baseElement = ElementsRuntimeManager.GetElement(elementType);
             if (baseElement) return;
-            ErrorHandle.LogWarning($"Element type {elementType.Name} is not exits in pool");
+            ErrorHandle.LogWarning($"Element type {elementType.Name} is not exists in pool");
             OnLoadResult(false);
             isExecute = true;
         }

@@ -90,14 +90,14 @@ namespace GameFlow.Internal
         internal BaseLoadingTypeController LoadingOn(int i)
         {
             if (i < totalController) return controllers[i].On();
-            ErrorHandle.LogError($"Loading controller not exits id {i}");
+            ErrorHandle.LogError($"Loading controller not exists id {i}");
             return null;
         }
 
         internal BaseLoadingTypeController LoadingOff(int i)
         {
             if (i < totalController) return controllers[i].Off();
-            ErrorHandle.LogError($"Loading controller not exits id {i}");
+            ErrorHandle.LogError($"Loading controller not exists id {i}");
             return null;
         }
 

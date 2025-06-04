@@ -28,7 +28,7 @@ namespace GameFlow.Editor
         private readonly GameFlowManager manager;
 
         private TextField textField;
-        private bool exitsElement;
+        private bool existsElement;
         private VisualElement elementTypeView;
         private VisualElement instanceIdView;
         private bool isScene;
@@ -38,7 +38,7 @@ namespace GameFlow.Editor
         private float generateSizePopup;
         private float idSizePopup;
         private float logSizePopup;
-        private bool fileNameIsExits;
+        private bool fileNameIsExists;
 
         public GenerateElementPopupWindow(bool isUserInterface, Generate generate)
         {
@@ -81,7 +81,7 @@ namespace GameFlow.Editor
             template.index = 0;
             editorWindow.rootVisualElement.Q<Button>("generate_button").RegisterCallback<ClickEvent>(GenerateButton);
             HandleTemplateView();
-            fileNameIsExits = false;
+            fileNameIsExists = false;
         }
 
         private void DrawTitle()
@@ -92,16 +92,16 @@ namespace GameFlow.Editor
         private void OnLogGUI()
         {
             logSizePopup = 0;
-            if (fileNameIsExits)
+            if (fileNameIsExists)
             {
                 logSizePopup += 40;
-                EditorGUILayout.HelpBox("Element name is exits.", MessageType.Error);
+                EditorGUILayout.HelpBox("Element name is exists.", MessageType.Error);
             }
 
             if ((isScene ? sceneTemplateChoices : prefabTemplateChoices).Count == 0)
             {
                 logSizePopup += 40;
-                EditorGUILayout.HelpBox("Element template is not exits.", MessageType.Error);
+                EditorGUILayout.HelpBox("Element template is not exists.", MessageType.Error);
             }
         }
 
@@ -130,8 +130,8 @@ namespace GameFlow.Editor
             {
                 var scriptsName = string.Format(GameFlowManagerEditorWindow.kScriptsElementNameFormat, newValue);
                 var type = elementsInProject.Find(type => type.Name == scriptsName);
-                exitsElement = type != null;
-                if (exitsElement)
+                existsElement = type != null;
+                if (existsElement)
                 {
                     if ((isUserInterface && type?.BaseType == typeof(UIFlowElement))
                         || (!isUserInterface && type?.BaseType == typeof(GameFlowElement)))
@@ -140,16 +140,16 @@ namespace GameFlow.Editor
                         idSizePopup = 30;
                         elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
                         generateSizePopup = 0;
-                        fileNameIsExits = false;
+                        fileNameIsExists = false;
                         return;
                     }
 
                     DisableAllView();
-                    fileNameIsExits = true;
+                    fileNameIsExists = true;
                     return;
                 }
 
-                fileNameIsExits = false;
+                fileNameIsExists = false;
                 elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
                 instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
                 generateSizePopup = 60;
@@ -163,8 +163,8 @@ namespace GameFlow.Editor
 
         private void DisableAllView()
         {
-            exitsElement = false;
-            fileNameIsExits = false;
+            existsElement = false;
+            fileNameIsExists = false;
             generateSizePopup = idSizePopup = 0;
             elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
             instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);

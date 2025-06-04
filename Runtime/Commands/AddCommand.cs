@@ -37,7 +37,7 @@ namespace GameFlow
                 return;
             }
 
-            ErrorHandle.LogError($"Element type {elementType.Name} not exits");
+            ErrorHandle.LogError($"Element type {elementType.Name} not exists");
             OnLoadResult(null);
             isExecute = true;
         }

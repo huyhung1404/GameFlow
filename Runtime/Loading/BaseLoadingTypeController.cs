@@ -59,24 +59,27 @@ namespace GameFlow
             return this;
         }
 
-        protected void ExecuteCallback()
+        protected bool ExecuteCallback()
         {
-            if (callback == null) return;
+            if (callback == null) return false;
             try
             {
                 callback.Invoke();
                 if (cacheCallback)
                 {
                     cacheCallback = false;
-                    return;
+                    return true;
                 }
 
                 callback = null;
+                return true;
             }
             catch (Exception e)
             {
                 ErrorHandle.LogException(e, "Execute Callback");
             }
+
+            return false;
         }
     }
 }
