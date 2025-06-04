@@ -85,6 +85,12 @@ namespace GameFlow
             canvasGroup.alpha = Mathf.Clamp01(alpha - speed * Time.deltaTime);
         }
 
+        /// <summary>
+        /// Assigns the onCompleted Action to the loading sequence.  
+        /// If a previous event exists, it will be executed before overwriting with the new condition.
+        /// </summary>
+        /// <param name="onCompleted">The Action to be invoked when the animation is completed</param>
+        /// <returns></returns>
         public override BaseLoadingTypeController OnCompleted(Action onCompleted)
         {
             if (!isEnable && !isShowing && !isShow)
