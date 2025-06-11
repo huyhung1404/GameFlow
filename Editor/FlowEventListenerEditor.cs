@@ -66,13 +66,16 @@ namespace GameFlow.Editor
                 RemoveEntry(toBeRemovedEntry);
             }
 
-            var btPosition = GUILayoutUtility.GetRect(addButtonContent, GUI.skin.button);
-            const float addButtonWidth = 200f;
-            btPosition.x += (btPosition.width - addButtonWidth) / 2;
-            btPosition.width = addButtonWidth;
-            if (GUI.Button(btPosition, addButtonContent))
+            if (serializedObject.FindProperty("element").objectReferenceValue != null)
             {
-                ShowAddTriggerMenu();
+                var btPosition = GUILayoutUtility.GetRect(addButtonContent, GUI.skin.button);
+                const float addButtonWidth = 200f;
+                btPosition.x += (btPosition.width - addButtonWidth) / 2;
+                btPosition.width = addButtonWidth;
+                if (GUI.Button(btPosition, addButtonContent))
+                {
+                    ShowAddTriggerMenu();
+                }
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -86,9 +89,10 @@ namespace GameFlow.Editor
         private void ShowAddTriggerMenu()
         {
             var menu = new GenericMenu();
+            var isUIFlowElement = serializedObject.FindProperty("element").objectReferenceValue is UIFlowElement;
             for (var i = 0; i < eventTypes.Length; ++i)
             {
-                var active = true;
+                var active = isUIFlowElement || i == 0 || i == 1 || i == 5;
                 for (var p = 0; p < delegatesProperty.arraySize; ++p)
                 {
                     var delegateEntry = delegatesProperty.GetArrayElementAtIndex(p);
