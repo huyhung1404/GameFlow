@@ -91,6 +91,11 @@ namespace GameFlow
             return null;
         }
 
+        public static UIFlowElement TopElement()
+        {
+            return CurrentCanvasCount() == 0 ? null : UIElementsRuntimeManager.elementsRuntime[CurrentCanvasCount() - 1];
+        }
+
         public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame)
         {
             while (CurrentCanvasCount() != totalCanvas)
