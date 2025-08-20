@@ -16,7 +16,8 @@
                 <ui:Foldout text="Settings" value="false" style="font-size: 10px; margin-left: 13px; margin-top: 5px;">
                     <uie:IntegerField label="Plane Distance" value="0" binding-path="planeDistance" name="plane_distance" />
                     <uie:IntegerField label="Sorting Order Offset" value="0" binding-path="sortingOrderOffset" name="sorting_order_offset" />
-                    <uie:IntegerField label="Loading Shield Sorting Order" value="42" name="loading_shield_sorting_order" />
+                    <uie:IntegerField label="Loading Shield Sorting Order" value="42" name="loading_shield_sorting_order" binding-path="loadingShieldSortingOrder" />
+                    <uie:Vector2Field label="Reference Resolution" name="reference_resolution" binding-path="referenceResolution" />
                 </ui:Foldout>
             </ui:Foldout>
         </ui:VisualElement>

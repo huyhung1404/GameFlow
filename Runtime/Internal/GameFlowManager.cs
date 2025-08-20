@@ -8,5 +8,6 @@ namespace GameFlow.Internal
         [SerializeField] internal int sortingOrderOffset = 5;
         [SerializeField] internal int planeDistance = 100;
         [SerializeField] internal int loadingShieldSortingOrder = 100;
+        [SerializeField] internal Vector2 referenceResolution = new Vector2(1080f, 2280f);
     }
 }

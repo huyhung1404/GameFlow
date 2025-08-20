@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using GameFlow.Internal;
+using UnityEngine;
 
 namespace GameFlow
 {
@@ -38,7 +39,7 @@ namespace GameFlow
         {
             return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOff(i);
         }
-        
+
         public static BaseLoadingTypeController Get(int i)
         {
             return !LoadingController.isInitialization ? null : LoadingController.instance.Get(i);
@@ -110,6 +111,11 @@ namespace GameFlow
             {
                 for (var i = 0; i < delayFrame; i++) yield return null;
             }
+        }
+
+        public static Vector2 CanvasReferenceResolution()
+        {
+            return GameFlowRuntimeController.Manager().referenceResolution;
         }
     }
 

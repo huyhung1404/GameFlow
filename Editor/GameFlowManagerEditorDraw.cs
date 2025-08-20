@@ -73,6 +73,7 @@ namespace GameFlow.Editor
             root.Q<IntegerField>("plane_distance").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.planeDistance)));
             root.Q<IntegerField>("sorting_order_offset").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.sortingOrderOffset)));
             root.Q<IntegerField>("loading_shield_sorting_order").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.loadingShieldSortingOrder)));
+            root.Q<Vector2Field>("reference_resolution").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.referenceResolution)));
             searchField.RegisterValueChangedCallback(_ => UpdateView());
         }
 

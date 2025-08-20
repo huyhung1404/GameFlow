@@ -68,6 +68,7 @@ namespace GameFlow.Component
 
         protected virtual void HandleCanvasScaler()
         {
+            canvasScale.referenceResolution = GameFlowRuntimeController.Manager().referenceResolution;
             canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < canvasScale.referenceResolution.x / canvasScale.referenceResolution.y ? 0 : 1;
         }
 

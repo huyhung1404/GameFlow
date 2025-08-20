@@ -1,7 +1,9 @@
 using GameFlow.Component;
+using GameFlow.Internal;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine.UI;
 
 namespace GameFlow.Editor
 {
@@ -25,6 +27,8 @@ namespace GameFlow.Editor
                 var canvas = uiCanvas.GetCanvas();
                 if (canvas == null) continue;
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                var scale = canvas.GetComponent<CanvasScaler>();
+                if (scale != null) scale.referenceResolution = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath()).referenceResolution;
                 if (canvas.worldCamera != null) continue;
                 canvas.worldCamera = InitializationCamera(uiCanvas);
             }
