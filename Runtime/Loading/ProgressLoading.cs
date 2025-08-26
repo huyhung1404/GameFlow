@@ -7,10 +7,10 @@ namespace GameFlow
     public abstract class ProgressLoading : BaseLoadingTypeController
     {
         [SerializeField] private float hideSpeed = 0.15f;
+        [SerializeField] private float moveSpeed = 0.15f;
         private CanvasGroup canvasGroup;
         private float currentProgress;
         private float targetProgress;
-        private float lastTime;
         private bool isShowing;
 
         protected override void OnShow()
@@ -20,7 +20,6 @@ namespace GameFlow
             SetValue(0);
             currentProgress = targetProgress = 0;
             canvasGroup.alpha = 1;
-            lastTime = Time.realtimeSinceStartup;
             isShow = isShowing = true;
             timeExecute = hideSpeed;
         }
@@ -52,11 +51,15 @@ namespace GameFlow
                 return;
             }
 
-            currentProgress = Mathf.Lerp(currentProgress, targetProgress, (Time.realtimeSinceStartup - lastTime) * 0.9f);
+            currentProgress = LerpProgress();
             SetValue(currentProgress);
-            lastTime = targetProgress < 1 ? Time.realtimeSinceStartup : -1;
             if (currentProgress < 1) return;
             OnHide();
+        }
+
+        public virtual float LerpProgress()
+        {
+            return Mathf.Claim(currentProgress + Time.deltaTime * moveSpeed, 0, targetProgress);
         }
 
         public void UpdateProgress(float value)
