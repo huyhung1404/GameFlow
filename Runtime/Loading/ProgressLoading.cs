@@ -63,6 +63,9 @@ namespace GameFlow
         {
             targetProgress = value;
         }
+        
+        public float CurrentProgress() => currentProgress;
+        public float TargetProgress() => targetProgress;
 
         public void ForceHide()
         {
