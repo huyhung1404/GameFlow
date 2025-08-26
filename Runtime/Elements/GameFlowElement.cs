@@ -33,5 +33,20 @@ namespace GameFlow
 <b><size=11>releaseMode:</size></b> {releaseMode}
 ";
         }
+
+        public void AddElement()
+        {
+            GameCommand.Add(elementType).Build();
+        }
+
+        public void ReleaseElement()
+        {
+            GameCommand.Release(elementType).Build();
+        }
+
+        public void LoadElement()
+        {
+            GameCommand.Load(elementType).Build();
+        }
     }
 }

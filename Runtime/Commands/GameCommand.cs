@@ -11,13 +11,22 @@ namespace GameFlow
 
         public static AddCommand Add<T>() where T : GameFlowElement
         {
-            var type = typeof(T);
+            return Add(typeof(T));
+        }
+
+        public static AddCommand Add(Type type)
+        {
             return type.IsSubclassOf(UIElementType) ? new AddUICommand(type) : new AddGameFlowCommand(type);
         }
 
         public static LoadCommand Load<T>() where T : UIFlowElement
         {
-            return new LoadCommand(typeof(T));
+            return Load(typeof(T));
+        }
+
+        public static LoadCommand Load(Type type)
+        {
+            return new LoadCommand(type);
         }
 
         public static ReleaseCommand Release<T>() where T : GameFlowElement
@@ -25,7 +34,7 @@ namespace GameFlow
             return Release(typeof(T));
         }
 
-        internal static ReleaseCommand Release(Type type)
+        public static ReleaseCommand Release(Type type)
         {
             return type.IsSubclassOf(UIElementType) ? new ReleaseUIElementCommand(type) : new ReleaseElementCommand(type);
         }
