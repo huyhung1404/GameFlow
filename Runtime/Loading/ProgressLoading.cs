@@ -59,7 +59,7 @@ namespace GameFlow
 
         public virtual float LerpProgress()
         {
-            return Mathf.Claim(currentProgress + Time.deltaTime * moveSpeed, 0, targetProgress);
+            return Mathf.Clamp(currentProgress + Time.deltaTime * moveSpeed, 0, targetProgress);
         }
 
         public void UpdateProgress(float value)
