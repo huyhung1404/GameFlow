@@ -13,6 +13,7 @@ namespace GameFlow.Internal
     internal class GameFlowRuntimeController : MonoBehaviour
     {
         private static readonly Queue<Command> commands = new Queue<Command>(5);
+        [SerializeField] private bool dontDestroyOnLoad = true;
         [SerializeField] private Transform elementContainer;
         [SerializeField] private Transform uiElementContainer;
         internal static OnBannerUpdate onBannerUpdate;
@@ -82,7 +83,7 @@ namespace GameFlow.Internal
         private void Initialization()
         {
             instance = this;
-            DontDestroyOnLoad(this);
+            if (dontDestroyOnLoad) DontDestroyOnLoad(this);
             LoadManager(3);
         }
 

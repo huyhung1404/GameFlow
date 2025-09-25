@@ -21,12 +21,12 @@ namespace GameFlow
         protected bool cacheCallback;
         protected float timeExecute;
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
             isEnable = true;
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             isEnable = false;
         }
