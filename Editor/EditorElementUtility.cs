@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using GameFlow.Internal;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace GameFlow.Editor
@@ -31,9 +32,18 @@ namespace GameFlow.Editor
 
         public static AssetReference GetAssetReferenceValue(this SerializedProperty property)
         {
-            var manager = (GameFlowManager)property.serializedObject.targetObject;
-            var index = ExtractArrayIndex(property);
-            return index == null ? null : manager.elementCollection.GetIndex(index.Value)?.reference;
+            switch (property.serializedObject.targetObject)
+            {
+                case GameFlowElement element:
+                    return element.reference;
+                case GameFlowManager manager:
+                {
+                    var index = ExtractArrayIndex(property);
+                    return index == null ? null : manager.elementCollection.GetIndex(index.Value)?.reference;
+                }
+                default:
+                    return null;
+            }
         }
 
         public static int? ExtractArrayIndex(this SerializedProperty property)
