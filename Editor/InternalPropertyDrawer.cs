@@ -8,7 +8,7 @@ namespace GameFlow.Editor
     [CustomPropertyDrawer(typeof(InternalDrawAttribute))]
     public class InternalPropertyDrawer : PropertyDrawer
     {
-        private static UnityEventDrawer eventDrawer;
+        private UnityEventDrawer eventDrawer;
         private const int k_Space = 2;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -48,7 +48,7 @@ namespace GameFlow.Editor
             EditorGUI.PropertyField(new Rect(position.x + position.width - 30, position.y, 30, position.height), offsetCanvasGroup, GUIContent.none);
         }
 
-        private static void DrawSafeView(Rect position, SerializedProperty property)
+        private void DrawSafeView(Rect position, SerializedProperty property)
         {
             var ignore = property.serializedObject.FindProperty("safeAreaIgnore");
             EditorGUI.LabelField(new Rect(position.x, position.y, 80, position.height), "Safe View");
@@ -56,9 +56,9 @@ namespace GameFlow.Editor
             EditorGUI.PropertyField(new Rect(position.x + (position.width - 80), position.y, 80, position.height), ignore, GUIContent.none);
         }
 
-        private static void DrawKeyBack(Rect position, SerializedProperty property, GUIContent label)
+        private void DrawKeyBack(Rect position, SerializedProperty property, GUIContent label)
         {
-            eventDrawer ??= new UnityEventDrawer();
+            eventDrawer = new UnityEventDrawer();
             eventDrawer.OnGUI(position, property, label);
             var useDefaultProperty = property.serializedObject.FindProperty("useDefaultKeyBack");
             EditorGUI.PropertyField(new Rect(position.x + position.width - 18, position.y + 1, 18, 18), useDefaultProperty, GUIContent.none);

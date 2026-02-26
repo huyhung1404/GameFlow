@@ -3,59 +3,63 @@ using UnityEngine;
 
 namespace GameFlow.Component
 {
+    [Flags]
     [Serializable]
     public enum SafeAreaIgnore
     {
-        NONE,
-        HEIGHT,
-        WIDTH,
-        TOP,
-        BOTTOM,
-        LEFT,
-        RIGHT,
-        ALL
+        None = 0,
+        Top = 1 << 0,
+        Bottom = 1 << 1,
+        Left = 1 << 2,
+        Right = 1 << 3,
+        Height = Top | Bottom,
+        Width = Left | Right,
+        All = Height | Width
     }
 
     public static class UnitySafeArea
     {
         public static void ApplySafeArea(this RectTransform panel, Rect safeArea, SafeAreaIgnore ignore)
         {
-            if (ignore == SafeAreaIgnore.ALL) return;
+            if (ignore == SafeAreaIgnore.All)
+            {
+                panel.anchorMin = Vector2.zero;
+                panel.anchorMax = Vector2.one;
+                return;
+            }
+
+            var screenWidth = Screen.width;
+            var screenHeight = Screen.height;
+
             var anchorMin = safeArea.position;
             var anchorMax = safeArea.position + safeArea.size;
-            anchorMin.x /= Screen.width;
-            anchorMin.y /= Screen.height;
-            anchorMax.x /= Screen.width;
-            anchorMax.y /= Screen.height;
 
-            switch (ignore)
-            {
-                case SafeAreaIgnore.NONE:
-                    break;
-                case SafeAreaIgnore.HEIGHT:
-                    anchorMin.y = 0;
-                    anchorMax.y = 1;
-                    break;
-                case SafeAreaIgnore.WIDTH:
-                    anchorMin.x = 0;
-                    anchorMax.x = 1;
-                    break;
-                case SafeAreaIgnore.TOP:
-                    anchorMax.y = 1;
-                    break;
-                case SafeAreaIgnore.BOTTOM:
-                    anchorMin.y = 0;
-                    break;
-                case SafeAreaIgnore.LEFT:
-                    anchorMin.x = 0;
-                    break;
-                case SafeAreaIgnore.RIGHT:
-                    anchorMax.x = 1;
-                    break;
-            }
+            anchorMin.x /= screenWidth;
+            anchorMin.y /= screenHeight;
+            anchorMax.x /= screenWidth;
+            anchorMax.y /= screenHeight;
+
+            if ((ignore & SafeAreaIgnore.Top) != 0) anchorMax.y = 1f;
+            if ((ignore & SafeAreaIgnore.Bottom) != 0) anchorMin.y = 0f;
+            if ((ignore & SafeAreaIgnore.Left) != 0) anchorMin.x = 0f;
+            if ((ignore & SafeAreaIgnore.Right) != 0) anchorMax.x = 1f;
 
             panel.anchorMin = anchorMin;
             panel.anchorMax = anchorMax;
+        }
+
+        public static RectOffset GetOffset()
+        {
+            var safeArea = Screen.safeArea;
+            var screenWidth = Screen.width;
+            var screenHeight = Screen.height;
+
+            var leftOffset = safeArea.x;
+            var bottomOffset = safeArea.y;
+            var rightOffset = screenWidth - (safeArea.x + safeArea.width);
+            var topOffset = screenHeight - (safeArea.y + safeArea.height);
+
+            return new RectOffset((int)leftOffset, (int)rightOffset, (int)topOffset, (int)bottomOffset);
         }
     }
 }
