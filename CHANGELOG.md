@@ -1,5 +1,9 @@
 # Code Package for Unity
 
+## [2.0.0] - 2026-02-26
+- New GUI
+- Rename scripts
+
 ## [1.0.1] - 2024-07-05
 
 - Fix bug 1.0.0

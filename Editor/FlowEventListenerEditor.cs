@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using GameFlow.Component;
 using UnityEditor;
 using UnityEngine;
@@ -9,51 +8,51 @@ namespace GameFlow.Editor
     [CustomEditor(typeof(FlowEventListener))]
     public class FlowEventListenerEditor : UnityEditor.Editor
     {
-        private SerializedProperty elementProperty;
-        private SerializedProperty delegatesProperty;
-        private GUIContent iconToolbarMinus;
-        private GUIContent eventIDName;
-        private GUIContent[] eventTypes;
-        private GUIContent addButtonContent;
+        private SerializedProperty _elementProperty;
+        private SerializedProperty _delegatesProperty;
+        private GUIContent _iconToolbarMinus;
+        private GUIContent _eventIDName;
+        private GUIContent[] _eventTypes;
+        private GUIContent _addButtonContent;
 
         private void OnEnable()
         {
-            elementProperty = serializedObject.FindProperty("element");
-            delegatesProperty = serializedObject.FindProperty("delegates");
-            addButtonContent = EditorGUIUtility.TrTextContent("Add New Event");
-            eventIDName = new GUIContent("");
-            iconToolbarMinus = new GUIContent(EditorGUIUtility.IconContent("Toolbar Minus"))
+            _elementProperty = serializedObject.FindProperty("Element");
+            _delegatesProperty = serializedObject.FindProperty("Delegates");
+            _addButtonContent = EditorGUIUtility.TrTextContent("Add New Event");
+            _eventIDName = new GUIContent("");
+            _iconToolbarMinus = new GUIContent(EditorGUIUtility.IconContent("Toolbar Minus"))
             {
                 tooltip = "Remove all events in this list."
             };
 
             var eventNames = Enum.GetNames(typeof(FlowEventListener.EventTriggerType));
-            eventTypes = new GUIContent[eventNames.Length];
+            _eventTypes = new GUIContent[eventNames.Length];
             for (var i = 0; i < eventNames.Length; ++i)
             {
-                eventTypes[i] = new GUIContent(eventNames[i]);
+                _eventTypes[i] = new GUIContent(eventNames[i]);
             }
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            EditorGUILayout.PropertyField(elementProperty, GUIContent.none);
+            EditorGUILayout.PropertyField(_elementProperty, GUIContent.none);
             var toBeRemovedEntry = -1;
 
             EditorGUILayout.Space();
-            var removeButtonSize = GUIStyle.none.CalcSize(iconToolbarMinus);
+            var removeButtonSize = GUIStyle.none.CalcSize(_iconToolbarMinus);
 
-            for (var i = 0; i < delegatesProperty.arraySize; ++i)
+            for (var i = 0; i < _delegatesProperty.arraySize; ++i)
             {
-                var delegateProperty = delegatesProperty.GetArrayElementAtIndex(i);
+                var delegateProperty = _delegatesProperty.GetArrayElementAtIndex(i);
                 var eventProperty = delegateProperty.FindPropertyRelative("eventID");
                 var callbacksProperty = delegateProperty.FindPropertyRelative("callback");
-                eventIDName.text = eventProperty.enumDisplayNames[eventProperty.enumValueIndex];
-                EditorGUILayout.PropertyField(callbacksProperty, eventIDName);
+                _eventIDName.text = eventProperty.enumDisplayNames[eventProperty.enumValueIndex];
+                EditorGUILayout.PropertyField(callbacksProperty, _eventIDName);
                 var callbackRect = GUILayoutUtility.GetLastRect();
                 var removeButtonPos = new Rect(callbackRect.xMax - removeButtonSize.x - 8, callbackRect.y + 1, removeButtonSize.x, removeButtonSize.y);
-                if (GUI.Button(removeButtonPos, iconToolbarMinus, GUIStyle.none))
+                if (GUI.Button(removeButtonPos, _iconToolbarMinus, GUIStyle.none))
                 {
                     toBeRemovedEntry = i;
                 }
@@ -68,11 +67,11 @@ namespace GameFlow.Editor
 
             if (serializedObject.FindProperty("element").objectReferenceValue != null)
             {
-                var btPosition = GUILayoutUtility.GetRect(addButtonContent, GUI.skin.button);
+                var btPosition = GUILayoutUtility.GetRect(_addButtonContent, GUI.skin.button);
                 const float addButtonWidth = 200f;
                 btPosition.x += (btPosition.width - addButtonWidth) / 2;
                 btPosition.width = addButtonWidth;
-                if (GUI.Button(btPosition, addButtonContent))
+                if (GUI.Button(btPosition, _addButtonContent))
                 {
                     ShowAddTriggerMenu();
                 }
@@ -83,19 +82,19 @@ namespace GameFlow.Editor
 
         private void RemoveEntry(int toBeRemovedEntry)
         {
-            delegatesProperty.DeleteArrayElementAtIndex(toBeRemovedEntry);
+            _delegatesProperty.DeleteArrayElementAtIndex(toBeRemovedEntry);
         }
 
         private void ShowAddTriggerMenu()
         {
             var menu = new GenericMenu();
             var isUIFlowElement = serializedObject.FindProperty("element").objectReferenceValue is UIFlowElement;
-            for (var i = 0; i < eventTypes.Length; ++i)
+            for (var i = 0; i < _eventTypes.Length; ++i)
             {
                 var active = isUIFlowElement || i == 0 || i == 1 || i == 5;
-                for (var p = 0; p < delegatesProperty.arraySize; ++p)
+                for (var p = 0; p < _delegatesProperty.arraySize; ++p)
                 {
-                    var delegateEntry = delegatesProperty.GetArrayElementAtIndex(p);
+                    var delegateEntry = _delegatesProperty.GetArrayElementAtIndex(p);
                     var eventProperty = delegateEntry.FindPropertyRelative("eventID");
                     if (eventProperty.enumValueIndex == i)
                     {
@@ -105,11 +104,11 @@ namespace GameFlow.Editor
 
                 if (active)
                 {
-                    menu.AddItem(eventTypes[i], false, OnAddNewSelected, i);
+                    menu.AddItem(_eventTypes[i], false, OnAddNewSelected, i);
                 }
                 else
                 {
-                    menu.AddDisabledItem(eventTypes[i]);
+                    menu.AddDisabledItem(_eventTypes[i]);
                 }
             }
 
@@ -119,53 +118,24 @@ namespace GameFlow.Editor
 
         private void OnAddNewSelected(object index)
         {
-            serializedObject.ApplyModifiedProperties();
-            var selected = (int)index;
-            var listener = (FlowEventListener)target;
-            listener.delegates ??= new List<FlowEventListener.Entry>();
-            switch ((FlowEventListener.EventTriggerType)selected)
-            {
-                case FlowEventListener.EventTriggerType.OnActive:
-                    listener.delegates.Add(new FlowEventListener.OnActiveEntry
-                    {
-                        eventID = FlowEventListener.EventTriggerType.OnActive
-                    });
-                    break;
-                case FlowEventListener.EventTriggerType.OnActiveWithData:
-                    listener.delegates.Add(new FlowEventListener.OnActiveWithDataEntry
-                    {
-                        eventID = FlowEventListener.EventTriggerType.OnActiveWithData
-                    });
-                    break;
-                case FlowEventListener.EventTriggerType.OnShowCompleted:
-                    listener.delegates.Add(new FlowEventListener.OnShowCompletedEntry
-                    {
-                        eventID = FlowEventListener.EventTriggerType.OnShowCompleted
-                    });
-                    break;
-                case FlowEventListener.EventTriggerType.OnKeyBack:
-                    listener.delegates.Add(new FlowEventListener.OnKeyBackEntry
-                    {
-                        eventID = FlowEventListener.EventTriggerType.OnKeyBack
-                    });
-                    break;
-                case FlowEventListener.EventTriggerType.OnReFocus:
-                    listener.delegates.Add(new FlowEventListener.OnReFocusEntry
-                    {
-                        eventID = FlowEventListener.EventTriggerType.OnReFocus
-                    });
-                    break;
-                case FlowEventListener.EventTriggerType.OnRelease:
-                    listener.delegates.Add(new FlowEventListener.OnReleaseEntry
-                    {
-                        eventID = FlowEventListener.EventTriggerType.OnRelease
-                    });
-                    break;
-                default:
-                    return;
-            }
-
             serializedObject.Update();
+            var selected = (FlowEventListener.EventTriggerType)index;
+            var newEntry = selected switch
+            {
+                FlowEventListener.EventTriggerType.OnActive => (FlowEventListener.Entry)new FlowEventListener.OnActiveEntry { eventID = selected },
+                FlowEventListener.EventTriggerType.OnActiveWithData => new FlowEventListener.OnActiveWithDataEntry { eventID = selected },
+                FlowEventListener.EventTriggerType.OnShowCompleted => new FlowEventListener.OnShowCompletedEntry { eventID = selected },
+                FlowEventListener.EventTriggerType.OnKeyBack => new FlowEventListener.OnKeyBackEntry { eventID = selected },
+                FlowEventListener.EventTriggerType.OnReFocus => new FlowEventListener.OnReFocusEntry { eventID = selected },
+                FlowEventListener.EventTriggerType.OnRelease => new FlowEventListener.OnReleaseEntry { eventID = selected },
+                _ => null
+            };
+            
+            if (newEntry == null) return;
+            _delegatesProperty.arraySize++;
+            var newElementProperty = _delegatesProperty.GetArrayElementAtIndex(_delegatesProperty.arraySize - 1);
+            newElementProperty.managedReferenceValue = newEntry;
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }

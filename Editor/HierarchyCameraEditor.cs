@@ -20,16 +20,36 @@ namespace GameFlow.Editor
         {
             if (Application.isPlaying) return;
             var prefab = PrefabStageUtility.GetCurrentPrefabStage();
-            var controller = prefab == null ? FindObjectsOfType<GameFlowUICanvas>() : prefab.prefabContentsRoot.GetComponentsInChildren<GameFlowUICanvas>();
-            if (controller == null) return;
+
+#if UNITY_6000_0_OR_NEWER
+            var controller = prefab == null 
+                ? FindObjectsByType<GameFlowUICanvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None) 
+                : prefab.prefabContentsRoot.GetComponentsInChildren<GameFlowUICanvas>();
+#else
+            var controller = prefab == null
+                ? FindObjectsOfType<GameFlowUICanvas>()
+                : prefab.prefabContentsRoot.GetComponentsInChildren<GameFlowUICanvas>();
+#endif
+
+            if (controller == null || controller.Length == 0) return;
+            var managerAsset = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
+            var referenceResolution = managerAsset != null ? managerAsset.referenceResolution : new Vector2(1920, 1080);
+
             foreach (var uiCanvas in controller)
             {
                 var canvas = uiCanvas.GetCanvas();
                 if (canvas == null) continue;
+
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
+
                 var scale = canvas.GetComponent<CanvasScaler>();
-                if (scale != null) scale.referenceResolution = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath()).referenceResolution;
+                if (scale != null)
+                {
+                    scale.referenceResolution = referenceResolution;
+                }
+
                 if (canvas.worldCamera != null) continue;
+
                 canvas.worldCamera = InitializationCamera(uiCanvas);
             }
         }

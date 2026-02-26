@@ -9,13 +9,15 @@ namespace GameFlow.Editor
 {
     public class GameFlowViewerEditorWindow : EditorWindow
     {
-        private static Texture2D evenTexture;
-        private static Texture2D oddTexture;
-        internal static GUIStyle evenStyle;
-        internal static GUIStyle oddStyle;
-        internal static GUIStyle labelStyle;
-        private IMGUIContainer listView;
-        private IMGUIContainer infoView;
+        private const string k_uxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowViewerEditorWindow.uxml";
+        private static Texture2D s_evenTexture;
+        private static Texture2D s_oddTexture;
+        internal static GUIStyle s_EvenStyle;
+        internal static GUIStyle s_OddStyle;
+        internal static GUIStyle s_LabelStyle;
+        private IMGUIContainer _listView;
+        private IMGUIContainer _infoView;
+        private ViewType _currentViewType;
 
         public enum ViewType
         {
@@ -23,9 +25,6 @@ namespace GameFlow.Editor
             Event,
             Element
         }
-
-        private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowViewerEditorWindow.uxml";
-        private ViewType currentViewType;
 
         public static void OpenWindow()
         {
@@ -38,54 +37,54 @@ namespace GameFlow.Editor
         private void OnEnable()
         {
             EditorApplication.update += OnUpdate;
-            evenTexture = new Texture2D(1, 1);
-            evenTexture.SetPixel(0, 0, new Color(0.4f, 0.4f, 0.4f, 0.4f));
-            evenTexture.Apply();
+            s_evenTexture = new Texture2D(1, 1);
+            s_evenTexture.SetPixel(0, 0, new Color(0.4f, 0.4f, 0.4f, 0.4f));
+            s_evenTexture.Apply();
 
-            oddTexture = new Texture2D(1, 1);
-            oddTexture.SetPixel(0, 0, new Color(0.2f, 0.2f, 0.2f, 0.6f));
-            oddTexture.Apply();
+            s_oddTexture = new Texture2D(1, 1);
+            s_oddTexture.SetPixel(0, 0, new Color(0.2f, 0.2f, 0.2f, 0.6f));
+            s_oddTexture.Apply();
         }
 
         private void OnUpdate()
         {
             if (!Application.isPlaying) return;
             if (Time.frameCount % 3 != 0) return;
-            if (listView == null) return;
-            if (infoView == null) return;
-            listView.MarkDirtyRepaint();
-            infoView.MarkDirtyRepaint();
+            if (_listView == null) return;
+            if (_infoView == null) return;
+            _listView.MarkDirtyRepaint();
+            _infoView.MarkDirtyRepaint();
         }
 
         private void OnDisable()
         {
             EditorApplication.update -= OnUpdate;
-            DestroyImmediate(evenTexture);
-            DestroyImmediate(oddTexture);
+            DestroyImmediate(s_evenTexture);
+            DestroyImmediate(s_oddTexture);
         }
 
         private void CreateGUI()
         {
-            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(kUxmlPath);
+            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_uxmlPath);
             VisualElement treeFromUXML = visualTree.Instantiate();
             treeFromUXML.style.height = Length.Percent(100);
-            listView = treeFromUXML.Q<IMGUIContainer>("list_view");
-            listView.onGUIHandler += ListViewGUI;
-            infoView = treeFromUXML.Q<IMGUIContainer>("element_content");
-            infoView.onGUIHandler += InfoGUI;
+            _listView = treeFromUXML.Q<IMGUIContainer>("list_view");
+            _listView.onGUIHandler += ListViewGUI;
+            _infoView = treeFromUXML.Q<IMGUIContainer>("element_content");
+            _infoView.onGUIHandler += InfoGUI;
             rootVisualElement.Add(treeFromUXML);
             InitToggle();
         }
 
         private void InitToggle()
         {
-            currentViewType = (ViewType)EditorPrefs.GetInt("com.huyhung1404.gameflow.viewerViewType", 0);
+            _currentViewType = (ViewType)EditorPrefs.GetInt("com.huyhung1404.gameflow.viewerViewType", 0);
             var commandToggle = rootVisualElement.Q<ToolbarToggle>("command_toggle");
-            commandToggle.value = currentViewType == ViewType.Command;
+            commandToggle.value = _currentViewType == ViewType.Command;
             var eventToggle = rootVisualElement.Q<ToolbarToggle>("event_toggle");
-            eventToggle.value = currentViewType == ViewType.Event;
+            eventToggle.value = _currentViewType == ViewType.Event;
             var elementToggle = rootVisualElement.Q<ToolbarToggle>("element_toggle");
-            elementToggle.value = currentViewType == ViewType.Element;
+            elementToggle.value = _currentViewType == ViewType.Element;
             commandToggle.RegisterCallback(ToggleCallback(commandToggle, eventToggle, elementToggle, ViewType.Command));
             eventToggle.RegisterCallback(ToggleCallback(eventToggle, commandToggle, elementToggle, ViewType.Event));
             elementToggle.RegisterCallback(ToggleCallback(elementToggle, commandToggle, eventToggle, ViewType.Element));
@@ -99,8 +98,8 @@ namespace GameFlow.Editor
                 if (!otherToggle.value && !otherToggle2.value) return;
                 otherToggle.value = false;
                 otherToggle2.value = false;
-                currentViewType = viewType;
-                EditorPrefs.SetInt("com.huyhung1404.gameflow.viewerViewType", (int)currentViewType);
+                _currentViewType = viewType;
+                EditorPrefs.SetInt("com.huyhung1404.gameflow.viewerViewType", (int)_currentViewType);
             };
         }
 
@@ -108,27 +107,27 @@ namespace GameFlow.Editor
         {
             if (!Application.isPlaying) return;
 
-            evenStyle ??= new GUIStyle
+            s_EvenStyle ??= new GUIStyle
             {
                 normal = new GUIStyleState
                 {
-                    background = evenTexture
+                    background = s_evenTexture
                 }
             };
 
-            oddStyle ??= new GUIStyle
+            s_OddStyle ??= new GUIStyle
             {
                 normal = new GUIStyleState
                 {
-                    background = oddTexture
+                    background = s_oddTexture
                 }
             };
-            labelStyle ??= new GUIStyle(GUI.skin.label)
+            s_LabelStyle ??= new GUIStyle(GUI.skin.label)
             {
                 richText = true
             };
 
-            switch (currentViewType)
+            switch (_currentViewType)
             {
                 default:
                 case ViewType.Command:
@@ -146,7 +145,7 @@ namespace GameFlow.Editor
         private void InfoGUI()
         {
             if (!Application.isPlaying) return;
-            switch (currentViewType)
+            switch (_currentViewType)
             {
                 default:
                 case ViewType.Command:
@@ -209,16 +208,16 @@ namespace GameFlow.Editor
             var isCurrent = currentCommand == current;
             var isWaitBuild = Command.waitBuildCommands.Contains(currentCommand);
             scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
-            EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, currentCommand).Trim(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, currentCommand).Trim(), GameFlowViewerEditorWindow.s_LabelStyle);
             EditorGUILayout.Space(2);
-            EditorGUILayout.TextArea(currentCommand.GetFullInfo(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.TextArea(currentCommand.GetFullInfo(), GameFlowViewerEditorWindow.s_LabelStyle);
             EditorGUILayout.EndScrollView();
         }
 
         private static void DrawElement(int index, Command command, bool isCurrent, bool isWaitBuild)
         {
-            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
-            EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, command), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.s_EvenStyle : GameFlowViewerEditorWindow.s_OddStyle);
+            EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, command), GameFlowViewerEditorWindow.s_LabelStyle);
             HandleMouseClick(GUILayoutUtility.GetLastRect(), command);
             EditorGUILayout.EndHorizontal();
         }
@@ -264,19 +263,19 @@ namespace GameFlow.Editor
             if (currentInfoType == null) return;
             if (currentCallback == null) return;
             scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
-            EditorGUILayout.LabelField(GetTitle(currentCallback is UIElementCallbackEvent, currentInfoType).Trim(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.LabelField(GetTitle(currentCallback is UIElementCallbackEvent, currentInfoType).Trim(), GameFlowViewerEditorWindow.s_LabelStyle);
             EditorGUILayout.Space(2);
-            EditorGUILayout.TextArea(currentCallback.ToString(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.TextArea(currentCallback.ToString(), GameFlowViewerEditorWindow.s_LabelStyle);
             EditorGUILayout.EndScrollView();
         }
 
         private static void DrawElement(int index, Type type, ElementCallbackEvent callbackEvent)
         {
-            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
+            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.s_EvenStyle : GameFlowViewerEditorWindow.s_OddStyle);
             callbackEvent.GetInfo(out var isUserInterface, out var eventCount, out var listenerCount);
-            EditorGUILayout.LabelField(GetTitle(isUserInterface, type), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.LabelField(GetTitle(isUserInterface, type), GameFlowViewerEditorWindow.s_LabelStyle);
             HandleMouseClick(GUILayoutUtility.GetLastRect(), type, callbackEvent);
-            EditorGUILayout.LabelField($"Enable: {eventCount} | {listenerCount}", GameFlowViewerEditorWindow.labelStyle, GUILayout.Width(80));
+            EditorGUILayout.LabelField($"Enable: {eventCount} | {listenerCount}", GameFlowViewerEditorWindow.s_LabelStyle, GUILayout.Width(80));
             EditorGUILayout.EndHorizontal();
         }
 
@@ -326,16 +325,16 @@ namespace GameFlow.Editor
         {
             if (currentElement == null) return;
             scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
-            EditorGUILayout.LabelField(GetTitle(currentElement is UIFlowElement, currentElement).Trim(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.LabelField(GetTitle(currentElement is UIFlowElement, currentElement).Trim(), GameFlowViewerEditorWindow.s_LabelStyle);
             EditorGUILayout.Space(2);
-            EditorGUILayout.TextArea(currentElement.GetFullInfo(), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.TextArea(currentElement.GetFullInfo(), GameFlowViewerEditorWindow.s_LabelStyle);
             EditorGUILayout.EndScrollView();
         }
 
         private static void DrawElement(int index, GameFlowElement element, bool isUI)
         {
-            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.evenStyle : GameFlowViewerEditorWindow.oddStyle);
-            EditorGUILayout.LabelField(GetTitle(isUI, element), GameFlowViewerEditorWindow.labelStyle);
+            EditorGUILayout.BeginHorizontal(index % 2 == 0 ? GameFlowViewerEditorWindow.s_EvenStyle : GameFlowViewerEditorWindow.s_OddStyle);
+            EditorGUILayout.LabelField(GetTitle(isUI, element), GameFlowViewerEditorWindow.s_LabelStyle);
             HandleMouseClick(GUILayoutUtility.GetLastRect(), element);
             EditorGUILayout.EndHorizontal();
         }

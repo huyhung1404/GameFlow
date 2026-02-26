@@ -13,24 +13,24 @@ namespace GameFlow.Editor
 {
     public class GameFlowManagerEditorWindow : EditorWindow
     {
-        public const string kScriptsElementNameFormat = "{0}Element";
-        private const string kScriptsNameSpace = nameof(GameFlow);
+        public const string k_scriptsElementNameFormat = "{0}Element";
+        private const string k_scriptsNameSpace = nameof(GameFlow);
 
         private enum State
         {
-            IDLE,
-            GENERATING,
-            COMPILING,
-            END
+            Idle,
+            Generating,
+            Compiling,
+            End
         }
 
-        private GameFlowManagerEditorDraw editorDraw;
-        private State windowState = State.IDLE;
-        private AssetReferenceElement assetReferenceGenerate;
-        private string scriptGeneratePath;
-        private GameObject prefabGenerate;
-        private string elementNameGenerate;
-        private GameFlowElement elementGenerate;
+        private GameFlowManagerEditorDraw _editorDraw;
+        private State _windowState = State.Idle;
+        private AssetReferenceElement _assetReferenceGenerate;
+        private string _scriptGeneratePath;
+        private GameObject _prefabGenerate;
+        private string _elementNameGenerate;
+        private GameFlowElement _elementGenerate;
 
         public static void OpenWindow()
         {
@@ -60,7 +60,7 @@ namespace GameFlow.Editor
                 return;
             }
 
-            editorDraw = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
+            _editorDraw = new GameFlowManagerEditorDraw(rootVisualElement, GenerateElement);
         }
 
         private void GenerateElement(bool isUserInterface, bool isScene, string templatePath, string elementName)
@@ -71,64 +71,64 @@ namespace GameFlow.Editor
 
             try
             {
-                elementNameGenerate = elementName;
+                _elementNameGenerate = elementName;
                 GenerateAsset(isScene, templatePath, unityPath);
                 GenerateScripts(elementName, isUserInterface);
-                windowState = State.GENERATING;
+                _windowState = State.Generating;
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
-                windowState = State.IDLE;
+                _windowState = State.Idle;
                 throw;
             }
         }
 
         private void GenerateAsset(bool isScene, string templatePath, string unityPath)
         {
-            prefabGenerate = null;
+            _prefabGenerate = null;
             EditorElementUtility.CreateTemplateClone(templatePath, unityPath);
 
             AssetDatabase.ImportAsset(unityPath);
             if (!isScene)
             {
-                prefabGenerate = AssetDatabase.LoadAssetAtPath<GameObject>(unityPath);
+                _prefabGenerate = AssetDatabase.LoadAssetAtPath<GameObject>(unityPath);
             }
             else
             {
                 UnityEditor.SceneManagement.EditorSceneManager.OpenScene(unityPath);
             }
 
-            assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true, isScene);
+            _assetReferenceGenerate = AddressableUtility.AddAddressableGroup(unityPath, true, isScene);
         }
 
         private void GenerateScripts(string elementName, bool isUserInterface)
         {
-            scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs";
+            _scriptGeneratePath = PackagePath.ScriptsGenerateFolderPath() + "/" + string.Format(k_scriptsElementNameFormat, elementName) + ".cs";
             var templateText = File.ReadAllText(PackagePath.ProjectTemplateScriptPath(PackagePath.PathType.FullPath));
-            templateText = templateText.Replace("%NAMESPACE%", kScriptsNameSpace);
-            templateText = templateText.Replace("%NAME%", string.Format(kScriptsElementNameFormat, elementName));
+            templateText = templateText.Replace("%NAMESPACE%", k_scriptsNameSpace);
+            templateText = templateText.Replace("%NAME%", string.Format(k_scriptsElementNameFormat, elementName));
             templateText = templateText.Replace("%BASE_CLASS_NAME%", isUserInterface ? nameof(UIFlowElement) : nameof(GameFlowElement));
-            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + string.Format(kScriptsElementNameFormat, elementName) + ".cs",
+            File.WriteAllText(PackagePath.ScriptsGenerateFolderPath(PackagePath.PathType.FullPath) + "/" + string.Format(k_scriptsElementNameFormat, elementName) + ".cs",
                 templateText);
-            AssetDatabase.ImportAsset(scriptGeneratePath);
+            AssetDatabase.ImportAsset(_scriptGeneratePath);
         }
 
         private void OnGUI()
         {
-            switch (windowState)
+            switch (_windowState)
             {
                 default:
-                case State.IDLE:
+                case State.Idle:
                     break;
-                case State.GENERATING:
+                case State.Generating:
                     if (EditorApplication.isCompiling)
                     {
-                        windowState = State.COMPILING;
+                        _windowState = State.Compiling;
                     }
 
                     break;
-                case State.COMPILING:
+                case State.Compiling:
                     if (EditorApplication.isCompiling)
                     {
                         EditorUtility.DisplayProgressBar("Compiling Scripts", "Wait for a few seconds...", 0.5f);
@@ -145,14 +145,14 @@ namespace GameFlow.Editor
                             Debug.LogException(e);
                         }
 
-                        windowState = State.END;
+                        _windowState = State.End;
                     }
 
                     break;
-                case State.END:
-                    windowState = State.IDLE;
+                case State.End:
+                    _windowState = State.Idle;
                     SaveGenerateAssets();
-                    editorDraw.UpdateView();
+                    _editorDraw.UpdateView();
                     break;
             }
         }
@@ -160,21 +160,21 @@ namespace GameFlow.Editor
         private void GenerateElementInstance()
         {
             var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
-            var type = GetAssemblyType(string.Format(kScriptsElementNameFormat, elementNameGenerate));
+            var type = GetAssemblyType(string.Format(k_scriptsElementNameFormat, _elementNameGenerate));
             if (type == null) throw new Exception("Type generate not exists");
-            elementGenerate = (GameFlowElement)CreateInstance(type);
-            elementGenerate.includeInBuild = true;
-            elementGenerate.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
-            elementGenerate.reference = assetReferenceGenerate;
-            manager.elementCollection.GenerateElement(elementGenerate);
+            _elementGenerate = (GameFlowElement)CreateInstance(type);
+            _elementGenerate.includeInBuild = true;
+            _elementGenerate.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
+            _elementGenerate.reference = _assetReferenceGenerate;
+            manager.elementCollection.GenerateElement(_elementGenerate);
             if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
             {
                 Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());
             }
 
-            AssetDatabase.CreateAsset(elementGenerate,
-                PackagePath.AssetsScriptableObjectFolderPath() + $"/{string.Format(kScriptsElementNameFormat, elementNameGenerate)}.asset");
-            AddressableUtility.AddAddressableGroupController(AssetDatabase.GetAssetPath(elementGenerate));
+            AssetDatabase.CreateAsset(_elementGenerate,
+                PackagePath.AssetsScriptableObjectFolderPath() + $"/{string.Format(k_scriptsElementNameFormat, _elementNameGenerate)}.asset");
+            AddressableUtility.AddAddressableGroupController(AssetDatabase.GetAssetPath(_elementGenerate));
             EditorUtility.SetDirty(manager);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
@@ -182,29 +182,37 @@ namespace GameFlow.Editor
 
         private static Type GetAssemblyType(string typeName)
         {
-            typeName = kScriptsNameSpace + "." + typeName;
+            typeName = k_scriptsNameSpace + "." + typeName;
             return AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly?.GetType(typeName))
                 .FirstOrDefault(type => type != null && type.IsSubclassOf(typeof(GameFlowElement)));
         }
 
         private void SaveGenerateAssets()
         {
-            var type = elementGenerate.GetType();
-            if (prefabGenerate != null)
+            var type = _elementGenerate.GetType();
+            if (_prefabGenerate != null)
             {
-                foreach (var child in prefabGenerate.GetComponentsInChildren<ElementMonoBehaviours>(true))
+                foreach (var child in _prefabGenerate.GetComponentsInChildren<ElementMonoBehaviours>(true))
                 {
-                    child.SetElement(elementGenerate, type);
+                    child.SetElement(_elementGenerate, type);
                 }
 
-                EditorUtility.SetDirty(prefabGenerate);
-                Selection.activeObject = prefabGenerate;
+                EditorUtility.SetDirty(_prefabGenerate);
+                Selection.activeObject = _prefabGenerate;
                 return;
             }
 
-            foreach (var child in FindObjectsOfType<ElementMonoBehaviours>(true))
+#if UNITY_6000_0_OR_NEWER
+            var children = FindObjectsByType<ElementMonoBehaviours>(
+                FindObjectsInactive.Include, 
+                FindObjectsSortMode.None);
+#else
+            var children = FindObjectsOfType<ElementMonoBehaviours>(true);
+#endif
+
+            foreach (var child in children)
             {
-                child.SetElement(elementGenerate, type);
+                child.SetElement(_elementGenerate, type);
             }
 
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());

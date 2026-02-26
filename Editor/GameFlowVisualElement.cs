@@ -5,46 +5,51 @@ using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
 {
-    public class GameFlowVisualElement : VisualElement
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    public partial class GameFlowVisualElement : VisualElement
     {
-        private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowVisualElement.uxml";
-        private readonly Foldout container;
-        private readonly List<ItemGameFlowContentElement> elements;
+        private const string k_uxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowVisualElement.uxml";
+        private readonly Foldout _container;
+        private readonly List<ItemGameFlowContentElement> _elements;
 
         public GameFlowVisualElement()
         {
-            var root = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(kUxmlPath).CloneTree();
-            container = root.Q<Foldout>("container");
-            elements = new List<ItemGameFlowContentElement>();
+            var root = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_uxmlPath).CloneTree();
+            _container = root.Q<Foldout>("container");
+            _elements = new List<ItemGameFlowContentElement>();
             Add(root);
         }
 
         public void UpdateGraphic(bool isUserInterface, Type type, ElementProperty elementProperty, Action<int> removeAt)
         {
-            container.text = $"{type.Name}.cs";
-            container.BindToViewDataKey(container.text);
+            _container.text = $"{type.Name}.cs";
+            _container.BindToViewDataKey(_container.text);
+            
             var index = 0;
-            for (; index < elementProperty.properties.Count; index++)
+            for (; index < elementProperty.Properties.Count; index++)
             {
-                if (index >= elements.Count)
+                if (index >= _elements.Count)
                 {
                     var visual = new ItemGameFlowContentElement();
-                    container.Add(visual);
-                    elements.Add(visual);
+                    _container.Add(visual);
+                    _elements.Add(visual);
                 }
 
-                var visualElement = elements[index];
+                var visualElement = _elements[index];
                 visualElement.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                visualElement.UpdateGraphic(elementProperty.properties[index], removeAt);
+                visualElement.UpdateGraphic(elementProperty.Properties[index], removeAt);
             }
 
-            for (; index < elements.Count; index++)
+            for (; index < _elements.Count; index++)
             {
-                elements[index].HideGraphic();
-                elements[index].style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                _elements[index].HideGraphic();
+                _elements[index].style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
             }
         }
 
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<GameFlowVisualElement, UxmlTraits>
         {
         }
@@ -56,5 +61,6 @@ namespace GameFlow.Editor
                 get { yield break; }
             }
         }
+#endif
     }
 }

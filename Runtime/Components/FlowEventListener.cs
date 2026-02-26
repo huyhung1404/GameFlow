@@ -122,25 +122,25 @@ namespace GameFlow.Component
             }
         }
 
-        [SerializeField] private GameFlowElement element;
-        [SerializeReference] internal List<Entry> delegates;
+        [SerializeField] private GameFlowElement m_element;
+        [SerializeReference] private List<Entry> m_delegates;
 
         private void OnEnable()
         {
-            var type = element.elementType;
-            for (var i = delegates.Count - 1; i >= 0; i--) delegates[i].Register(type);
+            var type = m_element.elementType;
+            for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Register(type);
         }
 
         private void OnDisable()
         {
-            var type = element.elementType;
-            for (var i = delegates.Count - 1; i >= 0; i--) delegates[i].Unregister(type);
+            var type = m_element.elementType;
+            for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Unregister(type);
         }
 
         internal override void SetElement(GameFlowElement value, Type type)
         {
-            if (element != null && type != element.GetType()) return;
-            element = value;
+            if (m_element != null && type != m_element.GetType()) return;
+            m_element = value;
         }
     }
 }

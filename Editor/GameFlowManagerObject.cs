@@ -8,15 +8,15 @@ namespace GameFlow.Editor
 {
     public static class GameFlowManagerObject
     {
-        private static GameFlowManager _instance;
+        private static GameFlowManager s_instance;
 
         internal static GameFlowManager Instance
         {
             get
             {
-                if (_instance != null) return _instance;
-                _instance = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
-                return _instance;
+                if (s_instance != null) return s_instance;
+                s_instance = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
+                return s_instance;
             }
         }
 

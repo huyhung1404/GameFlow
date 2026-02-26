@@ -9,9 +9,9 @@ namespace GameFlow.Editor
 {
     internal static class AddressableUtility
     {
-        private const string kGroupName = "GameFlow";
-        private const string kExcludeGroupName = "GameFlow_ExcludeFromBuild";
-        private const string kController = "GameFlowManager";
+        private const string k_groupName = "GameFlow";
+        private const string k_excludeGroupName = "GameFlow_ExcludeFromBuild";
+        private const string k_controllerName = "GameFlowManager";
 
         internal static void AddAddressableGroupController(string assetPath)
         {
@@ -38,8 +38,8 @@ namespace GameFlow.Editor
         private static bool SetGroup(string guid, bool includeInBuild, bool isController)
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
-            var groupName = includeInBuild ? kGroupName : kExcludeGroupName;
-            if (isController) groupName = kController;
+            var groupName = includeInBuild ? k_groupName : k_excludeGroupName;
+            if (isController) groupName = k_controllerName;
             if (!settings) return false;
             var group = settings.FindGroup(groupName);
             if (!group)

@@ -14,49 +14,47 @@ namespace GameFlow.Editor
 
     public class GenerateElementPopupWindow : PopupWindowContent
     {
-        private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GenerateElementPopupWindow.uxml";
-        private const string kNamePattern = "^[a-zA-Z0-9_]+$";
+        private const string k_uxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GenerateElementPopupWindow.uxml";
+        private const string k_namePattern = "^[a-zA-Z0-9_]+$";
 
-        private readonly bool isUserInterface;
-        private readonly Generate generateAction;
-        private readonly Regex nameRegex;
-        private readonly List<Type> elementsInProject;
-        private readonly List<string> prefabTemplatePath;
-        private readonly List<string> prefabTemplateChoices;
-        private readonly List<string> sceneTemplatePath;
-        private readonly List<string> sceneTemplateChoices;
-        private readonly GameFlowManager manager;
+        private readonly bool _isUserInterface;
+        private readonly Generate _generateAction;
+        private readonly Regex _nameRegex;
+        private readonly List<Type> _elementsInProject;
+        private readonly List<string> _prefabTemplatePath;
+        private readonly List<string> _prefabTemplateChoices;
+        private readonly List<string> _sceneTemplatePath;
+        private readonly List<string> _sceneTemplateChoices;
 
-        private TextField textField;
-        private bool existsElement;
-        private VisualElement elementTypeView;
-        private VisualElement instanceIdView;
-        private bool isScene;
-        private RadioButton sceneRadio;
-        private RadioButton prefabRadio;
-        private DropdownField template;
-        private float generateSizePopup;
-        private float idSizePopup;
-        private float logSizePopup;
-        private bool fileNameIsExists;
+        private TextField _textField;
+        private bool _existsElement;
+        private VisualElement _elementTypeView;
+        private VisualElement _instanceIdView;
+        private bool _isScene;
+        private RadioButton _sceneRadio;
+        private RadioButton _prefabRadio;
+        private DropdownField _template;
+        private float _generateSizePopup;
+        private float _idSizePopup;
+        private float _logSizePopup;
+        private bool _fileNameIsExists;
 
         public GenerateElementPopupWindow(bool isUserInterface, Generate generate)
         {
-            this.isUserInterface = isUserInterface;
-            generateAction = generate;
-            nameRegex = new Regex(kNamePattern);
-            elementsInProject = GetDerivedTypes(typeof(GameFlowElement));
-            isScene = true;
-            prefabTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", ".prefab",
-                out prefabTemplateChoices);
-            sceneTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", ".unity",
-                out sceneTemplateChoices);
-            manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
+            this._isUserInterface = isUserInterface;
+            _generateAction = generate;
+            _nameRegex = new Regex(k_namePattern);
+            _elementsInProject = GetDerivedTypes(typeof(GameFlowElement));
+            _isScene = true;
+            _prefabTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", ".prefab",
+                out _prefabTemplateChoices);
+            _sceneTemplatePath = SearchTemplate(isUserInterface ? "*UserInterfaceFlow" : "*GameFlow", ".unity",
+                out _sceneTemplateChoices);
         }
 
         public override Vector2 GetWindowSize()
         {
-            return new Vector2(400, 60 + generateSizePopup + logSizePopup + idSizePopup);
+            return new Vector2(400, 60 + _generateSizePopup + _logSizePopup + _idSizePopup);
         }
 
         public override void OnGUI(Rect rect)
@@ -65,42 +63,42 @@ namespace GameFlow.Editor
 
         public override void OnOpen()
         {
-            var visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(kUxmlPath);
+            var visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_uxmlPath);
             visualTreeAsset.CloneTree(editorWindow.rootVisualElement);
             DrawTitle();
             editorWindow.rootVisualElement.Q<IMGUIContainer>("log").onGUIHandler += OnLogGUI;
-            textField = editorWindow.rootVisualElement.Q<TextField>("element_name");
-            textField.RegisterCallback<ChangeEvent<string>>(NameChange);
-            elementTypeView = editorWindow.rootVisualElement.Q<VisualElement>("template_view");
-            instanceIdView = editorWindow.rootVisualElement.Q<VisualElement>("instance_id_view");
-            idSizePopup = generateSizePopup = 0;
-            elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-            instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-            template = editorWindow.rootVisualElement.Q<DropdownField>("template");
-            template.choices = isScene ? sceneTemplateChoices : prefabTemplateChoices;
-            template.index = 0;
+            _textField = editorWindow.rootVisualElement.Q<TextField>("element_name");
+            _textField.RegisterCallback<ChangeEvent<string>>(NameChange);
+            _elementTypeView = editorWindow.rootVisualElement.Q<VisualElement>("template_view");
+            _instanceIdView = editorWindow.rootVisualElement.Q<VisualElement>("instance_id_view");
+            _idSizePopup = _generateSizePopup = 0;
+            _elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            _instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            _template = editorWindow.rootVisualElement.Q<DropdownField>("template");
+            _template.choices = _isScene ? _sceneTemplateChoices : _prefabTemplateChoices;
+            _template.index = 0;
             editorWindow.rootVisualElement.Q<Button>("generate_button").RegisterCallback<ClickEvent>(GenerateButton);
             HandleTemplateView();
-            fileNameIsExists = false;
+            _fileNameIsExists = false;
         }
 
         private void DrawTitle()
         {
-            editorWindow.rootVisualElement.Q<Label>("title").text = $"Generate {(isUserInterface ? "User Interface" : "Game")} Flow Element";
+            editorWindow.rootVisualElement.Q<Label>("title").text = $"Generate {(_isUserInterface ? "User Interface" : "Game")} Flow Element";
         }
 
         private void OnLogGUI()
         {
-            logSizePopup = 0;
-            if (fileNameIsExists)
+            _logSizePopup = 0;
+            if (_fileNameIsExists)
             {
-                logSizePopup += 40;
+                _logSizePopup += 40;
                 EditorGUILayout.HelpBox("Element name is exists.", MessageType.Error);
             }
 
-            if ((isScene ? sceneTemplateChoices : prefabTemplateChoices).Count == 0)
+            if ((_isScene ? _sceneTemplateChoices : _prefabTemplateChoices).Count == 0)
             {
-                logSizePopup += 40;
+                _logSizePopup += 40;
                 EditorGUILayout.HelpBox("Element template is not exists.", MessageType.Error);
             }
         }
@@ -111,8 +109,8 @@ namespace GameFlow.Editor
             string previousValue;
             if (evt == null)
             {
-                newValue = textField.value;
-                previousValue = textField.value;
+                newValue = _textField.value;
+                previousValue = _textField.value;
             }
             else
             {
@@ -126,48 +124,48 @@ namespace GameFlow.Editor
                 return;
             }
 
-            if (nameRegex.IsMatch(newValue))
+            if (_nameRegex.IsMatch(newValue))
             {
-                var scriptsName = string.Format(GameFlowManagerEditorWindow.kScriptsElementNameFormat, newValue);
-                var type = elementsInProject.Find(type => type.Name == scriptsName);
-                existsElement = type != null;
-                if (existsElement)
+                var scriptsName = string.Format(GameFlowManagerEditorWindow.k_scriptsElementNameFormat, newValue);
+                var type = _elementsInProject.Find(type => type.Name == scriptsName);
+                _existsElement = type != null;
+                if (_existsElement)
                 {
-                    if ((isUserInterface && type?.BaseType == typeof(UIFlowElement))
-                        || (!isUserInterface && type?.BaseType == typeof(GameFlowElement)))
+                    if ((_isUserInterface && type?.BaseType == typeof(UIFlowElement))
+                        || (!_isUserInterface && type?.BaseType == typeof(GameFlowElement)))
                     {
-                        instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                        idSizePopup = 30;
-                        elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                        generateSizePopup = 0;
-                        fileNameIsExists = false;
+                        _instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+                        _idSizePopup = 30;
+                        _elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                        _generateSizePopup = 0;
+                        _fileNameIsExists = false;
                         return;
                     }
 
                     DisableAllView();
-                    fileNameIsExists = true;
+                    _fileNameIsExists = true;
                     return;
                 }
 
-                fileNameIsExists = false;
-                elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
-                instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-                generateSizePopup = 60;
-                idSizePopup = 0;
+                _fileNameIsExists = false;
+                _elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
+                _instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+                _generateSizePopup = 60;
+                _idSizePopup = 0;
                 return;
             }
 
             DisableAllView();
-            textField.value = previousValue;
+            _textField.value = previousValue;
         }
 
         private void DisableAllView()
         {
-            existsElement = false;
-            fileNameIsExists = false;
-            generateSizePopup = idSizePopup = 0;
-            elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
-            instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            _existsElement = false;
+            _fileNameIsExists = false;
+            _generateSizePopup = _idSizePopup = 0;
+            _elementTypeView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
+            _instanceIdView.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
         }
 
         public static List<Type> GetDerivedTypes(Type baseType)
@@ -197,7 +195,7 @@ namespace GameFlow.Editor
 
             try
             {
-                path.AddRange(Directory.GetFiles(isUserInterface
+                path.AddRange(Directory.GetFiles(_isUserInterface
                     ? PackagePath.AssetsUserInterfaceElementsFolderPath(PackagePath.PathType.FullPath)
                     : PackagePath.AssetsElementsFolderPath(PackagePath.PathType.FullPath), "*" + extension, SearchOption.AllDirectories));
             }
@@ -217,40 +215,40 @@ namespace GameFlow.Editor
 
         private void HandleTemplateView()
         {
-            sceneRadio = editorWindow.rootVisualElement.Q<RadioButton>("scene_radio");
-            sceneRadio.RegisterCallback<ClickEvent>(CallbackScene);
+            _sceneRadio = editorWindow.rootVisualElement.Q<RadioButton>("scene_radio");
+            _sceneRadio.RegisterCallback<ClickEvent>(CallbackScene);
 
-            prefabRadio = editorWindow.rootVisualElement.Q<RadioButton>("prefab_radio");
-            prefabRadio.RegisterCallback<ClickEvent>(CallbackPrefab);
+            _prefabRadio = editorWindow.rootVisualElement.Q<RadioButton>("prefab_radio");
+            _prefabRadio.RegisterCallback<ClickEvent>(CallbackPrefab);
         }
 
         private void CallbackScene(ClickEvent evt)
         {
-            isScene = sceneRadio.value;
+            _isScene = _sceneRadio.value;
             SetUpRadio();
         }
 
         private void CallbackPrefab(ClickEvent evt)
         {
-            isScene = !prefabRadio.value;
+            _isScene = !_prefabRadio.value;
             SetUpRadio();
         }
 
         private void SetUpRadio()
         {
-            sceneRadio.value = isScene;
-            prefabRadio.value = !isScene;
-            template.choices = isScene ? sceneTemplateChoices : prefabTemplateChoices;
-            template.index = 0;
+            _sceneRadio.value = _isScene;
+            _prefabRadio.value = !_isScene;
+            _template.choices = _isScene ? _sceneTemplateChoices : _prefabTemplateChoices;
+            _template.index = 0;
         }
 
         private void GenerateButton(ClickEvent evt)
         {
-            var templateList = isScene ? sceneTemplatePath : prefabTemplatePath;
+            var templateList = _isScene ? _sceneTemplatePath : _prefabTemplatePath;
             if (templateList.Count == 0) return;
-            var templatePath = templateList[template.index];
+            var templatePath = templateList[_template.index];
             editorWindow.Close();
-            generateAction.Invoke(isUserInterface, isScene, templatePath, textField.value);
+            _generateAction.Invoke(_isUserInterface, _isScene, templatePath, _textField.value);
         }
     }
 }

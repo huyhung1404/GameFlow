@@ -9,7 +9,7 @@ namespace GameFlow.Editor
 {
     public static class EditorViewDataKey
     {
-        private const string kDataKeyPrefs = "com.huyhung1404.gameflow_ViewDataKey";
+        private const string k_DataKeyPrefs = "com.huyhung1404.gameflow_viewdatakey";
         private static readonly Dictionary<string, bool> dataKey;
 
         static EditorViewDataKey()
@@ -19,7 +19,7 @@ namespace GameFlow.Editor
 
         public static void OnEnable()
         {
-            var jsonData = EditorPrefs.GetString(kDataKeyPrefs, null);
+            var jsonData = EditorPrefs.GetString(k_DataKeyPrefs, null);
             if (jsonData == null)
             {
                 dataKey.Clear();
@@ -39,7 +39,7 @@ namespace GameFlow.Editor
 
         public static void OnDisable()
         {
-            EditorPrefs.SetString(kDataKeyPrefs, ToStringData());
+            EditorPrefs.SetString(k_DataKeyPrefs, ToStringData());
         }
 
         private static string ToStringData()
@@ -68,14 +68,11 @@ namespace GameFlow.Editor
 
         public static void BindToViewDataKey(this Foldout foldout, string key, bool defaultValue = true)
         {
-            if (!dataKey.ContainsKey(key))
-            {
-                dataKey.Add(key, defaultValue);
-            }
-
+            dataKey.TryAdd(key, defaultValue);
             foldout.value = dataKey[key];
             foldout.UnregisterCallback<ClickEvent>(Callback);
             foldout.RegisterCallback<ClickEvent>(Callback);
+            return;
 
             void Callback(ClickEvent e)
             {

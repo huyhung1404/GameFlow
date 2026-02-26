@@ -7,57 +7,60 @@ using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
 {
-    public class ItemGameFlowContentElement : VisualElement
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+#endif
+    public partial class ItemGameFlowContentElement : VisualElement
     {
-        public static bool IsDrawGUI;
-        private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/ItemGameFlowContentElement.uxml";
-        private SerializedObject serializedObject;
-        private SerializedProperty serializedProperty;
-        private SerializedProperty includeInBuild;
-        private SerializedProperty reference;
-        private readonly EnumField releaseModeElement;
-        private readonly EnumField activeModeElement;
-        private Action<int> removeAtIndex;
-        private bool showDialog;
-        private bool isActive;
-        private readonly Foldout container;
+        internal static bool s_IsDrawGUI;
+        private const string k_uxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/ItemGameFlowContentElement.uxml";
+        private SerializedObject _serializedObject;
+        private SerializedProperty _serializedProperty;
+        private SerializedProperty _includeInBuild;
+        private SerializedProperty _reference;
+        private readonly EnumField _releaseModeElement;
+        private readonly EnumField _activeModeElement;
+        private Action<int> _removeAtIndex;
+        private bool _showDialog;
+        private bool _isActive;
+        private readonly Foldout _container;
 
         public ItemGameFlowContentElement()
         {
-            var root = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(kUxmlPath).CloneTree();
-            container = root.Q<Foldout>("container");
+            var root = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_uxmlPath).CloneTree();
+            _container = root.Q<Foldout>("container");
             root.Q<IMGUIContainer>("title_gui").onGUIHandler = DrawTitleGUI;
             root.Q<Button>("remove_button").RegisterCallback<ClickEvent>(OnClickRemove);
-            releaseModeElement = root.Q<EnumField>("release_mode");
-            activeModeElement = root.Q<EnumField>("active_mode");
+            _releaseModeElement = root.Q<EnumField>("release_mode");
+            _activeModeElement = root.Q<EnumField>("active_mode");
             Add(root);
         }
 
         private void OnClickRemove(ClickEvent evt)
         {
-            if (serializedProperty.ExtractArrayIndex() == null)
+            if (_serializedProperty.ExtractArrayIndex() == null)
             {
                 Debug.LogError("Not find array index");
                 return;
             }
 
-            showDialog = true;
+            _showDialog = true;
         }
 
         private void DrawTitleGUI()
         {
-            if (!IsDrawGUI || !isActive) return;
+            if (!s_IsDrawGUI || !_isActive) return;
             var guiWidth = EditorGUIUtility.currentViewWidth;
-            serializedObject.Update();
+            _serializedObject.Update();
             EditorGUI.BeginChangeCheck();
-            var lastValue = includeInBuild.boolValue;
-            includeInBuild.boolValue = EditorGUI.Toggle(new Rect(0, 0, 20, 20), GUIContent.none, includeInBuild.boolValue);
-            if (includeInBuild.boolValue != lastValue)
+            var lastValue = _includeInBuild.boolValue;
+            _includeInBuild.boolValue = EditorGUI.Toggle(new Rect(0, 0, 20, 20), GUIContent.none, _includeInBuild.boolValue);
+            if (_includeInBuild.boolValue != lastValue)
             {
-                var referenceValue = reference.GetAssetReferenceValue();
+                var referenceValue = _reference.GetAssetReferenceValue();
                 if (referenceValue == null)
                 {
-                    includeInBuild.boolValue = lastValue;
+                    _includeInBuild.boolValue = lastValue;
                 }
                 else
                 {
@@ -65,21 +68,21 @@ namespace GameFlow.Editor
                 }
             }
 
-            EditorGUI.PropertyField(new Rect(20, 1, Mathf.Max(45, guiWidth - 175), 18), reference, GUIContent.none);
+            EditorGUI.PropertyField(new Rect(20, 1, Mathf.Max(45, guiWidth - 175), 18), _reference, GUIContent.none);
             if (GUI.Button(new Rect(guiWidth - 150, 1, 45, 18), new GUIContent("Ping")))
             {
-                EditorGUIUtility.PingObject(serializedObject.targetObject);
+                EditorGUIUtility.PingObject(_serializedObject.targetObject);
             }
 
-            if (EditorGUI.EndChangeCheck()) serializedObject.ApplyModifiedProperties();
-            if (!showDialog) return;
+            if (EditorGUI.EndChangeCheck()) _serializedObject.ApplyModifiedProperties();
+            if (!_showDialog) return;
             ShowConfirmationDialog();
-            showDialog = false;
+            _showDialog = false;
         }
 
         private void ShowConfirmationDialog()
         {
-            var index = serializedProperty.ExtractArrayIndex();
+            var index = _serializedProperty.ExtractArrayIndex();
             if (index == null) return;
             var confirm = EditorUtility.DisplayDialog(
                 "Remove element",
@@ -89,29 +92,29 @@ namespace GameFlow.Editor
             );
 
             if (!confirm) return;
-            IsDrawGUI = false;
-            isActive = false;
-            removeAtIndex?.Invoke(index.Value);
+            s_IsDrawGUI = false;
+            _isActive = false;
+            _removeAtIndex?.Invoke(index.Value);
         }
 
         public void UpdateGraphic(SerializedProperty serialized, Action<int> removeAt)
         {
-            serializedProperty = serialized;
-            removeAtIndex = removeAt;
-            serializedObject = new SerializedObject(serializedProperty.objectReferenceValue);
-            container.BindToViewDataKey(serializedProperty.propertyPath, false);
-            includeInBuild = serializedObject.FindProperty(nameof(GameFlowElement.includeInBuild));
-            reference = serializedObject.FindProperty(nameof(GameFlowElement.reference));
-            releaseModeElement.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.releaseMode)));
-            activeModeElement.BindProperty(serializedObject.FindProperty(nameof(GameFlowElement.activeMode)));
-            isActive = true;
+            _serializedProperty = serialized;
+            _removeAtIndex = removeAt;
+            _serializedObject = new SerializedObject(_serializedProperty.objectReferenceValue);
+            _container.BindToViewDataKey(_serializedProperty.propertyPath, false);
+            _includeInBuild = _serializedObject.FindProperty(nameof(GameFlowElement.includeInBuild));
+            _reference = _serializedObject.FindProperty(nameof(GameFlowElement.reference));
+            _releaseModeElement.BindProperty(_serializedObject.FindProperty(nameof(GameFlowElement.releaseMode)));
+            _activeModeElement.BindProperty(_serializedObject.FindProperty(nameof(GameFlowElement.activeMode)));
+            _isActive = true;
         }
 
         public void HideGraphic()
         {
-            isActive = false;
+            _isActive = false;
         }
-
+#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<ItemGameFlowContentElement, UxmlTraits>
         {
         }
@@ -120,5 +123,6 @@ namespace GameFlow.Editor
         {
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription { get { yield break; } }
         }
+#endif
     }
 }

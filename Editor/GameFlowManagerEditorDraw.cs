@@ -11,47 +11,47 @@ namespace GameFlow.Editor
 {
     public class ElementProperty
     {
-        public List<SerializedProperty> properties;
+        public List<SerializedProperty> Properties;
     }
 
     public class GameFlowManagerEditorDraw
     {
-        private const string kUxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowManagerEditor.uxml";
-        private const string KNoElementText = "No elements were found in the manager.";
-        private const string KHasElementTextFormat = "Element count:  <b>{0}</b>";
+        private const string k_uxmlPath = "Packages/com.huyhung1404.gameflow/Editor/UXML/GameFlowManagerEditor.uxml";
+        private const string k_noElementText = "No elements were found in the manager.";
+        private const string k_hasElementTextFormat = "Element count:  <b>{0}</b>";
 
-        private readonly VisualElement root;
-        private readonly Generate generateAction;
-        private readonly SerializedObject serializedObject;
-        private readonly List<GameFlowVisualElement> gameFlowElements;
-        private readonly Dictionary<Type, ElementProperty> gameFlowProperties;
-        private readonly List<GameFlowVisualElement> userInterfaceFlowElements;
-        private readonly Dictionary<Type, ElementProperty> userInterfaceFlowProperties;
+        private readonly VisualElement _root;
+        private readonly Generate _generateAction;
+        private readonly SerializedObject _serializedObject;
+        private readonly List<GameFlowVisualElement> _gameFlowElements;
+        private readonly Dictionary<Type, ElementProperty> _gameFlowProperties;
+        private readonly List<GameFlowVisualElement> _userInterfaceFlowElements;
+        private readonly Dictionary<Type, ElementProperty> _userInterfaceFlowProperties;
 
-        private Label gameFlowCountTitle;
-        private Label userInterfaceFlowCountTitle;
-        private VisualElement gameFlowContainer;
-        private VisualElement userInterfaceContainer;
-        private ToolbarSearchField searchField;
+        private Label _gameFlowCountTitle;
+        private Label _userInterfaceFlowCountTitle;
+        private VisualElement _gameFlowContainer;
+        private VisualElement _userInterfaceContainer;
+        private ToolbarSearchField _searchField;
 
         public GameFlowManagerEditorDraw(VisualElement rootVisualElement, Generate generate)
         {
-            generateAction = generate;
-            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(kUxmlPath);
+            _generateAction = generate;
+            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(k_uxmlPath);
             VisualElement labelFromUXML = visualTree.Instantiate();
             rootVisualElement.Add(labelFromUXML);
-            root = rootVisualElement;
+            _root = rootVisualElement;
             var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
             if (manager.elementCollection.VerifyData())
             {
                 EditorUtility.SetDirty(manager);
             }
 
-            serializedObject = new SerializedObject(manager);
-            gameFlowElements = new List<GameFlowVisualElement>();
-            userInterfaceFlowElements = new List<GameFlowVisualElement>();
-            gameFlowProperties = new Dictionary<Type, ElementProperty>();
-            userInterfaceFlowProperties = new Dictionary<Type, ElementProperty>();
+            _serializedObject = new SerializedObject(manager);
+            _gameFlowElements = new List<GameFlowVisualElement>();
+            _userInterfaceFlowElements = new List<GameFlowVisualElement>();
+            _gameFlowProperties = new Dictionary<Type, ElementProperty>();
+            _userInterfaceFlowProperties = new Dictionary<Type, ElementProperty>();
             Register();
             RegisterAddButton();
             RegisterGenerateButton();
@@ -60,68 +60,68 @@ namespace GameFlow.Editor
 
         private void Register()
         {
-            foreach (var foldout in root.Query<Foldout>("sub_element_title").ToList())
+            foreach (var foldout in _root.Query<Foldout>("sub_element_title").ToList())
             {
                 foldout?.BindToViewDataKey($"title_{foldout.text}");
             }
 
-            gameFlowCountTitle = root.Q<Label>("game_flow_content");
-            userInterfaceFlowCountTitle = root.Q<Label>("ui_flow_content");
-            gameFlowContainer = root.Q<VisualElement>("game_flow_container");
-            userInterfaceContainer = root.Q<VisualElement>("ui_flow_container");
-            searchField = root.Q<ToolbarSearchField>("search_field");
-            root.Q<IntegerField>("plane_distance").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.planeDistance)));
-            root.Q<IntegerField>("sorting_order_offset").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.sortingOrderOffset)));
-            root.Q<IntegerField>("loading_shield_sorting_order").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.loadingShieldSortingOrder)));
-            root.Q<Vector2Field>("reference_resolution").BindProperty(serializedObject.FindProperty(nameof(GameFlowManager.referenceResolution)));
-            searchField.RegisterValueChangedCallback(_ => UpdateView());
+            _gameFlowCountTitle = _root.Q<Label>("game_flow_content");
+            _userInterfaceFlowCountTitle = _root.Q<Label>("ui_flow_content");
+            _gameFlowContainer = _root.Q<VisualElement>("game_flow_container");
+            _userInterfaceContainer = _root.Q<VisualElement>("ui_flow_container");
+            _searchField = _root.Q<ToolbarSearchField>("search_field");
+            _root.Q<IntegerField>("plane_distance").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.planeDistance)));
+            _root.Q<IntegerField>("sorting_order_offset").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.sortingOrderOffset)));
+            _root.Q<IntegerField>("loading_shield_sorting_order").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.loadingShieldSortingOrder)));
+            _root.Q<Vector2Field>("reference_resolution").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.referenceResolution)));
+            _searchField.RegisterValueChangedCallback(_ => UpdateView());
         }
 
         private void RegisterAddButton()
         {
-            var addButton = root.Q<Button>("add_button");
+            var addButton = _root.Q<Button>("add_button");
             addButton.RegisterCallback<ClickEvent>(_ => { PopupWindow.Show(addButton.worldBound, new AddElementPopupWindow(false, UpdateView)); });
-            var addInterfaceButton = root.Q<Button>("add_interface_button");
+            var addInterfaceButton = _root.Q<Button>("add_interface_button");
             addInterfaceButton.RegisterCallback<ClickEvent>(_ => { PopupWindow.Show(addInterfaceButton.worldBound, new AddElementPopupWindow(true, UpdateView)); });
         }
 
 
         private void RegisterGenerateButton()
         {
-            var generateButton = root.Q<Button>("generate_button");
+            var generateButton = _root.Q<Button>("generate_button");
             generateButton.RegisterCallback<ClickEvent>(_ =>
             {
                 AssetDatabase.Refresh();
-                PopupWindow.Show(generateButton.worldBound, new GenerateElementPopupWindow(false, generateAction));
+                PopupWindow.Show(generateButton.worldBound, new GenerateElementPopupWindow(false, _generateAction));
             });
 
-            var generateInterfaceButton = root.Q<Button>("generate_interface_button");
+            var generateInterfaceButton = _root.Q<Button>("generate_interface_button");
             generateInterfaceButton.RegisterCallback<ClickEvent>(_ =>
             {
                 AssetDatabase.Refresh();
-                PopupWindow.Show(generateInterfaceButton.worldBound, new GenerateElementPopupWindow(true, generateAction));
+                PopupWindow.Show(generateInterfaceButton.worldBound, new GenerateElementPopupWindow(true, _generateAction));
             });
         }
 
         internal void UpdateView()
         {
-            ItemGameFlowContentElement.IsDrawGUI = false;
+            ItemGameFlowContentElement.s_IsDrawGUI = false;
             UpdateData();
-            gameFlowCountTitle.text = SetCountTitle(gameFlowProperties.Count);
-            userInterfaceFlowCountTitle.text = SetCountTitle(userInterfaceFlowProperties.Count);
-            FillData(false, gameFlowProperties, gameFlowElements, gameFlowContainer);
-            FillData(true, userInterfaceFlowProperties, userInterfaceFlowElements, userInterfaceContainer);
-            ItemGameFlowContentElement.IsDrawGUI = true;
+            _gameFlowCountTitle.text = SetCountTitle(_gameFlowProperties.Count);
+            _userInterfaceFlowCountTitle.text = SetCountTitle(_userInterfaceFlowProperties.Count);
+            FillData(false, _gameFlowProperties, _gameFlowElements, _gameFlowContainer);
+            FillData(true, _userInterfaceFlowProperties, _userInterfaceFlowElements, _userInterfaceContainer);
+            ItemGameFlowContentElement.s_IsDrawGUI = true;
         }
 
         private void UpdateData()
         {
-            serializedObject.Update();
-            gameFlowProperties.Clear();
-            userInterfaceFlowProperties.Clear();
-            var property = serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements");
+            _serializedObject.Update();
+            _gameFlowProperties.Clear();
+            _userInterfaceFlowProperties.Clear();
+            var property = _serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements");
             if (property == null || property.arraySize == 0) return;
-            var searchKey = searchField.value;
+            var searchKey = _searchField.value;
             var hasSearchKey = !string.IsNullOrEmpty(searchKey);
             for (var i = 0; i < property.arraySize; i++)
             {
@@ -134,7 +134,7 @@ namespace GameFlow.Editor
                     if (!type.Name.Contains(searchKey)) continue;
                 }
 
-                AddDictionaryProperty(type, elementProperty, !isUserInterface ? gameFlowProperties : userInterfaceFlowProperties);
+                AddDictionaryProperty(type, elementProperty, !isUserInterface ? _gameFlowProperties : _userInterfaceFlowProperties);
             }
         }
 
@@ -142,13 +142,13 @@ namespace GameFlow.Editor
         {
             if (dictionary.TryGetValue(type, out var element))
             {
-                element.properties.Add(serializedProperty);
+                element.Properties.Add(serializedProperty);
                 return;
             }
 
             dictionary.Add(type, new ElementProperty
             {
-                properties = new List<SerializedProperty> { serializedProperty }
+                Properties = new List<SerializedProperty> { serializedProperty }
             });
         }
 
@@ -156,11 +156,11 @@ namespace GameFlow.Editor
         {
             var countText = count switch
             {
-                0 => KNoElementText,
-                _ => string.Format(KHasElementTextFormat, count)
+                0 => k_noElementText,
+                _ => string.Format(k_hasElementTextFormat, count)
             };
 
-            return string.IsNullOrEmpty(searchField.value) ? countText : $"[ Key: <b>{searchField.value}</b> ]  {countText}";
+            return string.IsNullOrEmpty(_searchField.value) ? countText : $"[ Key: <b>{_searchField.value}</b> ]  {countText}";
         }
 
         private void FillData(bool isUserInterface, Dictionary<Type, ElementProperty> properties, List<GameFlowVisualElement> elements, VisualElement container)
@@ -191,8 +191,8 @@ namespace GameFlow.Editor
         {
             try
             {
-                serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements").DeleteArrayElementAtIndex(index);
-                serializedObject?.ApplyModifiedProperties();
+                _serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements").DeleteArrayElementAtIndex(index);
+                _serializedObject?.ApplyModifiedProperties();
                 UpdateView();
             }
             catch (Exception e)

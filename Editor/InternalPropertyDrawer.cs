@@ -8,8 +8,8 @@ namespace GameFlow.Editor
     [CustomPropertyDrawer(typeof(InternalDrawAttribute))]
     public class InternalPropertyDrawer : PropertyDrawer
     {
-        private UnityEventDrawer eventDrawer;
-        private const int k_Space = 2;
+        private const int k_space = 2;
+        private UnityEventDrawer _eventDrawer;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -17,16 +17,16 @@ namespace GameFlow.Editor
             {
                 default:
                 case DrawType.Element:
-                    DrawElement(new Rect(position.x, position.y, position.width, position.height - k_Space), property);
+                    DrawElement(new Rect(position.x, position.y, position.width, position.height - k_space), property);
                     break;
                 case DrawType.Canvas:
-                    DrawCanvas(new Rect(position.x, position.y, position.width, position.height - k_Space), property);
+                    DrawCanvas(new Rect(position.x, position.y, position.width, position.height - k_space), property);
                     break;
                 case DrawType.SafeView:
-                    DrawSafeView(new Rect(position.x, position.y, position.width, position.height - k_Space), property);
+                    DrawSafeView(new Rect(position.x, position.y, position.width, position.height - k_space), property);
                     break;
                 case DrawType.OnKeyBack:
-                    DrawKeyBack(new Rect(position.x, position.y, position.width, position.height - k_Space), property, label);
+                    DrawKeyBack(new Rect(position.x, position.y, position.width, position.height - k_space), property, label);
                     break;
             }
         }
@@ -58,8 +58,8 @@ namespace GameFlow.Editor
 
         private void DrawKeyBack(Rect position, SerializedProperty property, GUIContent label)
         {
-            eventDrawer = new UnityEventDrawer();
-            eventDrawer.OnGUI(position, property, label);
+            _eventDrawer = new UnityEventDrawer();
+            _eventDrawer.OnGUI(position, property, label);
             var useDefaultProperty = property.serializedObject.FindProperty("useDefaultKeyBack");
             EditorGUI.PropertyField(new Rect(position.x + position.width - 18, position.y + 1, 18, 18), useDefaultProperty, GUIContent.none);
             EditorGUI.LabelField(new Rect(position.x + position.width - 90, position.y + 1, 80, 18), "Use Default");
@@ -73,10 +73,10 @@ namespace GameFlow.Editor
                 case DrawType.Element:
                 case DrawType.Canvas:
                 case DrawType.SafeView:
-                    return EditorGUIUtility.singleLineHeight + k_Space;
+                    return EditorGUIUtility.singleLineHeight + k_space;
                 case DrawType.OnKeyBack:
-                    eventDrawer ??= new UnityEventDrawer();
-                    return eventDrawer.GetPropertyHeight(property, label) + k_Space;
+                    _eventDrawer ??= new UnityEventDrawer();
+                    return _eventDrawer.GetPropertyHeight(property, label) + k_space;
             }
         }
     }

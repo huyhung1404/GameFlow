@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using GameFlow.Internal;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace GameFlow.Editor
@@ -38,7 +37,7 @@ namespace GameFlow.Editor
                     return element.reference;
                 case GameFlowManager manager:
                 {
-                    var index = ExtractArrayIndex(property);
+                    var index = property.ExtractArrayIndex();
                     return index == null ? null : manager.elementCollection.GetIndex(index.Value)?.reference;
                 }
                 default:
