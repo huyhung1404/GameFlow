@@ -6,7 +6,7 @@ namespace GameFlow.Component
 {
     public abstract class GameFlowUIAnimation : ElementMonoBehaviours
     {
-        [SerializeField, InternalDraw(DrawType.Element), FormerlySerializedAs("element")] protected UIFlowElement m_element;
+        [SerializeField, Element, FormerlySerializedAs("element")] protected UIFlowElement m_element;
         protected UIElementCallbackEvent _delegates;
         private ICommandReleaseHandle _releaseHandle;
 

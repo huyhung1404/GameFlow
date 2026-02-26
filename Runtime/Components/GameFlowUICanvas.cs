@@ -8,11 +8,11 @@ namespace GameFlow.Component
     [AddComponentMenu("Game Flow/UI Canvas")]
     public class GameFlowUICanvas : FlowListenerMonoBehaviour
     {
-        [SerializeField, InternalDraw(DrawType.Element), FormerlySerializedAs("element")] protected UIFlowElement m_element;
-        [SerializeField, InternalDraw(DrawType.Canvas), FormerlySerializedAs("canvas")] protected Canvas m_canvas;
+        [SerializeField, Element, FormerlySerializedAs("element")] protected UIFlowElement m_element;
+        [SerializeField, HideInInspector, FormerlySerializedAs("canvas")] protected Canvas m_canvas;
         [SerializeField, HideInInspector, FormerlySerializedAs("autoGetComponent")] protected bool m_autoGetComponent = true;
         [SerializeField, HideInInspector, FormerlySerializedAs("offsetCanvasGroup")] protected int m_offsetCanvasGroup;
-        [SerializeField, InternalDraw(DrawType.SafeView), FormerlySerializedAs("safeView")] protected RectTransform m_safeView;
+        [SerializeField, HideInInspector, FormerlySerializedAs("safeView")] protected RectTransform m_safeView;
         [SerializeField, HideInInspector, FormerlySerializedAs("safeAreaIgnore")] protected SafeAreaIgnore m_safeAreaIgnore;
         protected UIElementCallbackEvent _delegates;
         protected CanvasScaler _canvasScale;

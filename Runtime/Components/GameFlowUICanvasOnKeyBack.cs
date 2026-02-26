@@ -1,20 +1,25 @@
-using GameFlow.Internal;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace GameFlow.Component
 {
+    [Serializable]
+    public class KeyBackEvent
+    {
+        public bool UseDefault;
+        public UnityEvent OnKeyBack;
+    }
+
     [AddComponentMenu("Game Flow/UI Canvas Key Back")]
     public class GameFlowUICanvasOnKeyBack : GameFlowUICanvas
     {
-        [SerializeField, InternalDraw(DrawType.OnKeyBack), FormerlySerializedAs("onKeyBack")] protected UnityEvent m_onKeyBack;
-        [SerializeField, HideInInspector, FormerlySerializedAs("useDefaultKeyBack")] protected bool m_useDefaultKeyBack;
+        [SerializeField] private KeyBackEvent m_keyBackEvent;
 
         public override void OnKeyBack()
         {
-            if (m_useDefaultKeyBack) base.OnKeyBack();
-            m_onKeyBack?.Invoke();
+            if (m_keyBackEvent.UseDefault) base.OnKeyBack();
+            m_keyBackEvent.OnKeyBack.Invoke();
         }
     }
 }
