@@ -50,11 +50,21 @@ namespace GameFlow.Editor
             var offsetProp = serializedObject.FindProperty("m_offsetCanvasGroup");
             var safeViewProp = serializedObject.FindProperty("m_safeView");
             var safeIgnoreProp = serializedObject.FindProperty("m_safeAreaIgnore");
+
+            // ==========================================
+            // KHUNG BOX 1: CANVAS BINDING
+            // ==========================================
             
-            var offsetHeight = EditorGUI.GetPropertyHeight(offsetProp, true);
-            var box1Height = k_innerBoxPadding * 2 + EditorGUIUtility.singleLineHeight + spacing + offsetHeight;
+            var offsetHeight = offsetProp != null ? EditorGUI.GetPropertyHeight(offsetProp, true) : 0f;
+            
+            // Tính toán động chiều cao Box 1 dựa trên việc biến offset có tồn tại hay không
+            var box1Height = k_innerBoxPadding * 2 + EditorGUIUtility.singleLineHeight;
+            if (offsetProp != null)
+            {
+                box1Height += spacing + offsetHeight;
+            }
+
             var box1Rect = new Rect(startX, currentY, availableWidth, box1Height);
-            
             GUI.Box(box1Rect, GUIContent.none, EditorStyles.helpBox);
 
             var innerX1 = box1Rect.x + k_innerBoxPadding;
@@ -62,53 +72,84 @@ namespace GameFlow.Editor
             var innerW1 = box1Rect.width - k_innerBoxPadding * 2;
 
             var canvasRowRect = new Rect(innerX1, innerY1, innerW1, EditorGUIUtility.singleLineHeight);
-            
-            var buttonRect = new Rect(canvasRowRect.xMax - k_autoButtonWidth, canvasRowRect.y, k_autoButtonWidth, canvasRowRect.height);
-            autoGetProp.boolValue = GUI.Toggle(buttonRect, autoGetProp.boolValue, "Auto", EditorStyles.miniButton);
+            var isAuto = false;
+
+            // Bảo vệ luồng đọc/ghi AutoGetProp
+            if (autoGetProp != null)
+            {
+                var buttonRect = new Rect(canvasRowRect.xMax - k_autoButtonWidth, canvasRowRect.y, k_autoButtonWidth, canvasRowRect.height);
+                isAuto = autoGetProp.boolValue;
+                autoGetProp.boolValue = GUI.Toggle(buttonRect, isAuto, "Auto", EditorStyles.miniButton);
+                isAuto = autoGetProp.boolValue;
+            }
 
             var canvasFullFieldRect = new Rect(canvasRowRect.x, canvasRowRect.y, canvasRowRect.width - k_autoButtonWidth - 5f, canvasRowRect.height);
-
             var labelWidth = EditorGUIUtility.labelWidth - 16f;
             var labelRect = new Rect(canvasFullFieldRect.x, canvasFullFieldRect.y, labelWidth, canvasFullFieldRect.height);
             var fieldRect = new Rect(canvasFullFieldRect.x + labelWidth, canvasFullFieldRect.y, canvasFullFieldRect.width - labelWidth, canvasFullFieldRect.height);
 
             EditorGUI.LabelField(labelRect, "Canvas Root");
 
-            var preEnableState = GUI.enabled;
-            if (autoGetProp.boolValue)
+            // Bảo vệ vẽ CanvasProp
+            if (canvasProp != null)
             {
-                GUI.enabled = false;
+                var preEnableState = GUI.enabled;
+                if (isAuto)
+                {
+                    GUI.enabled = false;
+                }
+                
+                EditorGUI.PropertyField(fieldRect, canvasProp, GUIContent.none);
+                GUI.enabled = preEnableState;
             }
-            
-            EditorGUI.PropertyField(fieldRect, canvasProp, GUIContent.none);
-            
-            GUI.enabled = preEnableState;
 
-            innerY1 += EditorGUIUtility.singleLineHeight + spacing;
+            innerY1 += EditorGUIUtility.singleLineHeight;
 
-            var offsetRect = new Rect(innerX1 + k_visualIndent, innerY1, innerW1 - k_visualIndent, offsetHeight);
-            EditorGUI.PropertyField(offsetRect, offsetProp, new GUIContent("↳ Offset Layer"));
+            // Chỉ vẽ Offset Layer nếu biến thực sự tồn tại
+            if (offsetProp != null)
+            {
+                innerY1 += spacing;
+                var offsetRect = new Rect(innerX1 + k_visualIndent, innerY1, innerW1 - k_visualIndent, offsetHeight);
+                EditorGUI.PropertyField(offsetRect, offsetProp, new GUIContent("↳ Offset Layer"));
+            }
 
             currentY += box1Height + spacing;
 
-            var safeViewHeight = EditorGUI.GetPropertyHeight(safeViewProp, true);
-            var safeIgnoreHeight = EditorGUI.GetPropertyHeight(safeIgnoreProp, true);
-            var box2Height = k_innerBoxPadding * 2 + safeViewHeight + spacing + safeIgnoreHeight;
-            var box2Rect = new Rect(startX, currentY, availableWidth, box2Height);
+            // ==========================================
+            // KHUNG BOX 2: SAFE AREA SETUP
+            // ==========================================
 
-            GUI.Box(box2Rect, GUIContent.none, EditorStyles.helpBox);
+            var safeViewHeight = safeViewProp != null ? EditorGUI.GetPropertyHeight(safeViewProp, true) : 0f;
+            var safeIgnoreHeight = safeIgnoreProp != null ? EditorGUI.GetPropertyHeight(safeIgnoreProp, true) : 0f;
 
-            var innerX2 = box2Rect.x + k_innerBoxPadding;
-            var innerY2 = box2Rect.y + k_innerBoxPadding;
-            var innerW2 = box2Rect.width - k_innerBoxPadding * 2;
+            // Chỉ render toàn bộ Box 2 nếu ít nhất 1 trong 2 thuộc tính tồn tại 🧠
+            if (safeViewProp != null || safeIgnoreProp != null)
+            {
+                var box2Height = k_innerBoxPadding * 2f;
+                if (safeViewProp != null) box2Height += safeViewHeight;
+                if (safeIgnoreProp != null) box2Height += (safeViewProp != null ? spacing : 0) + safeIgnoreHeight;
 
-            var safeViewRect = new Rect(innerX2, innerY2, innerW2, safeViewHeight);
-            EditorGUI.PropertyField(safeViewRect, safeViewProp, new GUIContent("Safe View"));
+                var box2Rect = new Rect(startX, currentY, availableWidth, box2Height);
+                GUI.Box(box2Rect, GUIContent.none, EditorStyles.helpBox);
 
-            innerY2 += safeViewHeight + spacing;
+                var innerX2 = box2Rect.x + k_innerBoxPadding;
+                var innerY2 = box2Rect.y + k_innerBoxPadding;
+                var innerW2 = box2Rect.width - k_innerBoxPadding * 2;
 
-            var safeIgnoreRect = new Rect(innerX2 + k_visualIndent, innerY2, innerW2 - k_visualIndent, safeIgnoreHeight);
-            EditorGUI.PropertyField(safeIgnoreRect, safeIgnoreProp, new GUIContent("↳ Ignore Edges"));
+                if (safeViewProp != null)
+                {
+                    var safeViewRect = new Rect(innerX2, innerY2, innerW2, safeViewHeight);
+                    EditorGUI.PropertyField(safeViewRect, safeViewProp, new GUIContent("Safe View"));
+                    innerY2 += safeViewHeight;
+                }
+
+                if (safeIgnoreProp != null)
+                {
+                    if (safeViewProp != null) innerY2 += spacing;
+                    var safeIgnoreRect = new Rect(innerX2 + k_visualIndent, innerY2, innerW2 - k_visualIndent, safeIgnoreHeight);
+                    EditorGUI.PropertyField(safeIgnoreRect, safeIgnoreProp, new GUIContent("↳ Ignore Edges"));
+                }
+            }
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -123,14 +164,34 @@ namespace GameFlow.Editor
 
             var serializedObject = property.serializedObject;
 
-            var offsetHeight = EditorGUI.GetPropertyHeight(serializedObject.FindProperty("m_offsetCanvasGroup"), true);
-            height += k_innerBoxPadding * 2 + EditorGUIUtility.singleLineHeight + spacing + offsetHeight;
+            var canvasProp = serializedObject.FindProperty("m_canvas");
+            var autoGetProp = serializedObject.FindProperty("m_autoGetComponent");
+            var offsetProp = serializedObject.FindProperty("m_offsetCanvasGroup");
+            var safeViewProp = serializedObject.FindProperty("m_safeView");
+            var safeIgnoreProp = serializedObject.FindProperty("m_safeAreaIgnore");
 
-            height += spacing; 
+            // --- Tính toán Box 1 ---
+            var box1Height = k_innerBoxPadding * 2 + EditorGUIUtility.singleLineHeight;
+            if (offsetProp != null)
+            {
+                box1Height += spacing + EditorGUI.GetPropertyHeight(offsetProp, true);
+            }
+            height += box1Height + spacing; 
 
-            var safeViewHeight = EditorGUI.GetPropertyHeight(serializedObject.FindProperty("m_safeView"), true);
-            var safeIgnoreHeight = EditorGUI.GetPropertyHeight(serializedObject.FindProperty("m_safeAreaIgnore"), true);
-            height += k_innerBoxPadding * 2 + safeViewHeight + spacing + safeIgnoreHeight;
+            // --- Tính toán Box 2 ---
+            if (safeViewProp != null || safeIgnoreProp != null)
+            {
+                var box2Height = k_innerBoxPadding * 2f;
+                if (safeViewProp != null) box2Height += EditorGUI.GetPropertyHeight(safeViewProp, true);
+                if (safeIgnoreProp != null) box2Height += (safeViewProp != null ? spacing : 0) + EditorGUI.GetPropertyHeight(safeIgnoreProp, true);
+                
+                height += box2Height;
+            }
+            else
+            {
+                // Nếu box 2 không tồn tại thì trừ đi cái spacing dư đệm ở giữa 2 box
+                height -= spacing;
+            }
 
             return height;
         }
