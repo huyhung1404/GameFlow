@@ -7,35 +7,35 @@ namespace GameFlow
 
     public abstract class ReleaseCommand : Command, IReleaseCompleted
     {
-        protected bool isExecute;
-        protected bool callbackOnRelease;
-        internal OnReleaseCommandCompleted onCompleted;
-        internal bool ignoreAnimationHide;
-        protected abstract GameFlowElement baseElement { get; set; }
+        protected bool _isExecute;
+        protected bool _callbackOnRelease;
+        internal OnReleaseCommandCompleted OnCompleted;
+        internal bool IgnoreAnimationHide;
+        protected abstract GameFlowElement BaseElement { get; set; }
 
         internal ReleaseCommand(Type elementType) : base(elementType)
         {
-            isExecute = false;
+            _isExecute = false;
         }
 
         internal override void Update()
         {
-            if (isExecute) return;
-            isExecute = Execute();
+            if (_isExecute) return;
+            _isExecute = Execute();
         }
 
         private bool Execute()
         {
             try
             {
-                var reference = baseElement.reference;
+                var reference = BaseElement.Reference;
                 if (!reference.IsReady()) return false;
                 HandleRelease();
                 return true;
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, $"Release Command Error: {elementType.Name}");
+                ErrorHandle.LogException(e, $"Release Command Error: {_elementType.Name}");
                 OnLoadResult(false);
                 return true;
             }
@@ -45,14 +45,14 @@ namespace GameFlow
 
         protected void ExecuteByReleaseMode()
         {
-            switch (baseElement.releaseMode)
+            switch (BaseElement.ReleaseMode)
             {
                 default:
-                case ElementReleaseMode.RELEASE_ON_CLOSE:
-                case ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK:
+                case ElementReleaseMode.ReleaseOnClose:
+                case ElementReleaseMode.ReleaseOnCloseIncludeCallback:
                     ReleaseOnClose();
                     break;
-                case ElementReleaseMode.NONE_RELEASE:
+                case ElementReleaseMode.NoneRelease:
                     NoneRelease();
                     break;
             }
@@ -62,7 +62,7 @@ namespace GameFlow
         {
             if (isSuccess)
             {
-                baseElement.runtimeInstance = null;
+                BaseElement.RuntimeInstance = null;
                 OnLoadResult(true);
                 return;
             }
@@ -76,15 +76,15 @@ namespace GameFlow
 
         internal override void OnRelease()
         {
-            if (!callbackOnRelease) return;
-            if (baseElement.releaseMode == ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK) FlowObservable.ReleaseEvent(elementType);
+            if (!_callbackOnRelease) return;
+            if (BaseElement.ReleaseMode == ElementReleaseMode.ReleaseOnCloseIncludeCallback) FlowObservable.ReleaseEvent(_elementType);
         }
 
         internal override string GetFullInfo()
         {
-            return $@"<b><size=11>isRelease:</size></b> {isRelease}
-<b><size=11>onCompleted:</size></b> {onCompleted.Target}.{onCompleted.Method.Name}
-<b><size=11>isExecute:</size></b> {isExecute}
+            return $@"<b><size=11>isRelease:</size></b> {IsRelease}
+<b><size=11>onCompleted:</size></b> {OnCompleted.Target}.{OnCompleted.Method.Name}
+<b><size=11>isExecute:</size></b> {_isExecute}
 <b><size=11>isUserInterface:</size></b> {this is ReleaseUIElementCommand}";
         }
     }

@@ -5,7 +5,7 @@ namespace GameFlow
 {
     public static class FlowObservable
     {
-        internal static readonly Dictionary<Type, ElementCallbackEvent> callbackEvents = new Dictionary<Type, ElementCallbackEvent>();
+        internal static readonly Dictionary<Type, ElementCallbackEvent> s_CallbackEvents = new Dictionary<Type, ElementCallbackEvent>();
 
         public static ElementCallbackEvent Event<T>() where T : GameFlowElement
         {
@@ -14,13 +14,13 @@ namespace GameFlow
 
         public static ElementCallbackEvent Event(Type type)
         {
-            if (callbackEvents.TryGetValue(type, out var elementCallbackEvent))
+            if (s_CallbackEvents.TryGetValue(type, out var elementCallbackEvent))
             {
                 return elementCallbackEvent;
             }
 
-            var elementEvent = type.IsSubclassOf(GameCommand.UIElementType) ? new UIElementCallbackEvent() : new ElementCallbackEvent();
-            callbackEvents.Add(type, elementEvent);
+            var elementEvent = type.IsSubclassOf(GameCommand.s_UIElementType) ? new UIElementCallbackEvent() : new ElementCallbackEvent();
+            s_CallbackEvents.Add(type, elementEvent);
             return elementEvent;
         }
 
@@ -41,7 +41,7 @@ namespace GameFlow
 
         public static bool ReleaseEvent(Type type)
         {
-            return callbackEvents.Remove(type);
+            return s_CallbackEvents.Remove(type);
         }
     }
 }

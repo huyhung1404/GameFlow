@@ -11,13 +11,13 @@ namespace GameFlow.Internal
             FullPath
         }
 
-        private const string kDefaultConfigAssetName = "GameFlowManager";
-        private const string kDefaultProjectFolderName = "GameFlow";
-        internal const string kScriptFolderName = "ElementScripts";
-        private const string kAssetsFolderName = "Elements";
-        private const string kAssetsElementsFolderName = "GameFlowElements";
-        private const string kAssetsUserInterfaceElementsFolderName = "UserInterfaceFlowElements";
-        private const string kAssetSOFolderName = "ElementControllers";
+        private const string k_defaultConfigAssetName = "GameFlowManager";
+        private const string k_defaultProjectFolderName = "GameFlow";
+        internal const string k_ScriptFolderName = "ElementScripts";
+        private const string k_assetsFolderName = "Elements";
+        private const string k_assetsElementsFolderName = "GameFlowElements";
+        private const string k_assetsUserInterfaceElementsFolderName = "UserInterfaceFlowElements";
+        private const string k_assetSOFolderName = "ElementControllers";
 
         internal static string ProjectFolderPath(PathType type = PathType.UnityPath)
         {
@@ -25,28 +25,28 @@ namespace GameFlow.Internal
             var folderParentName = EditorPrefs.GetString("com.huyhung1404.gameflow.folderParentName", string.Empty);
             if (type == PathType.UnityPath)
             {
-                return $"Assets/{folderParentName}{kDefaultProjectFolderName}";
+                return $"Assets/{folderParentName}{k_defaultProjectFolderName}";
             }
 
-            return $"{Application.dataPath}/{folderParentName}{kDefaultProjectFolderName}";
+            return $"{Application.dataPath}/{folderParentName}{k_defaultProjectFolderName}";
 #else
              if (type == PathType.UnityPath)
              {
-                 return $"Assets/{kDefaultProjectFolderName}";
+                 return $"Assets/{k_defaultProjectFolderName}";
              }
  
-             return $"{Application.dataPath}/{kDefaultProjectFolderName}";
+             return $"{Application.dataPath}/{k_defaultProjectFolderName}";
 #endif
         }
 
         internal static string ManagerPath(PathType type = PathType.UnityPath)
         {
-            return $"{ProjectFolderPath(type)}/{kDefaultConfigAssetName}.asset";
+            return $"{ProjectFolderPath(type)}/{k_defaultConfigAssetName}.asset";
         }
 
         internal static string ScriptsGenerateFolderPath(PathType type = PathType.UnityPath)
         {
-            return ProjectFolderPath(type) + "/" + kScriptFolderName;
+            return ProjectFolderPath(type) + "/" + k_ScriptFolderName;
         }
 
         internal static string ProjectTemplatesPath(PathType type = PathType.UnityPath)
@@ -61,22 +61,22 @@ namespace GameFlow.Internal
 
         private static string AssetsFolderPath(PathType type = PathType.UnityPath)
         {
-            return ProjectFolderPath(type) + "/" + kAssetsFolderName;
+            return ProjectFolderPath(type) + "/" + k_assetsFolderName;
         }
 
         internal static string AssetsScriptableObjectFolderPath(PathType type = PathType.UnityPath)
         {
-            return ProjectFolderPath(type) + "/" + kAssetSOFolderName;
+            return ProjectFolderPath(type) + "/" + k_assetSOFolderName;
         }
 
         internal static string AssetsElementsFolderPath(PathType type = PathType.UnityPath)
         {
-            return AssetsFolderPath(type) + "/" + kAssetsElementsFolderName;
+            return AssetsFolderPath(type) + "/" + k_assetsElementsFolderName;
         }
 
         internal static string AssetsUserInterfaceElementsFolderPath(PathType type = PathType.UnityPath)
         {
-            return AssetsFolderPath(type) + "/" + kAssetsUserInterfaceElementsFolderName;
+            return AssetsFolderPath(type) + "/" + k_assetsUserInterfaceElementsFolderName;
         }
     }
 }

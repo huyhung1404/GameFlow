@@ -2,18 +2,18 @@ namespace GameFlow.Component
 {
     public abstract class GameFlowUICanvasWithAnimation : GameFlowUICanvas
     {
-        private ICommandReleaseHandle releaseHandle;
+        private ICommandReleaseHandle _releaseHandle;
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            delegates.OnHide += OnHide;
+            _delegates.OnHide += OnHide;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
-            delegates.OnHide -= OnHide;
+            _delegates.OnHide -= OnHide;
         }
 
         public override void OnActive()
@@ -24,7 +24,7 @@ namespace GameFlow.Component
 
         private void OnHide(ICommandReleaseHandle handle)
         {
-            releaseHandle = handle;
+            _releaseHandle = handle;
             OnHide();
         }
 
@@ -33,14 +33,14 @@ namespace GameFlow.Component
 
         protected void OnShowCompleted()
         {
-            FlowObservable.UIEvent(element.elementType).RaiseOnShowCompleted();
+            FlowObservable.UIEvent(m_element.ElementType).RaiseOnShowCompleted();
         }
 
         protected void OnHideCompleted()
         {
-            if (releaseHandle == null) return;
-            releaseHandle.Next();
-            releaseHandle = null;
+            if (_releaseHandle == null) return;
+            _releaseHandle.Next();
+            _releaseHandle = null;
         }
     }
 }

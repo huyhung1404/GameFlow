@@ -7,7 +7,7 @@ namespace GameFlow
 {
     public static class GameCommand
     {
-        internal static readonly Type UIElementType = typeof(UIFlowElement);
+        internal static readonly Type s_UIElementType = typeof(UIFlowElement);
 
         public static AddCommand Add<T>() where T : GameFlowElement
         {
@@ -16,7 +16,7 @@ namespace GameFlow
 
         public static AddCommand Add(Type type)
         {
-            return type.IsSubclassOf(UIElementType) ? new AddUICommand(type) : new AddGameFlowCommand(type);
+            return type.IsSubclassOf(s_UIElementType) ? new AddUICommand(type) : new AddGameFlowCommand(type);
         }
 
         public static LoadCommand Load<T>() where T : UIFlowElement
@@ -36,22 +36,22 @@ namespace GameFlow
 
         public static ReleaseCommand Release(Type type)
         {
-            return type.IsSubclassOf(UIElementType) ? new ReleaseUIElementCommand(type) : new ReleaseElementCommand(type);
+            return type.IsSubclassOf(s_UIElementType) ? new ReleaseUIElementCommand(type) : new ReleaseElementCommand(type);
         }
 
         public static BaseLoadingTypeController LoadingOn(int i)
         {
-            return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOn(i);
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOn(i);
         }
 
         public static BaseLoadingTypeController LoadingOff(int i)
         {
-            return !LoadingController.isInitialization ? null : LoadingController.instance.LoadingOff(i);
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOff(i);
         }
 
         public static BaseLoadingTypeController Get(int i)
         {
-            return !LoadingController.isInitialization ? null : LoadingController.instance.Get(i);
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.Get(i);
         }
 
         public static void LockFlow()
@@ -79,23 +79,23 @@ namespace GameFlow
     {
         public static int CurrentCanvasCount()
         {
-            return UIElementsRuntimeManager.elementsRuntime.Count;
+            return UIElementsRuntimeManager.ElementsRuntime.Count;
         }
 
         public static bool IsTopCanvas<T>() where T : UIFlowElement
         {
             if (CurrentCanvasCount() == 0) return false;
-            return UIElementsRuntimeManager.elementsRuntime[^1].GetType() == typeof(T);
+            return UIElementsRuntimeManager.ElementsRuntime[^1].GetType() == typeof(T);
         }
 
         public static UnityEngine.Canvas GetCanvas<T>() where T : UIFlowElement
         {
             if (CurrentCanvasCount() == 0) return null;
             var type = typeof(T);
-            for (var i = UIElementsRuntimeManager.elementsRuntime.Count - 1; i >= 0; i--)
+            for (var i = UIElementsRuntimeManager.ElementsRuntime.Count - 1; i >= 0; i--)
             {
-                var element = UIElementsRuntimeManager.elementsRuntime[i];
-                if (element.GetType() == type) return element.runtimeInstance.GetComponent<UnityEngine.Canvas>();
+                var element = UIElementsRuntimeManager.ElementsRuntime[i];
+                if (element.GetType() == type) return element.RuntimeInstance.GetComponent<UnityEngine.Canvas>();
             }
 
             return null;
@@ -103,7 +103,7 @@ namespace GameFlow
 
         public static UIFlowElement TopElement()
         {
-            return CurrentCanvasCount() == 0 ? null : UIElementsRuntimeManager.elementsRuntime[CurrentCanvasCount() - 1];
+            return CurrentCanvasCount() == 0 ? null : UIElementsRuntimeManager.ElementsRuntime[CurrentCanvasCount() - 1];
         }
 
         public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame)
@@ -124,7 +124,7 @@ namespace GameFlow
 
         public static Vector2 CanvasReferenceResolution()
         {
-            return GameFlowRuntimeController.Manager().referenceResolution;
+            return GameFlowRuntimeController.Manager().ReferenceResolution;
         }
     }
 
@@ -138,25 +138,25 @@ namespace GameFlow
         /// <returns></returns>
         public static AddCommand LoadingID(this AddCommand command, int id)
         {
-            command.loadingId = id;
+            command.LoadingId = id;
             return command;
         }
 
         public static AddCommand Preload(this AddCommand command)
         {
-            command.isPreload = true;
+            command.IsPreload = true;
             return command;
         }
 
         public static AddCommand OnCompleted(this AddCommand command, OnAddCommandCompleted completed)
         {
-            command.onCompleted = completed;
+            command.OnCompleted = completed;
             return command;
         }
 
         public static AddCommand ActiveData(this AddCommand command, object data)
         {
-            command.activeData = data;
+            command.ActiveData = data;
             return command;
         }
 
@@ -168,15 +168,15 @@ namespace GameFlow
         /// <returns></returns>
         public static AddCommand GetActiveHandle(this AddCommand command, out ReferenceActiveHandle handle)
         {
-            command.activeHandle ??= new ReferenceActiveHandle(command);
-            handle = command.activeHandle;
+            command.ActiveHandle ??= new ReferenceActiveHandle(command);
+            handle = command.ActiveHandle;
             return command;
         }
 
         public static LoadCommand GetActiveHandle(this LoadCommand command, out ReferenceActiveHandle handle)
         {
-            handle = command.activeHandle;
-            command.autoActive = false;
+            handle = command.ActiveHandle;
+            command.AutoActive = false;
             return command;
         }
     }
@@ -185,13 +185,13 @@ namespace GameFlow
     {
         public static ReleaseCommand OnCompleted(this ReleaseCommand command, OnReleaseCommandCompleted completed)
         {
-            command.onCompleted = completed;
+            command.OnCompleted = completed;
             return command;
         }
 
         public static ReleaseCommand IgnoreAnimationHide(this ReleaseCommand command)
         {
-            command.ignoreAnimationHide = true;
+            command.IgnoreAnimationHide = true;
             return command;
         }
     }

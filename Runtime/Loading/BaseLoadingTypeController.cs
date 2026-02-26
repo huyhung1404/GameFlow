@@ -6,29 +6,20 @@ namespace GameFlow
 {
     public abstract class BaseLoadingTypeController : MonoBehaviour
     {
-#if UNITY_EDITOR
-        public bool isShow { get; protected set; }
-#else
-        [NonSerialized] public bool isShow;
-#endif
-
-#if UNITY_EDITOR
-        public bool isEnable { get; private set; }
-#else
-        [NonSerialized] public bool isEnable;
-#endif
-        protected Action callback;
-        protected bool cacheCallback;
-        protected float timeExecute;
+        public bool IsShow { get; protected set; }
+        public bool IsEnable { get; private set; }
+        protected Action _callback;
+        protected bool _cacheCallback;
+        protected float _timeExecute;
 
         protected virtual void OnEnable()
         {
-            isEnable = true;
+            IsEnable = true;
         }
 
         protected virtual void OnDisable()
         {
-            isEnable = false;
+            IsEnable = false;
         }
 
         internal BaseLoadingTypeController On()
@@ -49,29 +40,29 @@ namespace GameFlow
         public virtual BaseLoadingTypeController OnCompleted(Action onCompleted)
         {
             ExecuteCallback();
-            callback = onCompleted;
+            _callback = onCompleted;
             return this;
         }
 
         public virtual BaseLoadingTypeController SetTime(float time)
         {
-            timeExecute = time;
+            _timeExecute = time;
             return this;
         }
 
         protected bool ExecuteCallback()
         {
-            if (callback == null) return false;
+            if (_callback == null) return false;
             try
             {
-                callback.Invoke();
-                if (cacheCallback)
+                _callback.Invoke();
+                if (_cacheCallback)
                 {
-                    cacheCallback = false;
+                    _cacheCallback = false;
                     return true;
                 }
 
-                callback = null;
+                _callback = null;
                 return true;
             }
             catch (Exception e)

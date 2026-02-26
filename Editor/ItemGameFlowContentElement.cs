@@ -103,10 +103,10 @@ namespace GameFlow.Editor
             _removeAtIndex = removeAt;
             _serializedObject = new SerializedObject(_serializedProperty.objectReferenceValue);
             _container.BindToViewDataKey(_serializedProperty.propertyPath, false);
-            _includeInBuild = _serializedObject.FindProperty(nameof(GameFlowElement.includeInBuild));
-            _reference = _serializedObject.FindProperty(nameof(GameFlowElement.reference));
-            _releaseModeElement.BindProperty(_serializedObject.FindProperty(nameof(GameFlowElement.releaseMode)));
-            _activeModeElement.BindProperty(_serializedObject.FindProperty(nameof(GameFlowElement.activeMode)));
+            _includeInBuild = _serializedObject.FindProperty(nameof(GameFlowElement.IncludeInBuild));
+            _reference = _serializedObject.FindProperty(nameof(GameFlowElement.Reference));
+            _releaseModeElement.BindProperty(_serializedObject.FindProperty(nameof(GameFlowElement.ReleaseMode)));
+            _activeModeElement.BindProperty(_serializedObject.FindProperty(nameof(GameFlowElement.ActiveMode)));
             _isActive = true;
         }
 

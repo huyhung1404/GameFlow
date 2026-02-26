@@ -14,21 +14,21 @@ namespace GameFlow.Tests
         [UnityTest]
         public IEnumerator Loading_AllHide_ShowAllType()
         {
-            var display = ResourcesInstance.loadingController.LoadingOn(0);
+            var display = ResourcesInstance.LoadingController.LoadingOn(0);
             yield return null;
             Assert.IsTrue(display.gameObject.activeSelf);
-            ResourcesInstance.loadingController.LoadingOff(0);
+            ResourcesInstance.LoadingController.LoadingOff(0);
             yield return null;
             Assert.IsTrue(!display.gameObject.activeSelf);
 
-            var fade = (FadeLoading)ResourcesInstance.loadingController.LoadingOn(1);
+            var fade = (FadeLoading)ResourcesInstance.LoadingController.LoadingOn(1);
             yield return new WaitForSeconds(0.5f);
             fade.LoadingIsShow();
-            ResourcesInstance.loadingController.LoadingOff(1);
+            ResourcesInstance.LoadingController.LoadingOff(1);
             yield return new WaitForSeconds(0.5f);
             fade.LoadingIsHide();
 
-            var progress = (ProgressLoading)ResourcesInstance.loadingController.LoadingOn(2);
+            var progress = (ProgressLoading)ResourcesInstance.LoadingController.LoadingOn(2);
             yield return null;
             progress.UpdateProgress(0.3f);
             yield return new WaitForSeconds(0.2f);
@@ -46,12 +46,12 @@ namespace GameFlow.Tests
             var time = Time.time;
             float timeOn;
             float timeOff;
-            var fade = (FadeLoading)ResourcesInstance.loadingController.LoadingOn(1).OnCompleted(() =>
+            var fade = (FadeLoading)ResourcesInstance.LoadingController.LoadingOn(1).OnCompleted(() =>
             {
                 timeOn = Time.time - time;
                 Assert.IsTrue(timeOn >= 0.5, timeOn.ToString("0.0000"));
             }).SetTime(0.5f);
-            ResourcesInstance.loadingController.LoadingOff(1).OnCompleted(() =>
+            ResourcesInstance.LoadingController.LoadingOff(1).OnCompleted(() =>
             {
                 timeOff = Time.time - time;
                 Assert.IsTrue(timeOff > 1f, timeOff.ToString("0.0000"));
@@ -66,13 +66,13 @@ namespace GameFlow.Tests
             var time = Time.time;
             float time1;
             float time2;
-            var fade = (FadeLoading)ResourcesInstance.loadingController.LoadingOn(1).OnCompleted(() =>
+            var fade = (FadeLoading)ResourcesInstance.LoadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time1 = Time.time - time;
                 Assert.IsTrue(time1 < 0.32f, time1.ToString("0.0000"));
             }).SetTime(0.5f);
             yield return new WaitForSeconds(0.3f);
-            ResourcesInstance.loadingController.LoadingOn(1).OnCompleted(() =>
+            ResourcesInstance.LoadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time2 = Time.time - time;
                 Assert.IsTrue(time2 < 0.52f, time2.ToString("0.0000"));
@@ -90,25 +90,25 @@ namespace GameFlow.Tests
             float time2;
             float time3;
             float time4;
-            var fade = (FadeLoading)ResourcesInstance.loadingController.LoadingOn(1).OnCompleted(() =>
+            var fade = (FadeLoading)ResourcesInstance.LoadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time1 = Time.time - time;
                 Assert.IsTrue(time1 < 0.32f, time1.ToString("0.0000"));
             }).SetTime(0.5f);
             yield return new WaitForSeconds(0.3f);
-            ResourcesInstance.loadingController.LoadingOn(1).OnCompleted(() =>
+            ResourcesInstance.LoadingController.LoadingOn(1).OnCompleted(() =>
             {
                 time2 = Time.time - time;
                 Assert.IsTrue(time2 < 0.52f, time2.ToString("0.0000"));
             }).SetTime(0.5f);
 
-            ResourcesInstance.loadingController.LoadingOff(1).OnCompleted(() =>
+            ResourcesInstance.LoadingController.LoadingOff(1).OnCompleted(() =>
             {
                 time3 = Time.time - time;
                 Assert.IsTrue(time3 < 0.82f, time3.ToString("0.0000"));
             }).SetTime(0.5f);
             yield return new WaitForSeconds(0.3f);
-            ResourcesInstance.loadingController.LoadingOff(1).OnCompleted(() =>
+            ResourcesInstance.LoadingController.LoadingOff(1).OnCompleted(() =>
             {
                 time4 = Time.time - time;
                 Assert.IsTrue(time4 < 1.02f, time4.ToString("0.0000"));
@@ -142,22 +142,22 @@ namespace GameFlow.Tests
                           $"var timeExecute4 = {timeExecute4}f;");
                 var lastIsHide = true;
                 var execute = 0;
-                ResourcesInstance.loadingController.StartCoroutine(CreateFadeOn(time1, timeExecute1, () =>
+                ResourcesInstance.LoadingController.StartCoroutine(CreateFadeOn(time1, timeExecute1, () =>
                 {
                     lastIsHide = false;
                     execute++;
                 }));
-                ResourcesInstance.loadingController.StartCoroutine(CreateFadeOn(time2, timeExecute2, () =>
+                ResourcesInstance.LoadingController.StartCoroutine(CreateFadeOn(time2, timeExecute2, () =>
                 {
                     lastIsHide = false;
                     execute++;
                 }));
-                ResourcesInstance.loadingController.StartCoroutine(CreateFadeOff(time3, timeExecute3, () =>
+                ResourcesInstance.LoadingController.StartCoroutine(CreateFadeOff(time3, timeExecute3, () =>
                 {
                     lastIsHide = true;
                     execute++;
                 }));
-                ResourcesInstance.loadingController.StartCoroutine(CreateFadeOff(time4, timeExecute4, () =>
+                ResourcesInstance.LoadingController.StartCoroutine(CreateFadeOff(time4, timeExecute4, () =>
                 {
                     lastIsHide = true;
                     execute++;
@@ -166,11 +166,11 @@ namespace GameFlow.Tests
                 Assert.AreEqual(execute, 4, "Execute is not 4");
                 if (lastIsHide)
                 {
-                    ResourcesInstance.fadeLoading.LoadingIsHide();
+                    ResourcesInstance.FadeLoading.LoadingIsHide();
                 }
                 else
                 {
-                    ResourcesInstance.fadeLoading.LoadingIsShow();
+                    ResourcesInstance.FadeLoading.LoadingIsShow();
                 }
             }
         }
@@ -178,32 +178,32 @@ namespace GameFlow.Tests
         private static IEnumerator CreateFadeOn(float time, float timeExecute, Action onCompleted)
         {
             yield return new WaitForSeconds(time);
-            ResourcesInstance.loadingController.LoadingOn(1).OnCompleted(onCompleted).SetTime(timeExecute);
+            ResourcesInstance.LoadingController.LoadingOn(1).OnCompleted(onCompleted).SetTime(timeExecute);
         }
 
         private static IEnumerator CreateFadeOff(float time, float timeExecute, Action onCompleted)
         {
             yield return new WaitForSeconds(time);
-            ResourcesInstance.loadingController.LoadingOff(1).OnCompleted(onCompleted).SetTime(timeExecute);
+            ResourcesInstance.LoadingController.LoadingOff(1).OnCompleted(onCompleted).SetTime(timeExecute);
         }
 
         [UnityTest]
         public IEnumerator Loading_Hide_ProgressLoading()
         {
             var onCompleted = false;
-            var progress = (ProgressLoading)ResourcesInstance.loadingController.LoadingOn(2)
+            var progress = (ProgressLoading)ResourcesInstance.LoadingController.LoadingOn(2)
                 .OnCompleted(() => onCompleted = true)
                 .SetTime(0.15f);
             yield return null;
             progress.UpdateProgress(0.5f);
-            ResourcesInstance.loadingController.LoadingOff(2);
+            ResourcesInstance.LoadingController.LoadingOff(2);
             yield return new WaitForSeconds(0.1f);
             Assert.IsGameObjectEnable(progress);
             yield return new WaitForSeconds(0.6f);
             Assert.IsGameObjectDisable(progress);
             Assert.IsTrue(onCompleted);
             yield return new WaitForSeconds(0.1f);
-            ResourcesInstance.loadingController.LoadingOff(2);
+            ResourcesInstance.LoadingController.LoadingOff(2);
         }
 
         [UnityTest]
@@ -211,13 +211,13 @@ namespace GameFlow.Tests
         {
             var onCompleted = false;
             var onCompleted2 = false;
-            var progress = (ProgressLoading)ResourcesInstance.loadingController.LoadingOn(2)
+            var progress = (ProgressLoading)ResourcesInstance.LoadingController.LoadingOn(2)
                 .OnCompleted(() => onCompleted = true)
                 .SetTime(0.15f);
             yield return null;
             progress.UpdateProgress(0.5f);
             yield return null;
-            ResourcesInstance.loadingController.LoadingOn(2)
+            ResourcesInstance.LoadingController.LoadingOn(2)
                 .OnCompleted(() => onCompleted2 = true)
                 .SetTime(0.15f);
 
@@ -237,7 +237,7 @@ namespace GameFlow.Tests
         {
             var onCompleted = false;
 
-            var progress = (ProgressLoading)ResourcesInstance.loadingController.LoadingOn(2)
+            var progress = (ProgressLoading)ResourcesInstance.LoadingController.LoadingOn(2)
                 .OnCompleted(() => onCompleted = true)
                 .SetTime(0.15f);
 
@@ -245,7 +245,7 @@ namespace GameFlow.Tests
             progress.UpdateProgress(0.5f);
             yield return null;
 
-            ResourcesInstance.loadingController.LoadingOn(2);
+            ResourcesInstance.LoadingController.LoadingOn(2);
 
             yield return null;
             progress.UpdateProgress(1f);
@@ -263,12 +263,12 @@ namespace GameFlow.Tests
         {
             var onCompleted = false;
             var onCompleted2 = false;
-            var progress = (ProgressLoading)ResourcesInstance.loadingController.LoadingOn(2)
+            var progress = (ProgressLoading)ResourcesInstance.LoadingController.LoadingOn(2)
                 .OnCompleted(() => onCompleted = true)
                 .SetTime(0.15f);
             yield return null;
             progress.UpdateProgress(0.5f);
-            ResourcesInstance.loadingController.LoadingOff(2).OnCompleted(() => onCompleted2 = true);
+            ResourcesInstance.LoadingController.LoadingOff(2).OnCompleted(() => onCompleted2 = true);
             yield return new WaitForSeconds(0.1f);
             Assert.IsGameObjectEnable(progress);
             yield return new WaitForSeconds(0.6f);

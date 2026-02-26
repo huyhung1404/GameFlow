@@ -5,8 +5,8 @@ namespace GameFlow
 {
     public class AddUICommand : AddCommand
     {
-        private UIFlowElement element;
-        protected override GameFlowElement baseElement { get => element; set => element = (UIFlowElement)value; }
+        private UIFlowElement _element;
+        protected override GameFlowElement BaseElement { get => _element; set => _element = (UIFlowElement)value; }
 
         internal AddUICommand(Type elementType) : base(elementType)
         {
@@ -14,20 +14,20 @@ namespace GameFlow
 
         protected override void ReActiveElement()
         {
-            FlowObservable.Event(elementType).RaiseOnRelease(true);
-            baseElement.runtimeInstance.SetActive(false);
-            UIElementsRuntimeManager.RemoveElement(element);
-            baseElement.runtimeInstance.SetActive(true);
-            UIElementsRuntimeManager.AddUserInterfaceElement(element);
-            callbackOnRelease = true;
+            FlowObservable.Event(_elementType).RaiseOnRelease(true);
+            BaseElement.RuntimeInstance.SetActive(false);
+            UIElementsRuntimeManager.RemoveElement(_element);
+            BaseElement.RuntimeInstance.SetActive(true);
+            UIElementsRuntimeManager.AddUserInterfaceElement(_element);
+            _callbackOnRelease = true;
             Release();
         }
 
         protected override void ActiveElement()
         {
-            baseElement.runtimeInstance.SetActive(true);
-            UIElementsRuntimeManager.AddUserInterfaceElement(element);
-            callbackOnRelease = true;
+            BaseElement.RuntimeInstance.SetActive(true);
+            UIElementsRuntimeManager.AddUserInterfaceElement(_element);
+            _callbackOnRelease = true;
             Release();
         }
     }

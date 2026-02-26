@@ -31,7 +31,7 @@ namespace GameFlow.Internal
 
         public static void IsValidReference<T>(bool condition) where T : GameFlowElement
         {
-            IsTrue(GameFlowRuntimeController.GetElements().GetElement(typeof(T)).runtimeInstance == condition);
+            IsTrue(GameFlowRuntimeController.GetElements().GetElement(typeof(T)).RuntimeInstance == condition);
         }
     }
 }

@@ -5,16 +5,16 @@ namespace GameFlow.Internal
 {
     internal static class ErrorHandle
     {
-        private const string LOG_FORMAT = "GameFlow: {0}";
+        private const string k_LogFormat = "GameFlow: {0}";
 
         public static void LogError(string content)
         {
-            Debug.LogErrorFormat(LOG_FORMAT, content);
+            Debug.LogErrorFormat(k_LogFormat, content);
         }
 
         public static void LogWarning(string content)
         {
-            Debug.LogWarningFormat(LOG_FORMAT, content);
+            Debug.LogWarningFormat(k_LogFormat, content);
         }
 
         public static void LogException(Exception e, string content)

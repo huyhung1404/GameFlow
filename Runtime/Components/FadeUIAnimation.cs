@@ -1,6 +1,7 @@
 using System.Collections;
 using GameFlow.Component;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFlow
 {
@@ -8,22 +9,22 @@ namespace GameFlow
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeUIAnimation : GameFlowUIAnimation
     {
-        private CanvasGroup canvasGroup;
-        [SerializeField] private bool ignoreTimeScale;
-        [SerializeField] private float durationShow = 0.3f;
-        [SerializeField] private float durationHide = 0.3f;
+        [SerializeField, FormerlySerializedAs("ignoreTimeScale")] private bool m_ignoreTimeScale;
+        [SerializeField, FormerlySerializedAs("durationShow")] private float m_durationShow = 0.3f;
+        [SerializeField, FormerlySerializedAs("durationHide")] private float m_durationHide = 0.3f;
+        private CanvasGroup _canvasGroup;
 
         protected override void Awake()
         {
-            canvasGroup = GetComponent<CanvasGroup>();
+            _canvasGroup = GetComponent<CanvasGroup>();
             base.Awake();
         }
 
         protected override void OnShow()
         {
-            if (durationShow == 0)
+            if (m_durationShow == 0)
             {
-                canvasGroup.alpha = 1;
+                _canvasGroup.alpha = 1;
                 OnShowCompleted();
                 return;
             }
@@ -33,9 +34,9 @@ namespace GameFlow
 
         protected override void OnHide()
         {
-            if (durationHide == 0)
+            if (m_durationHide == 0)
             {
-                canvasGroup.alpha = 0;
+                _canvasGroup.alpha = 0;
                 OnHideCompleted();
                 return;
             }
@@ -45,31 +46,31 @@ namespace GameFlow
 
         private IEnumerator IEShow()
         {
-            canvasGroup.alpha = 0;
+            _canvasGroup.alpha = 0;
             var time = 0f;
             do
             {
                 yield return null;
-                time += (ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime) / durationShow;
-                canvasGroup.alpha = time;
+                time += (m_ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime) / m_durationShow;
+                _canvasGroup.alpha = time;
             } while (time < 1f);
 
-            canvasGroup.alpha = 1;
+            _canvasGroup.alpha = 1;
             OnShowCompleted();
         }
 
         private IEnumerator IEHide()
         {
-            canvasGroup.alpha = 1;
+            _canvasGroup.alpha = 1;
             var time = 0f;
             do
             {
                 yield return null;
-                time += (ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime) / durationShow;
-                canvasGroup.alpha = 1 - time;
+                time += (m_ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime) / m_durationShow;
+                _canvasGroup.alpha = 1 - time;
             } while (time < 1f);
 
-            canvasGroup.alpha = 0;
+            _canvasGroup.alpha = 0;
             OnHideCompleted();
         }
     }

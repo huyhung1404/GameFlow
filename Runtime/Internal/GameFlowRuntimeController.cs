@@ -5,6 +5,7 @@ using GameFlow.Component;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace GameFlow.Internal
@@ -12,44 +13,40 @@ namespace GameFlow.Internal
     [AddComponentMenu("Game Flow/Runtime Controller")]
     internal class GameFlowRuntimeController : MonoBehaviour
     {
-        private static readonly Queue<Command> commands = new Queue<Command>(5);
-        [SerializeField] private bool dontDestroyOnLoad = true;
-        [SerializeField] private Transform elementContainer;
-        [SerializeField] private Transform uiElementContainer;
-        internal static OnBannerUpdate onBannerUpdate;
-        internal static bool updateBanner;
-        private static GameFlowRuntimeController instance;
-        private static bool isLock;
-        private static bool disableKeyBack;
-        private GameFlowManager manager;
-        private Command current;
-#if UNITY_EDITOR
-        internal bool isActive { get; private set; }
-#else
-        internal bool isActive;
-#endif
+        private static readonly Queue<Command> s_commands = new Queue<Command>(5);
+        [SerializeField, FormerlySerializedAs("dontDestroyOnLoad")] private bool m_dontDestroyOnLoad = true;
+        [SerializeField, FormerlySerializedAs("elementContainer")] private Transform m_elementContainer;
+        [SerializeField, FormerlySerializedAs("uiElementContainer")] private Transform m_uiElementContainer;
+        internal static OnBannerUpdate OnBannerUpdate;
+        internal static bool s_UpdateBanner;
+        private static GameFlowRuntimeController s_Instance;
+        private static bool s_IsLock;
+        private static bool s_DisableKeyBack;
+        private GameFlowManager _manager;
+        private Command _current;
+        internal bool IsActive { get; private set; }
 
         internal static void SetLock(bool value)
         {
-            isLock = value;
+            s_IsLock = value;
         }
 
         internal static void SetDisableKeyBack(bool value)
         {
-            disableKeyBack = value;
+            s_DisableKeyBack = value;
         }
 
         internal static ElementCollection GetElements()
         {
-            return instance.manager.elementCollection;
+            return s_Instance._manager.ElementCollection;
         }
 
         internal static Transform PrefabElementContainer(bool isUI)
         {
-            return isUI ? instance.uiElementContainer : instance.elementContainer;
+            return isUI ? s_Instance.m_uiElementContainer : s_Instance.m_elementContainer;
         }
 
-        internal static GameFlowManager Manager() => instance.manager;
+        internal static GameFlowManager Manager() => s_Instance._manager;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -60,18 +57,18 @@ namespace GameFlow.Internal
             loadingController.GetComponent<Image>().color = Color.clear;
             var canvas = loadingController.GetComponent<Canvas>();
             canvas.sortingOrder = 100;
-            canvas.planeDistance = manager.planeDistance;
+            canvas.planeDistance = _manager.PlaneDistance;
             UnityEditor.EditorUtility.SetDirty(gameObject);
-            elementContainer = new GameObject("Elements").transform;
-            elementContainer.SetParent(transform);
-            uiElementContainer = new GameObject("UI Elements").transform;
-            uiElementContainer.SetParent(transform);
+            m_elementContainer = new GameObject("Elements").transform;
+            m_elementContainer.SetParent(transform);
+            m_uiElementContainer = new GameObject("UI Elements").transform;
+            m_uiElementContainer.SetParent(transform);
         }
 #endif
 
         private void Awake()
         {
-            if (instance != null)
+            if (s_Instance != null)
             {
                 Destroy(gameObject);
                 return;
@@ -82,8 +79,8 @@ namespace GameFlow.Internal
 
         private void Initialization()
         {
-            instance = this;
-            if (dontDestroyOnLoad) DontDestroyOnLoad(this);
+            s_Instance = this;
+            if (m_dontDestroyOnLoad) DontDestroyOnLoad(this);
             LoadManager(3);
         }
 
@@ -94,9 +91,9 @@ namespace GameFlow.Internal
             {
                 if (operationHandle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    manager = operationHandle.Result;
-                    LoadingController.instance?.SetUpShieldSortingOrder(manager.loadingShieldSortingOrder);
-                    isActive = true;
+                    _manager = operationHandle.Result;
+                    LoadingController.Instance?.SetUpShieldSortingOrder(_manager.LoadingShieldSortingOrder);
+                    IsActive = true;
                     return;
                 }
 
@@ -114,7 +111,7 @@ namespace GameFlow.Internal
 
         private void Update()
         {
-            if (!isActive) return;
+            if (!IsActive) return;
             if (!CommandHandle())
             {
                 LoadingController.EnableTransparent();
@@ -127,14 +124,14 @@ namespace GameFlow.Internal
 
         private void LateUpdate()
         {
-            if (!updateBanner) return;
-            updateBanner = false;
-            onBannerUpdate?.Invoke(FlowBannerController.CurrentBannerHeight);
+            if (!s_UpdateBanner) return;
+            s_UpdateBanner = false;
+            OnBannerUpdate?.Invoke(FlowBannerController.CurrentBannerHeight);
         }
 
         internal static void AddCommand(Command command)
         {
-            commands.Enqueue(command);
+            s_commands.Enqueue(command);
         }
 
         /// <summary>
@@ -143,8 +140,8 @@ namespace GameFlow.Internal
         /// <param name="command"></param>
         internal static void OverriderCommand(CloneCommand command)
         {
-            instance.current = command;
-            instance.current.PreUpdate();
+            s_Instance._current = command;
+            s_Instance._current.PreUpdate();
         }
 
         /// <summary>
@@ -153,54 +150,54 @@ namespace GameFlow.Internal
         /// <returns>True is can handle key back action</returns>
         private bool CommandHandle()
         {
-            if (current != null)
+            if (_current != null)
             {
-                current.Update();
-                if (!current.isRelease) return false;
-                current.OnRelease();
-                current = null;
+                _current.Update();
+                if (!_current.IsRelease) return false;
+                _current.OnRelease();
+                _current = null;
             }
 
-            if (isLock) return true;
-            if (commands.Count == 0) return true;
-            current = commands.Dequeue();
-            current.PreUpdate();
+            if (s_IsLock) return true;
+            if (s_commands.Count == 0) return true;
+            _current = s_commands.Dequeue();
+            _current.PreUpdate();
             return false;
         }
 
         internal void CommandsIsEmpty()
         {
-            Assert.IsNotNull(instance);
-            Assert.IsTrue(commands.Count == 0 && current == null, CommandCountErrorMessage());
+            Assert.IsNotNull(s_Instance);
+            Assert.IsTrue(s_commands.Count == 0 && _current == null, CommandCountErrorMessage());
             return;
 
             string CommandCountErrorMessage()
             {
-                var message = "Command Count: " + commands.Count;
-                message += $"\n Current: {(current == null ? "Empty" : current)}";
-                return commands.Aggregate(message, (s, c) => s + ("\n" + c));
+                var message = "Command Count: " + s_commands.Count;
+                message += $"\n Current: {(_current == null ? "Empty" : _current)}";
+                return s_commands.Aggregate(message, (s, c) => s + ("\n" + c));
             }
         }
 
         private void KeyBackHandle()
         {
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
-            if (disableKeyBack) return;
-            if (isLock) return;
+            if (s_DisableKeyBack) return;
+            if (s_IsLock) return;
             if (LoadingController.IsShow()) return;
             UIElementsRuntimeManager.OnKeyBack();
         }
 
         private void OnDestroy()
         {
-            if (instance != null) isActive = false;
+            if (s_Instance != null) IsActive = false;
             StopAllCoroutines();
         }
 
         internal static Queue<Command> GetInfo(out Command currentCommand)
         {
-            currentCommand = instance?.current;
-            return commands;
+            currentCommand = s_Instance?._current;
+            return s_commands;
         }
     }
 }

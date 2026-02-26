@@ -163,10 +163,10 @@ namespace GameFlow.Editor
             var type = GetAssemblyType(string.Format(k_scriptsElementNameFormat, _elementNameGenerate));
             if (type == null) throw new Exception("Type generate not exists");
             _elementGenerate = (GameFlowElement)CreateInstance(type);
-            _elementGenerate.includeInBuild = true;
-            _elementGenerate.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
-            _elementGenerate.reference = _assetReferenceGenerate;
-            manager.elementCollection.GenerateElement(_elementGenerate);
+            _elementGenerate.IncludeInBuild = true;
+            _elementGenerate.ReleaseMode = ElementReleaseMode.ReleaseOnClose;
+            _elementGenerate.Reference = _assetReferenceGenerate;
+            manager.ElementCollection.GenerateElement(_elementGenerate);
             if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
             {
                 Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());

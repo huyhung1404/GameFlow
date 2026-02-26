@@ -8,7 +8,7 @@ namespace GameFlow.Tests
 
         private void Awake()
         {
-            CallbackHistory.current.RecorderObject(gameObject, element);
+            CallbackHistory.Current.RecorderObject(gameObject, element);
         }
 
         private void OnEnable()
@@ -21,17 +21,17 @@ namespace GameFlow.Tests
 
         private void OnActive()
         {
-            CallbackHistory.current.WriteOnActive(element.GetType());
+            CallbackHistory.Current.WriteOnActive(element.GetType());
         }
 
         private void OnActiveWithData(object obj)
         {
-            CallbackHistory.current.WriteOnActiveWithData(element.GetType(), obj);
+            CallbackHistory.Current.WriteOnActiveWithData(element.GetType(), obj);
         }
 
         private void OnRelease(bool obj)
         {
-            CallbackHistory.current.WriteOnRelease(element.GetType(), obj);
+            CallbackHistory.Current.WriteOnRelease(element.GetType(), obj);
         }
 
         private void OnDisable()

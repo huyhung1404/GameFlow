@@ -17,21 +17,21 @@ namespace GameFlow.Tests.Build
 {
     internal static class Prebuild
     {
-        internal const string kFolderParentName = "__TestResources";
-        internal const string kSceneName = "TestManager";
-        internal static readonly string kSceneBuildPath = $"{kFolderParentName}/{kSceneName}";
-        internal static readonly string kScenePath = $"Assets/{kSceneBuildPath}.unity";
-        private static Scene managerScene;
-        private static GameFlowManager manager;
-        private static GameObject root;
-        private static GameFlowRuntimeController runtimeController;
-        private static LoadingController loadingController;
-        private static DisplayLoading imageLoading;
-        private static FadeLoading fadeLoading;
+        internal const string k_FolderParentName = "__TestResources";
+        internal const string k_SceneName = "TestManager";
+        internal static readonly string k_SceneBuildPath = $"{k_FolderParentName}/{k_SceneName}";
+        internal static readonly string k_ScenePath = $"Assets/{k_SceneBuildPath}.unity";
+        private static Scene s_managerScene;
+        private static GameFlowManager s_manager;
+        private static GameObject s_root;
+        private static GameFlowRuntimeController s_runtimeController;
+        private static LoadingController s_loadingController;
+        private static DisplayLoading s_imageLoading;
+        private static FadeLoading s_fadeLoading;
 
         public static void PresetResources()
         {
-            EditorPrefs.SetString("com.huyhung1404.gameflow.folderParentName", kFolderParentName + "/");
+            EditorPrefs.SetString("com.huyhung1404.gameflow.folderParentName", k_FolderParentName + "/");
 #if UNITY_EDITOR
             AddressableAssetIsAvailable();
 #endif
@@ -53,37 +53,37 @@ namespace GameFlow.Tests.Build
 
         private static void CreateResourcesIfNeed()
         {
-            manager = null;
-            root = null;
-            runtimeController = null;
-            loadingController = null;
-            imageLoading = null;
-            fadeLoading = null;
-            if (File.Exists(kScenePath)) return;
+            s_manager = null;
+            s_root = null;
+            s_runtimeController = null;
+            s_loadingController = null;
+            s_imageLoading = null;
+            s_fadeLoading = null;
+            if (File.Exists(k_ScenePath)) return;
             CreateSceneManager();
             CreateManager();
             CreateRuntimeController();
             CreateCamera();
             AssetDatabase.Refresh();
-            EditorSceneManager.SaveScene(managerScene, kScenePath);
-            AddSceneToBuild(kScenePath);
-            EditorSceneManager.CloseScene(managerScene, false);
+            EditorSceneManager.SaveScene(s_managerScene, k_ScenePath);
+            AddSceneToBuild(k_ScenePath);
+            EditorSceneManager.CloseScene(s_managerScene, false);
             CreateTestElements();
-            EditorUtility.SetDirty(manager);
+            EditorUtility.SetDirty(s_manager);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
         }
 
         private static void CreateSceneManager()
         {
-            managerScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-            if (!Directory.Exists($"Assets/{kFolderParentName}"))
+            s_managerScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            if (!Directory.Exists($"Assets/{k_FolderParentName}"))
             {
-                Directory.CreateDirectory($"Assets/{kFolderParentName}");
+                Directory.CreateDirectory($"Assets/{k_FolderParentName}");
             }
 
-            root = new GameObject("root");
-            SceneManager.MoveGameObjectToScene(root, managerScene);
+            s_root = new GameObject("root");
+            SceneManager.MoveGameObjectToScene(s_root, s_managerScene);
         }
 
         private static void AddSceneToBuild(string scenePath)
@@ -98,27 +98,27 @@ namespace GameFlow.Tests.Build
         private static void CreateManager()
         {
             Directory.CreateDirectory(PackagePath.ProjectFolderPath());
-            manager = ScriptableObject.CreateInstance<GameFlowManager>();
-            AssetDatabase.CreateAsset(manager, PackagePath.ManagerPath());
+            s_manager = ScriptableObject.CreateInstance<GameFlowManager>();
+            AssetDatabase.CreateAsset(s_manager, PackagePath.ManagerPath());
             AddAddressableGroup(PackagePath.ManagerPath(), false);
-            manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
+            s_manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
         }
 
         private static void CreateRuntimeController()
         {
-            runtimeController = root.AddComponent<GameFlowRuntimeController>();
-            loadingController = runtimeController.GetComponentInChildren<LoadingController>();
-            imageLoading = new GameObject("Image").AddComponent<DisplayLoading>();
-            imageLoading.transform.SetParent(loadingController.transform);
-            fadeLoading = new GameObject("Fade").AddComponent<FadeLoading>();
-            fadeLoading.transform.SetParent(loadingController.transform);
-            loadingController.RegisterControllers(false, imageLoading, fadeLoading);
+            s_runtimeController = s_root.AddComponent<GameFlowRuntimeController>();
+            s_loadingController = s_runtimeController.GetComponentInChildren<LoadingController>();
+            s_imageLoading = new GameObject("Image").AddComponent<DisplayLoading>();
+            s_imageLoading.transform.SetParent(s_loadingController.transform);
+            s_fadeLoading = new GameObject("Fade").AddComponent<FadeLoading>();
+            s_fadeLoading.transform.SetParent(s_loadingController.transform);
+            s_loadingController.RegisterControllers(false, s_imageLoading, s_fadeLoading);
         }
 
         private static void CreateCamera()
         {
             var camera = new GameObject("Camera").AddComponent<FlowUICamera>();
-            camera.transform.SetParent(root.transform);
+            camera.transform.SetParent(s_root.transform);
         }
 
         internal static AssetReferenceElement AddAddressableGroup(string assetPath, bool isScene)
@@ -164,7 +164,7 @@ namespace GameFlow.Tests.Build
             var element = GenerateElementInstance(typeof(TestScript___SimpleElement), elementName);
             var callback = instance.AddComponent<FlowCallbackMonoBehaviour>();
             callback.element = element;
-            element.reference = GenerateAsset(instance, false, unityPath);
+            element.Reference = GenerateAsset(instance, false, unityPath);
         }
 
         private static void CreateTestSimpleSceneElement()
@@ -175,7 +175,7 @@ namespace GameFlow.Tests.Build
             var element = GenerateElementInstance(typeof(TestScript___SimpleSceneElement), elementName);
             var callback = instance.AddComponent<FlowCallbackMonoBehaviour>();
             callback.element = element;
-            element.reference = GenerateAsset(instance, true, unityPath);
+            element.Reference = GenerateAsset(instance, true, unityPath);
         }
 
         private static string GetPath(bool isUserInterface, bool isScene, string elementName)
@@ -219,8 +219,8 @@ namespace GameFlow.Tests.Build
         private static GameFlowElement GenerateElementInstance(Type type, string name)
         {
             var instance = (GameFlowElement)ScriptableObject.CreateInstance(type);
-            instance.includeInBuild = true;
-            manager.elementCollection.GenerateElement(instance);
+            instance.IncludeInBuild = true;
+            s_manager.ElementCollection.GenerateElement(instance);
             if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
             {
                 Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());

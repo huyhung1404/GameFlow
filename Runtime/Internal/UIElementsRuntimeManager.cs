@@ -5,45 +5,38 @@ namespace GameFlow.Internal
 {
     public static class UIElementsRuntimeManager
     {
-        internal static List<UIFlowElement> elementsRuntime
-#if UNITY_EDITOR
-        {
-            get;
-        }
-#else
-        ;
-#endif
+        internal static List<UIFlowElement> ElementsRuntime { get; }
 
         static UIElementsRuntimeManager()
         {
-            elementsRuntime = new List<UIFlowElement>();
+            ElementsRuntime = new List<UIFlowElement>();
         }
 
         internal static void AddUserInterfaceElement(UIFlowElement userInterfaceFlowElement)
         {
-            userInterfaceFlowElement.currentSortingOrder = GetSortingOrder();
-            elementsRuntime.Add(userInterfaceFlowElement);
+            userInterfaceFlowElement.CurrentSortingOrder = GetSortingOrder();
+            ElementsRuntime.Add(userInterfaceFlowElement);
         }
 
         internal static Type GetTopElement()
         {
-            var elementCount = elementsRuntime.Count;
-            return elementCount == 0 ? null : elementsRuntime[elementCount - 1].elementType;
+            var elementCount = ElementsRuntime.Count;
+            return elementCount == 0 ? null : ElementsRuntime[elementCount - 1].ElementType;
         }
 
         internal static int GetSortingOrder()
         {
-            var elementCount = elementsRuntime.Count;
+            var elementCount = ElementsRuntime.Count;
             if (elementCount == 0) return 0;
-            return elementsRuntime[elementCount - 1].currentSortingOrder + GameFlowRuntimeController.Manager().sortingOrderOffset;
+            return ElementsRuntime[elementCount - 1].CurrentSortingOrder + GameFlowRuntimeController.Manager().SortingOrderOffset;
         }
 
         internal static UIFlowElement GetElement(Type type)
         {
-            for (var i = elementsRuntime.Count - 1; i >= 0; i--)
+            for (var i = ElementsRuntime.Count - 1; i >= 0; i--)
             {
-                if (elementsRuntime[i].elementType != type) continue;
-                return elementsRuntime[i];
+                if (ElementsRuntime[i].ElementType != type) continue;
+                return ElementsRuntime[i];
             }
 
             return null;
@@ -51,12 +44,12 @@ namespace GameFlow.Internal
 
         internal static void RemoveElement(UIFlowElement element)
         {
-            elementsRuntime.Remove(element);
+            ElementsRuntime.Remove(element);
         }
 
         internal static void ReleaseAllElement(Action onReleaseCompleted)
         {
-            var elementCount = elementsRuntime.Count;
+            var elementCount = ElementsRuntime.Count;
             if (elementCount == 0)
             {
                 onReleaseCompleted?.Invoke();
@@ -64,24 +57,24 @@ namespace GameFlow.Internal
             }
 
             var releaseCount = new ReleaseCount(onReleaseCompleted, elementCount);
-            for (var i = elementsRuntime.Count - 1; i >= 0; i--)
+            for (var i = ElementsRuntime.Count - 1; i >= 0; i--)
             {
-                ReleaseElement(elementsRuntime[i], releaseCount);
+                ReleaseElement(ElementsRuntime[i], releaseCount);
             }
         }
 
         private static void ReleaseElement(UIFlowElement element, ReleaseCount releaseCount)
         {
             FlowObservable.Event(element.GetType()).RaiseOnRelease(true);
-            switch (element.releaseMode)
+            switch (element.ReleaseMode)
             {
                 default:
-                case ElementReleaseMode.RELEASE_ON_CLOSE:
-                case ElementReleaseMode.RELEASE_ON_CLOSE_INCLUDE_CALLBACK:
-                    element.reference.ReleaseHandlePrefab(element.runtimeInstance, releaseCount);
+                case ElementReleaseMode.ReleaseOnClose:
+                case ElementReleaseMode.ReleaseOnCloseIncludeCallback:
+                    element.Reference.ReleaseHandlePrefab(element.RuntimeInstance, releaseCount);
                     break;
-                case ElementReleaseMode.NONE_RELEASE:
-                    element.runtimeInstance.SetActive(false);
+                case ElementReleaseMode.NoneRelease:
+                    element.RuntimeInstance.SetActive(false);
                     releaseCount.Count();
                     break;
             }

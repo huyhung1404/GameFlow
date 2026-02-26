@@ -5,28 +5,24 @@ namespace GameFlow.Internal
 {
     internal static class ElementsRuntimeManager
     {
-#if UNITY_EDITOR
-        internal static List<GameFlowElement> elementsRuntime { get; }
-#else
-        private static readonly List<GameFlowElement> elementsRuntime;
-#endif
+        internal static List<GameFlowElement> ElementsRuntime { get; }
 
         static ElementsRuntimeManager()
         {
-            elementsRuntime = new List<GameFlowElement>();
+            ElementsRuntime = new List<GameFlowElement>();
         }
 
         internal static void AddElement(GameFlowElement element)
         {
-            elementsRuntime.Add(element);
+            ElementsRuntime.Add(element);
         }
 
         internal static GameFlowElement GetElement(Type type)
         {
-            for (var i = elementsRuntime.Count - 1; i >= 0; i--)
+            for (var i = ElementsRuntime.Count - 1; i >= 0; i--)
             {
-                if (type != elementsRuntime[i].elementType) continue;
-                return elementsRuntime[i];
+                if (type != ElementsRuntime[i].ElementType) continue;
+                return ElementsRuntime[i];
             }
 
             return null;
@@ -34,7 +30,7 @@ namespace GameFlow.Internal
 
         internal static void RemoveElement(GameFlowElement element)
         {
-            elementsRuntime.Remove(element);
+            ElementsRuntime.Remove(element);
         }
     }
 }

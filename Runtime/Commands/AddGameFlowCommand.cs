@@ -5,7 +5,7 @@ namespace GameFlow
 {
     public class AddGameFlowCommand : AddCommand
     {
-        protected override GameFlowElement baseElement { get; set; }
+        protected override GameFlowElement BaseElement { get; set; }
 
         public AddGameFlowCommand(Type elementType) : base(elementType)
         {
@@ -13,18 +13,18 @@ namespace GameFlow
 
         protected override void ReActiveElement()
         {
-            FlowObservable.Event(elementType).RaiseOnRelease(true);
-            baseElement.runtimeInstance.SetActive(false);
-            baseElement.runtimeInstance.SetActive(true);
-            callbackOnRelease = true;
+            FlowObservable.Event(_elementType).RaiseOnRelease(true);
+            BaseElement.RuntimeInstance.SetActive(false);
+            BaseElement.RuntimeInstance.SetActive(true);
+            _callbackOnRelease = true;
             Release();
         }
 
         protected override void ActiveElement()
         {
-            baseElement.runtimeInstance.SetActive(true);
-            ElementsRuntimeManager.AddElement(baseElement);
-            callbackOnRelease = true;
+            BaseElement.RuntimeInstance.SetActive(true);
+            ElementsRuntimeManager.AddElement(BaseElement);
+            _callbackOnRelease = true;
             Release();
         }
     }

@@ -61,7 +61,7 @@ namespace GameFlow.Editor
                 return;
             }
 
-            if (_manager.elementCollection.TryGetElement(evt.newValue.GetType(), out _))
+            if (_manager.ElementCollection.TryGetElement(evt.newValue.GetType(), out _))
             {
                 _debugViewButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.Flex);
                 _addButton.style.display = new StyleEnum<DisplayStyle>(DisplayStyle.None);
@@ -84,7 +84,7 @@ namespace GameFlow.Editor
 
         private void AddElement()
         {
-            _manager.elementCollection.GenerateElement((GameFlowElement)_objectField.value);
+            _manager.ElementCollection.GenerateElement((GameFlowElement)_objectField.value);
             EditorUtility.SetDirty(_manager);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();

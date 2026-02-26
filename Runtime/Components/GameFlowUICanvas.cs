@@ -1,5 +1,6 @@
 using GameFlow.Internal;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace GameFlow.Component
@@ -7,28 +8,28 @@ namespace GameFlow.Component
     [AddComponentMenu("Game Flow/UI Canvas")]
     public class GameFlowUICanvas : FlowListenerMonoBehaviour
     {
-        [SerializeField, InternalDraw(DrawType.Element)] protected UIFlowElement element;
-        [SerializeField, InternalDraw(DrawType.Canvas)] protected Canvas canvas;
-        [SerializeField, HideInInspector] protected bool autoGetComponent = true;
-        [SerializeField, HideInInspector] protected int offsetCanvasGroup;
-        [SerializeField, InternalDraw(DrawType.SafeView)] protected RectTransform safeView;
-        [SerializeField, HideInInspector] protected SafeAreaIgnore safeAreaIgnore;
-        protected UIElementCallbackEvent delegates;
-        protected CanvasScaler canvasScale;
-        protected RectTransform rectTransform;
-        private bool hasSafeView;
-        private bool isGotComponents;
+        [SerializeField, InternalDraw(DrawType.Element), FormerlySerializedAs("element")] protected UIFlowElement m_element;
+        [SerializeField, InternalDraw(DrawType.Canvas), FormerlySerializedAs("canvas")] protected Canvas m_canvas;
+        [SerializeField, HideInInspector, FormerlySerializedAs("autoGetComponent")] protected bool m_autoGetComponent = true;
+        [SerializeField, HideInInspector, FormerlySerializedAs("offsetCanvasGroup")] protected int m_offsetCanvasGroup;
+        [SerializeField, InternalDraw(DrawType.SafeView), FormerlySerializedAs("safeView")] protected RectTransform m_safeView;
+        [SerializeField, HideInInspector, FormerlySerializedAs("safeAreaIgnore")] protected SafeAreaIgnore m_safeAreaIgnore;
+        protected UIElementCallbackEvent _delegates;
+        protected CanvasScaler _canvasScale;
+        protected RectTransform _rectTransform;
+        private bool _hasSafeView;
+        private bool _isGotComponents;
 
         protected void GetComponentsIfNeed()
         {
-            if (isGotComponents) return;
-            delegates = FlowObservable.UIEvent(element.elementType);
-            if (autoGetComponent) canvas = GetComponent<Canvas>();
-            canvasScale = canvas.GetComponent<CanvasScaler>();
-            rectTransform = canvas.GetComponent<RectTransform>();
-            hasSafeView = safeView != null;
-            canvas.worldCamera = FlowUICamera.instance;
-            isGotComponents = true;
+            if (_isGotComponents) return;
+            _delegates = FlowObservable.UIEvent(m_element.ElementType);
+            if (m_autoGetComponent) m_canvas = GetComponent<Canvas>();
+            _canvasScale = m_canvas.GetComponent<CanvasScaler>();
+            _rectTransform = m_canvas.GetComponent<RectTransform>();
+            _hasSafeView = m_safeView != null;
+            m_canvas.worldCamera = FlowUICamera.Instance;
+            _isGotComponents = true;
         }
 
         protected virtual void Awake()
@@ -39,42 +40,42 @@ namespace GameFlow.Component
 
         protected virtual void OnEnable()
         {
-            canvas.enabled = false;
-            delegates.RegisterListener(this);
+            m_canvas.enabled = false;
+            _delegates.RegisterListener(this);
             FlowBannerController.OnBannerUpdate += OnBannerUpdate;
         }
 
         public override void OnActive()
         {
             GetComponentsIfNeed();
-            canvas.enabled = true;
+            m_canvas.enabled = true;
             SetUpCanvas();
         }
 
         protected virtual void SetUpCanvas()
         {
-            var sortingOrder = element.currentSortingOrder;
-            canvas.sortingOrder = sortingOrder + offsetCanvasGroup;
-            canvas.planeDistance = GameFlowRuntimeController.Manager().planeDistance;
-            if (hasSafeView) safeView.ApplySafeArea(Screen.safeArea, safeAreaIgnore);
+            var sortingOrder = m_element.CurrentSortingOrder;
+            m_canvas.sortingOrder = sortingOrder + m_offsetCanvasGroup;
+            m_canvas.planeDistance = GameFlowRuntimeController.Manager().PlaneDistance;
+            if (_hasSafeView) m_safeView.ApplySafeArea(Screen.safeArea, m_safeAreaIgnore);
             OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }
 
         protected virtual void OnBannerUpdate(float height)
         {
             GetComponentsIfNeed();
-            safeView.offsetMin = height == 0 ? Vector2.zero : height / Screen.height * rectTransform.rect.size.y * Vector2.up;
+            m_safeView.offsetMin = height == 0 ? Vector2.zero : height / Screen.height * _rectTransform.rect.size.y * Vector2.up;
         }
 
         protected virtual void HandleCanvasScaler()
         {
-            canvasScale.referenceResolution = GameFlowRuntimeController.Manager().referenceResolution;
-            canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < canvasScale.referenceResolution.x / canvasScale.referenceResolution.y ? 0 : 1;
+            _canvasScale.referenceResolution = GameFlowRuntimeController.Manager().ReferenceResolution;
+            _canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < _canvasScale.referenceResolution.x / _canvasScale.referenceResolution.y ? 0 : 1;
         }
 
         protected virtual void OnDisable()
         {
-            delegates.UnregisterListener(this);
+            _delegates.UnregisterListener(this);
             FlowBannerController.OnBannerUpdate -= OnBannerUpdate;
         }
 
@@ -85,19 +86,19 @@ namespace GameFlow.Component
 
         public void ReleaseCanvas()
         {
-            GameCommand.Release(element.elementType).Build();
+            GameCommand.Release(m_element.ElementType).Build();
         }
 
         internal Canvas GetCanvas()
         {
-            return autoGetComponent ? GetComponent<Canvas>() : canvas;
+            return m_autoGetComponent ? GetComponent<Canvas>() : m_canvas;
         }
 
         internal override void SetElement(GameFlowElement value, System.Type type)
         {
-            if (element != null && type != element.GetType()) return;
+            if (m_element != null && type != m_element.GetType()) return;
             if (value is not UIFlowElement uiElement) return;
-            element = uiElement;
+            m_element = uiElement;
         }
     }
 }

@@ -8,61 +8,61 @@ namespace GameFlow
 
     public abstract class AddCommand : Command
     {
-        internal int loadingId = -1;
-        internal bool isPreload;
-        internal object activeData;
-        internal OnAddCommandCompleted onCompleted;
-        internal ReferenceActiveHandle activeHandle;
-        protected bool callbackOnRelease;
-        private bool isExecute;
-        private bool isLoadingOn;
+        internal int LoadingId = -1;
+        internal bool IsPreload;
+        internal object ActiveData;
+        internal OnAddCommandCompleted OnCompleted;
+        internal ReferenceActiveHandle ActiveHandle;
+        protected bool _callbackOnRelease;
+        private bool _isExecute;
+        private bool _isLoadingOn;
 
-        protected abstract GameFlowElement baseElement { get; set; }
-        internal ElementReleaseMode ReleaseMode() => baseElement.releaseMode;
+        protected abstract GameFlowElement BaseElement { get; set; }
+        internal ElementReleaseMode ReleaseMode() => BaseElement.ReleaseMode;
 
         internal AddCommand(Type elementType) : base(elementType)
         {
-            isExecute = false;
-            isLoadingOn = false;
-            callbackOnRelease = false;
+            _isExecute = false;
+            _isLoadingOn = false;
+            _callbackOnRelease = false;
         }
 
         internal override void PreUpdate()
         {
             var collection = GameFlowRuntimeController.GetElements();
-            if (collection.TryGetElement(elementType, out var element))
+            if (collection.TryGetElement(_elementType, out var element))
             {
-                baseElement = element;
-                activeHandle?.SetReference(element.reference);
+                BaseElement = element;
+                ActiveHandle?.SetReference(element.Reference);
                 return;
             }
 
-            ErrorHandle.LogError($"Element type {elementType.Name} not exists");
+            ErrorHandle.LogError($"Element type {_elementType.Name} not exists");
             OnLoadResult(null);
-            isExecute = true;
+            _isExecute = true;
         }
 
         internal override void Update()
         {
-            if (isExecute) return;
-            isExecute = Execute();
+            if (_isExecute) return;
+            _isExecute = Execute();
         }
 
         private bool Execute()
         {
             try
             {
-                var reference = baseElement.reference;
+                var reference = BaseElement.Reference;
                 if (!reference.IsReady()) return false;
-                if (baseElement.runtimeInstance)
+                if (BaseElement.RuntimeInstance)
                 {
-                    if (isPreload)
+                    if (IsPreload)
                     {
                         OnLoadResult(null);
                         return true;
                     }
 
-                    if (baseElement.runtimeInstance.activeSelf)
+                    if (BaseElement.RuntimeInstance.activeSelf)
                     {
                         HandleActiveMode();
                         return true;
@@ -78,13 +78,13 @@ namespace GameFlow
                     return true;
                 }
 
-                ErrorHandle.LogWarning($"Reference isValid: {elementType.Name}");
+                ErrorHandle.LogWarning($"Reference isValid: {_elementType.Name}");
                 OnLoadResult(null);
                 return true;
             }
             catch (Exception e)
             {
-                ErrorHandle.LogException(e, $"Add Command Error: {elementType.Name}");
+                ErrorHandle.LogException(e, $"Add Command Error: {_elementType.Name}");
                 OnLoadResult(null);
                 return true;
             }
@@ -93,32 +93,32 @@ namespace GameFlow
         private void Loading()
         {
             BaseLoadingTypeController loading = null;
-            if (loadingId >= 0) loading = LoadingController.instance.LoadingOn(loadingId);
+            if (LoadingId >= 0) loading = LoadingController.Instance.LoadingOn(LoadingId);
             if (ReferenceEquals(loading, null))
             {
-                baseElement.reference.LoadGameObjectHandle(this);
+                BaseElement.Reference.LoadGameObjectHandle(this);
                 return;
             }
 
-            isLoadingOn = true;
-            loading.OnCompleted(() => baseElement.reference.LoadGameObjectHandle(this));
+            _isLoadingOn = true;
+            loading.OnCompleted(() => BaseElement.Reference.LoadGameObjectHandle(this));
         }
 
         private void HandleActiveMode()
         {
-            switch (baseElement.activeMode)
+            switch (BaseElement.ActiveMode)
             {
                 default:
-                case ElementActiveMode.SINGLETON:
+                case ElementActiveMode.Singleton:
                     ErrorHandle.LogWarning("Element already exists, to re active please adjust in manager editor");
                     OnLoadResult(null);
                     return;
-                case ElementActiveMode.RE_ACTIVE:
+                case ElementActiveMode.ReActive:
                     ReActiveElement();
                     return;
-                case ElementActiveMode.MULTI_INSTANCE:
-                    new CloneCommand(elementType, this).BuildClone();
-                    if (loadingId >= 0 && isLoadingOn) LoadingController.instance.LoadingOff(loadingId);
+                case ElementActiveMode.MultiInstance:
+                    new CloneCommand(_elementType, this).BuildClone();
+                    if (LoadingId >= 0 && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId);
                     Release();
                     return;
             }
@@ -132,11 +132,11 @@ namespace GameFlow
                 return;
             }
 
-            baseElement.runtimeInstance = handle;
-            if (isPreload)
+            BaseElement.RuntimeInstance = handle;
+            if (IsPreload)
             {
-                baseElement.runtimeInstance.SetActive(false);
-                OnLoadResult(baseElement.runtimeInstance);
+                BaseElement.RuntimeInstance.SetActive(false);
+                OnLoadResult(BaseElement.RuntimeInstance);
                 return;
             }
 
@@ -148,31 +148,31 @@ namespace GameFlow
 
         protected void OnLoadResult(GameObject result)
         {
-            onCompleted?.Invoke(result);
-            if (loadingId >= 0 && isLoadingOn) LoadingController.instance.LoadingOff(loadingId);
+            OnCompleted?.Invoke(result);
+            if (LoadingId >= 0 && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId);
             Release();
         }
 
         internal override void OnRelease()
         {
-            if (!callbackOnRelease) return;
-            OnLoadResult(baseElement.runtimeInstance);
-            var delegates = FlowObservable.Event(elementType);
-            if (!ReferenceEquals(activeData, null)) delegates.RaiseOnActiveWithData(activeData);
+            if (!_callbackOnRelease) return;
+            OnLoadResult(BaseElement.RuntimeInstance);
+            var delegates = FlowObservable.Event(_elementType);
+            if (!ReferenceEquals(ActiveData, null)) delegates.RaiseOnActiveWithData(ActiveData);
             delegates.RaiseOnActive();
         }
 
         internal override string GetFullInfo()
         {
-            return $@"<b><size=11>isRelease:</size></b> {isRelease}
-<b><size=11>loadingId:</size></b> {loadingId}
-<b><size=11>isPreload:</size></b> {isPreload}
-<b><size=11>activeData:</size></b> {activeData}
-<b><size=11>onCompleted:</size></b> {onCompleted?.Target}.{onCompleted?.Method.Name}
-<b><size=11>activeHandle:</size></b> {activeHandle}
-<b><size=11>callbackOnRelease:</size></b> {callbackOnRelease}
-<b><size=11>isExecute:</size></b> {isExecute}
-<b><size=11>isLoadingOn:</size></b> {isLoadingOn}
+            return $@"<b><size=11>isRelease:</size></b> {IsRelease}
+<b><size=11>loadingId:</size></b> {LoadingId}
+<b><size=11>isPreload:</size></b> {IsPreload}
+<b><size=11>activeData:</size></b> {ActiveData}
+<b><size=11>onCompleted:</size></b> {OnCompleted?.Target}.{OnCompleted?.Method.Name}
+<b><size=11>activeHandle:</size></b> {ActiveHandle}
+<b><size=11>callbackOnRelease:</size></b> {_callbackOnRelease}
+<b><size=11>isExecute:</size></b> {_isExecute}
+<b><size=11>isLoadingOn:</size></b> {_isLoadingOn}
 <b><size=11>isUserInterface:</size></b> {this is AddUICommand}";
         }
     }

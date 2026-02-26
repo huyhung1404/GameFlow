@@ -20,7 +20,7 @@ namespace GameFlow.Tests
         [SetUp]
         public void SetUp()
         {
-            FlowObservable.callbackEvents.Clear();
+            FlowObservable.s_CallbackEvents.Clear();
             TestScript___EventCallback1.timeRun = 0;
             TestScript___EventCallback2.timeRun = 0;
         }

@@ -6,29 +6,23 @@ namespace GameFlow
     public abstract class Command
     {
 #if UNITY_EDITOR
-        internal static readonly System.Collections.Generic.List<Command> waitBuildCommands = new System.Collections.Generic.List<Command>();
+        internal static readonly System.Collections.Generic.List<Command> s_WaitBuildCommands = new System.Collections.Generic.List<Command>();
 #endif
-
-
-#if UNITY_EDITOR
-        internal bool isRelease { get; private set; }
-#else
-        internal bool isRelease;
-#endif
-
-        protected readonly Type elementType;
+        
+        internal bool IsRelease { get; private set; }
+        protected readonly Type _elementType;
 
         protected Command(Type elementType)
         {
 #if UNITY_EDITOR
-            waitBuildCommands.Add(this);
+            s_WaitBuildCommands.Add(this);
 #endif
-            this.elementType = elementType;
+            _elementType = elementType;
         }
 
         internal void Release()
         {
-            isRelease = true;
+            IsRelease = true;
         }
 
         internal virtual void OnRelease()
@@ -45,19 +39,19 @@ namespace GameFlow
         public void Build()
         {
 #if UNITY_EDITOR
-            waitBuildCommands.Remove(this);
+            s_WaitBuildCommands.Remove(this);
 #endif
             GameFlowRuntimeController.AddCommand(this);
         }
 
         public override string ToString()
         {
-            return $"name: {elementType.FullName} - isRelease: {isRelease}";
+            return $"name: {_elementType.FullName} - isRelease: {IsRelease}";
         }
 
         internal string GetInfo()
         {
-            return $"{GetType().Name}:  {elementType.Namespace}.<b>{elementType.Name}</b>";
+            return $"{GetType().Name}:  {_elementType.Namespace}.<b>{_elementType.Name}</b>";
         }
 
         internal abstract string GetFullInfo();

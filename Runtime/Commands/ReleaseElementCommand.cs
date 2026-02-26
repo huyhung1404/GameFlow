@@ -5,7 +5,7 @@ namespace GameFlow
 {
     public class ReleaseElementCommand : ReleaseCommand
     {
-        protected override GameFlowElement baseElement { get; set; }
+        protected override GameFlowElement BaseElement { get; set; }
 
         public ReleaseElementCommand(Type elementType) : base(elementType)
         {
@@ -13,11 +13,11 @@ namespace GameFlow
 
         internal override void PreUpdate()
         {
-            baseElement = ElementsRuntimeManager.GetElement(elementType);
-            if (baseElement) return;
-            ErrorHandle.LogWarning($"Element type {elementType.Name} is not exists in pool");
+            BaseElement = ElementsRuntimeManager.GetElement(_elementType);
+            if (BaseElement) return;
+            ErrorHandle.LogWarning($"Element type {_elementType.Name} is not exists in pool");
             OnLoadResult(false);
-            isExecute = true;
+            _isExecute = true;
         }
 
         protected override void HandleRelease()
@@ -27,24 +27,24 @@ namespace GameFlow
 
         protected override void ReleaseOnClose()
         {
-            FlowObservable.Event(elementType).RaiseOnRelease(false);
-            baseElement.reference.ReleaseHandlePrefab(baseElement.runtimeInstance, this);
+            FlowObservable.Event(_elementType).RaiseOnRelease(false);
+            BaseElement.Reference.ReleaseHandlePrefab(BaseElement.RuntimeInstance, this);
         }
 
         protected override void NoneRelease()
         {
-            FlowObservable.Event(elementType).RaiseOnRelease(false);
-            baseElement.runtimeInstance.SetActive(false);
+            FlowObservable.Event(_elementType).RaiseOnRelease(false);
+            BaseElement.RuntimeInstance.SetActive(false);
             OnLoadResult(true);
         }
 
         protected override void OnLoadResult(bool canRelease)
         {
-            onCompleted?.Invoke(canRelease);
+            OnCompleted?.Invoke(canRelease);
             if (canRelease)
             {
-                callbackOnRelease = true;
-                ElementsRuntimeManager.RemoveElement(baseElement);
+                _callbackOnRelease = true;
+                ElementsRuntimeManager.RemoveElement(BaseElement);
             }
 
             Release();

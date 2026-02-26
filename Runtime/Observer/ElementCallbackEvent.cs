@@ -7,40 +7,40 @@ namespace GameFlow
 {
     public class ElementCallbackEvent
     {
-        protected List<IFlowListener> listeners;
-        protected OnActive onActive;
-        protected OnActiveWithData onActiveWithData;
-        protected OnRelease onRelease;
-        public event OnActive OnActive { add => onActive += value; remove => onActive -= value; }
-        public event OnActiveWithData OnActiveWithData { add => onActiveWithData += value; remove => onActiveWithData -= value; }
-        public event OnRelease OnRelease { add => onRelease += value; remove => onRelease -= value; }
+        protected List<IFlowListener> _listeners;
+        protected OnActive _onActive;
+        protected OnActiveWithData _onActiveWithData;
+        protected OnRelease _onRelease;
+        public event OnActive OnActive { add => _onActive += value; remove => _onActive -= value; }
+        public event OnActiveWithData OnActiveWithData { add => _onActiveWithData += value; remove => _onActiveWithData -= value; }
+        public event OnRelease OnRelease { add => _onRelease += value; remove => _onRelease -= value; }
 
         public void RegisterListener(IFlowListener listener)
         {
-            listeners ??= new List<IFlowListener>();
-            listeners.Add(listener);
+            _listeners ??= new List<IFlowListener>();
+            _listeners.Add(listener);
         }
 
         public void UnregisterListener(IFlowListener listener)
         {
-            listeners?.Remove(listener);
+            _listeners?.Remove(listener);
         }
 
         internal void RaiseOnActive()
         {
             try
             {
-                onActive?.Invoke();
-                if (listeners == null) return;
-                var count = listeners.Count;
+                _onActive?.Invoke();
+                if (_listeners == null) return;
+                var count = _listeners.Count;
                 for (var i = 0; i < count; i++)
                 {
-                    listeners[i].OnActive();
+                    _listeners[i].OnActive();
                 }
             }
             catch (Exception e)
             {
-                LogError(e, "OnActive", onActive?.GetInvocationList());
+                LogError(e, "OnActive", _onActive?.GetInvocationList());
             }
         }
 
@@ -48,17 +48,17 @@ namespace GameFlow
         {
             try
             {
-                onActiveWithData?.Invoke(data);
-                if (listeners == null) return;
-                var count = listeners.Count;
+                _onActiveWithData?.Invoke(data);
+                if (_listeners == null) return;
+                var count = _listeners.Count;
                 for (var i = 0; i < count; i++)
                 {
-                    listeners[i].OnActiveWithData(data);
+                    _listeners[i].OnActiveWithData(data);
                 }
             }
             catch (Exception e)
             {
-                LogError(e, "OnActiveWithData", onActiveWithData?.GetInvocationList());
+                LogError(e, "OnActiveWithData", _onActiveWithData?.GetInvocationList());
             }
         }
 
@@ -66,17 +66,17 @@ namespace GameFlow
         {
             try
             {
-                onRelease?.Invoke(isReleaseImmediately);
-                if (listeners == null) return;
-                var count = listeners.Count;
+                _onRelease?.Invoke(isReleaseImmediately);
+                if (_listeners == null) return;
+                var count = _listeners.Count;
                 for (var i = 0; i < count; i++)
                 {
-                    listeners[i].OnRelease(isReleaseImmediately);
+                    _listeners[i].OnRelease(isReleaseImmediately);
                 }
             }
             catch (Exception e)
             {
-                LogError(e, "OnRelease", onRelease?.GetInvocationList());
+                LogError(e, "OnRelease", _onRelease?.GetInvocationList());
             }
         }
 
@@ -84,27 +84,27 @@ namespace GameFlow
         {
             isUserInterface = false;
             callbackCount = 0;
-            listenerCount = listeners?.Count ?? 0;
-            if (onActive != null) callbackCount++;
-            if (onActiveWithData != null) callbackCount++;
-            if (onRelease != null) callbackCount++;
+            listenerCount = _listeners?.Count ?? 0;
+            if (_onActive != null) callbackCount++;
+            if (_onActiveWithData != null) callbackCount++;
+            if (_onRelease != null) callbackCount++;
         }
 
         public override string ToString()
         {
             return GetListenerInfo() +
-                   $"<b><size=11>OnActive</size></b>                    {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnActiveWithData</size></b>    {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnRelease</size></b>                 {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
+                   $"<b><size=11>OnActive</size></b>                    {(_onActive == null ? "Event: 0" : GetDelegatesInfo(_onActive.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnActiveWithData</size></b>    {(_onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(_onActiveWithData.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnRelease</size></b>                 {(_onRelease == null ? "Event: 0" : GetDelegatesInfo(_onRelease.GetInvocationList()))}";
         }
 
         protected string GetListenerInfo()
         {
             var info = "<b><size=11>Listener:</size></b>\n";
-            if (listeners == null) return info;
-            for (var i = 0; i < listeners.Count; i++)
+            if (_listeners == null) return info;
+            for (var i = 0; i < _listeners.Count; i++)
             {
-                var listener = listeners[i];
+                var listener = _listeners[i];
                 info += $"[{i}] {listener}\n";
             }
 
@@ -129,9 +129,9 @@ namespace GameFlow
                 }
             }
 
-            if (listeners != null)
+            if (_listeners != null)
             {
-                foreach (var listener in listeners)
+                foreach (var listener in _listeners)
                 {
                     errorMessage += $"Listener: {listener}";
                 }
@@ -143,38 +143,38 @@ namespace GameFlow
 
     public class UIElementCallbackEvent : ElementCallbackEvent
     {
-        private OnShowCompleted onShowCompleted;
-        private OnHide onHide;
-        private OnKeyBack onKeyBack;
-        private OnReFocus onReFocus;
-        public event OnShowCompleted OnShowCompleted { add => onShowCompleted += value; remove => onShowCompleted -= value; }
-        public event OnHide OnHide { add => onHide += value; remove => onHide -= value; }
-        public event OnKeyBack OnKeyBack { add => onKeyBack += value; remove => onKeyBack -= value; }
-        public event OnReFocus OnReFocus { add => onReFocus += value; remove => onReFocus -= value; }
+        private OnShowCompleted _onShowCompleted;
+        private OnHide _onHide;
+        private OnKeyBack _onKeyBack;
+        private OnReFocus _onReFocus;
+        public event OnShowCompleted OnShowCompleted { add => _onShowCompleted += value; remove => _onShowCompleted -= value; }
+        public event OnHide OnHide { add => _onHide += value; remove => _onHide -= value; }
+        public event OnKeyBack OnKeyBack { add => _onKeyBack += value; remove => _onKeyBack -= value; }
+        public event OnReFocus OnReFocus { add => _onReFocus += value; remove => _onReFocus -= value; }
 
         internal void RaiseOnShowCompleted()
         {
             try
             {
-                onShowCompleted?.Invoke();
+                _onShowCompleted?.Invoke();
             }
             catch (Exception e)
             {
-                LogError(e, "OnShowCompleted", onShowCompleted?.GetInvocationList());
+                LogError(e, "OnShowCompleted", _onShowCompleted?.GetInvocationList());
             }
         }
 
         internal bool RaiseOnHide(ICommandReleaseHandle handle)
         {
-            if (onHide == null) return false;
+            if (_onHide == null) return false;
             try
             {
-                onHide.Invoke(handle);
+                _onHide.Invoke(handle);
                 return true;
             }
             catch (Exception e)
             {
-                LogError(e, "OnHide", onHide?.GetInvocationList());
+                LogError(e, "OnHide", _onHide?.GetInvocationList());
             }
 
             return false;
@@ -184,17 +184,17 @@ namespace GameFlow
         {
             try
             {
-                onKeyBack?.Invoke();
-                if (listeners == null) return;
-                var count = listeners.Count;
+                _onKeyBack?.Invoke();
+                if (_listeners == null) return;
+                var count = _listeners.Count;
                 for (var i = 0; i < count; i++)
                 {
-                    listeners[i].OnKeyBack();
+                    _listeners[i].OnKeyBack();
                 }
             }
             catch (Exception e)
             {
-                LogError(e, "OnKeyBack", onKeyBack?.GetInvocationList());
+                LogError(e, "OnKeyBack", _onKeyBack?.GetInvocationList());
             }
         }
 
@@ -203,17 +203,17 @@ namespace GameFlow
         {
             try
             {
-                onReFocus?.Invoke();
-                if (listeners == null) return;
-                var count = listeners.Count;
+                _onReFocus?.Invoke();
+                if (_listeners == null) return;
+                var count = _listeners.Count;
                 for (var i = 0; i < count; i++)
                 {
-                    listeners[i].OnReFocus();
+                    _listeners[i].OnReFocus();
                 }
             }
             catch (Exception e)
             {
-                LogError(e, "OnReFocus", onReFocus?.GetInvocationList());
+                LogError(e, "OnReFocus", _onReFocus?.GetInvocationList());
             }
         }
 
@@ -221,22 +221,22 @@ namespace GameFlow
         {
             base.GetInfo(out isUserInterface, out callbackCount, out listenerCount);
             isUserInterface = true;
-            if (onShowCompleted != null) callbackCount++;
-            if (onHide != null) callbackCount++;
-            if (onKeyBack != null) callbackCount++;
-            if (onReFocus != null) callbackCount++;
+            if (_onShowCompleted != null) callbackCount++;
+            if (_onHide != null) callbackCount++;
+            if (_onKeyBack != null) callbackCount++;
+            if (_onReFocus != null) callbackCount++;
         }
 
         public override string ToString()
         {
             return GetListenerInfo() +
-                   $"<b><size=11>OnActive</size></b>                       {(onActive == null ? "Event: 0" : GetDelegatesInfo(onActive.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnActiveWithData</size></b>       {(onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(onActiveWithData.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnShowCompleted</size></b>     {(onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(onShowCompleted.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnHide</size></b>                          {(onHide == null ? "Event: 0" : GetDelegatesInfo(onHide.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnKeyBack</size></b>                    {(onKeyBack == null ? "Event: 0" : GetDelegatesInfo(onKeyBack.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnReFocus</size></b>                   {(onReFocus == null ? "Event: 0" : GetDelegatesInfo(onReFocus.GetInvocationList()))}\n" +
-                   $"<b><size=11>OnRelease</size></b>                    {(onRelease == null ? "Event: 0" : GetDelegatesInfo(onRelease.GetInvocationList()))}";
+                   $"<b><size=11>OnActive</size></b>                       {(_onActive == null ? "Event: 0" : GetDelegatesInfo(_onActive.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnActiveWithData</size></b>       {(_onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(_onActiveWithData.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnShowCompleted</size></b>     {(_onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(_onShowCompleted.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnHide</size></b>                          {(_onHide == null ? "Event: 0" : GetDelegatesInfo(_onHide.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnKeyBack</size></b>                    {(_onKeyBack == null ? "Event: 0" : GetDelegatesInfo(_onKeyBack.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnReFocus</size></b>                   {(_onReFocus == null ? "Event: 0" : GetDelegatesInfo(_onReFocus.GetInvocationList()))}\n" +
+                   $"<b><size=11>OnRelease</size></b>                    {(_onRelease == null ? "Event: 0" : GetDelegatesInfo(_onRelease.GetInvocationList()))}";
         }
     }
 }

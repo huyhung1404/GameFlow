@@ -191,7 +191,7 @@ namespace GameFlow.Editor
                 index++;
             }
 
-            foreach (var command in Command.waitBuildCommands)
+            foreach (var command in Command.s_WaitBuildCommands)
             {
                 if (command == null) continue;
                 DrawElement(index, command, false, true);
@@ -206,7 +206,7 @@ namespace GameFlow.Editor
             if (currentCommand == null) return;
             GameFlowRuntimeController.GetInfo(out var current);
             var isCurrent = currentCommand == current;
-            var isWaitBuild = Command.waitBuildCommands.Contains(currentCommand);
+            var isWaitBuild = Command.s_WaitBuildCommands.Contains(currentCommand);
             scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
             EditorGUILayout.LabelField(GetTitle(isCurrent, isWaitBuild, currentCommand).Trim(), GameFlowViewerEditorWindow.s_LabelStyle);
             EditorGUILayout.Space(2);
@@ -249,7 +249,7 @@ namespace GameFlow.Editor
         {
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             var index = 0;
-            foreach (var keyValue in FlowObservable.callbackEvents)
+            foreach (var keyValue in FlowObservable.s_CallbackEvents)
             {
                 DrawElement(index, keyValue.Key, keyValue.Value);
                 index++;
@@ -306,13 +306,13 @@ namespace GameFlow.Editor
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             var index = 0;
-            foreach (var element in UIElementsRuntimeManager.elementsRuntime)
+            foreach (var element in UIElementsRuntimeManager.ElementsRuntime)
             {
                 DrawElement(index, element, true);
                 index++;
             }
 
-            foreach (var element in ElementsRuntimeManager.elementsRuntime)
+            foreach (var element in ElementsRuntimeManager.ElementsRuntime)
             {
                 DrawElement(index, element, false);
                 index++;

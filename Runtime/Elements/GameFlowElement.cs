@@ -1,52 +1,53 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFlow
 {
     [Serializable]
     public class GameFlowElement : ScriptableObject
     {
-        internal GameObject runtimeInstance;
-        internal Type elementType;
-        [SerializeField, HideInInspector] internal bool includeInBuild = true;
-        [SerializeField] internal AssetReferenceElement reference;
-        [SerializeField] internal ElementReleaseMode releaseMode;
-        [SerializeField] internal ElementActiveMode activeMode = ElementActiveMode.RE_ACTIVE;
+        internal GameObject RuntimeInstance;
+        internal Type ElementType;
+        [SerializeField, HideInInspector, FormerlySerializedAs("includeInBuild")] internal bool IncludeInBuild = true;
+        [SerializeField, FormerlySerializedAs("reference")] internal AssetReferenceElement Reference;
+        [SerializeField, FormerlySerializedAs("releaseMode")] internal ElementReleaseMode ReleaseMode;
+        [SerializeField, FormerlySerializedAs("activeMode")] internal ElementActiveMode ActiveMode = ElementActiveMode.ReActive;
 
         private void OnEnable()
         {
-            elementType = GetType();
+            ElementType = GetType();
             hideFlags = HideFlags.DontUnloadUnusedAsset;
         }
 
         internal string GetInfo()
         {
-            return $"{elementType.Namespace}.{elementType.Name}";
+            return $"{ElementType.Namespace}.{ElementType.Name}";
         }
 
         internal string GetFullInfo()
         {
-            return $@"<b><size=11>runtimeInstance:</size></b> {runtimeInstance?.name}
-<b><size=11>includeInBuild:</size></b> {includeInBuild}
-<b><size=11>canReActive:</size></b> {activeMode}
-<b><size=11>reference is scene:</size></b> {reference.IsScene()}
-<b><size=11>releaseMode:</size></b> {releaseMode}
+            return $@"<b><size=11>runtimeInstance:</size></b> {RuntimeInstance?.name}
+<b><size=11>includeInBuild:</size></b> {IncludeInBuild}
+<b><size=11>canReActive:</size></b> {ActiveMode}
+<b><size=11>reference is scene:</size></b> {Reference.IsScene()}
+<b><size=11>releaseMode:</size></b> {ReleaseMode}
 ";
         }
 
         public void AddElement()
         {
-            GameCommand.Add(elementType).Build();
+            GameCommand.Add(ElementType).Build();
         }
 
         public void ReleaseElement()
         {
-            GameCommand.Release(elementType).Build();
+            GameCommand.Release(ElementType).Build();
         }
 
         public void LoadElement()
         {
-            GameCommand.Load(elementType).Build();
+            GameCommand.Load(ElementType).Build();
         }
     }
 }

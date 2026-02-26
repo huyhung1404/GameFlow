@@ -8,12 +8,12 @@ namespace GameFlow
     {
         protected override void OnShow()
         {
-            isShow = true;
+            IsShow = true;
         }
 
         protected override void OnHide()
         {
-            isShow = false;
+            IsShow = false;
         }
 
         public override BaseLoadingTypeController OnCompleted(Action onCompleted)

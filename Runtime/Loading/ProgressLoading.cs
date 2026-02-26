@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFlow
 {
@@ -6,75 +7,75 @@ namespace GameFlow
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class ProgressLoading : BaseLoadingTypeController
     {
-        [SerializeField] private float hideSpeed = 0.15f;
-        [SerializeField] private float moveSpeed = 0.15f;
-        private CanvasGroup canvasGroup;
-        private float currentProgress;
-        private float targetProgress;
-        private bool isShowing;
+        [SerializeField, FormerlySerializedAs("hideSpeed")] private float m_hideSpeed = 0.15f;
+        [SerializeField, FormerlySerializedAs("moveSpeed")] private float m_moveSpeed = 0.15f;
+        private CanvasGroup _canvasGroup;
+        private float _currentProgress;
+        private float _targetProgress;
+        private bool _isShowing;
 
         protected override void OnShow()
         {
             SetUpCanvasGroupIfNeed();
             ExecuteCallback();
             SetValue(0);
-            currentProgress = targetProgress = 0;
-            canvasGroup.alpha = 1;
-            isShow = isShowing = true;
-            timeExecute = hideSpeed;
+            _currentProgress = _targetProgress = 0;
+            _canvasGroup.alpha = 1;
+            IsShow = _isShowing = true;
+            _timeExecute = m_hideSpeed;
         }
 
         private void SetUpCanvasGroupIfNeed()
         {
-            if (!ReferenceEquals(canvasGroup, null)) return;
-            canvasGroup = GetComponent<CanvasGroup>();
+            if (!ReferenceEquals(_canvasGroup, null)) return;
+            _canvasGroup = GetComponent<CanvasGroup>();
         }
 
         protected override void OnHide()
         {
-            isShowing = false;
+            _isShowing = false;
             SetValue(1);
         }
 
         private void LateUpdate()
         {
-            if (!isShowing)
+            if (!_isShowing)
             {
-                var alpha = canvasGroup.alpha;
+                var alpha = _canvasGroup.alpha;
                 if (alpha <= 0) return;
-                var speed = 1 / timeExecute;
+                var speed = 1 / _timeExecute;
                 alpha = Mathf.Clamp01(alpha - speed * Time.deltaTime);
-                canvasGroup.alpha = alpha;
+                _canvasGroup.alpha = alpha;
                 if (alpha > 0) return;
-                isShow = false;
+                IsShow = false;
                 ExecuteCallback();
                 return;
             }
 
-            currentProgress = LerpProgress();
-            SetValue(currentProgress);
-            if (currentProgress < 1) return;
+            _currentProgress = LerpProgress();
+            SetValue(_currentProgress);
+            if (_currentProgress < 1) return;
             OnHide();
         }
 
         public virtual float LerpProgress()
         {
-            return Mathf.Clamp(currentProgress + Time.deltaTime * moveSpeed, 0, targetProgress);
+            return Mathf.Clamp(_currentProgress + Time.deltaTime * m_moveSpeed, 0, _targetProgress);
         }
 
         public void UpdateProgress(float value)
         {
-            targetProgress = value;
+            _targetProgress = value;
         }
         
-        public float CurrentProgress() => currentProgress;
-        public float TargetProgress() => targetProgress;
+        public float CurrentProgress() => _currentProgress;
+        public float TargetProgress() => _targetProgress;
 
         public void ForceHide()
         {
-            targetProgress = currentProgress = 1;
-            isShowing = false;
-            isShow = false;
+            _targetProgress = _currentProgress = 1;
+            _isShowing = false;
+            IsShow = false;
             ExecuteCallback();
             gameObject.SetActive(false);
         }

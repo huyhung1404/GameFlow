@@ -1,19 +1,20 @@
 using System.Collections;
 using GameFlow.Component;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFlow
 {
     [AddComponentMenu("Game Flow/UI Bubble Animation")]
     public sealed class BubbleUIAnimation : GameFlowUIAnimation
     {
-        [SerializeField] private bool ignoreTimeScale;
-        [SerializeField] private Transform view;
-        [SerializeField] private Vector3 startScale = new Vector3(0.9f, 0.9f, 1f);
-        [SerializeField] private float durationShow = 0.25f;
-        [SerializeField] private float durationHide = 0.15f;
+        [SerializeField, FormerlySerializedAs("ignoreTimeScale")] private bool m_ignoreTimeScale;
+        [SerializeField, FormerlySerializedAs("view")] private Transform m_view;
+        [SerializeField, FormerlySerializedAs("startScale")] private Vector3 m_startScale = new Vector3(0.9f, 0.9f, 1f);
+        [SerializeField, FormerlySerializedAs("durationShow")] private float m_durationShow = 0.25f;
+        [SerializeField, FormerlySerializedAs("durationHide")] private float m_durationHide = 0.15f;
 
-        [SerializeField] private AnimationCurve curve = new AnimationCurve(new[]
+        [SerializeField, FormerlySerializedAs("curve")] private AnimationCurve m_curve = new AnimationCurve(new[]
         {
             new Keyframe(0f, 0.002441406f, 8.881391f, 8.881391f),
             new Keyframe(0.1966633f, 1.066512f, 2.71777f, 2.71777f),
@@ -34,27 +35,27 @@ namespace GameFlow
 
         private IEnumerator IEShow()
         {
-            view.localScale = startScale;
-            var scale = Vector3.one - startScale;
+            m_view.localScale = m_startScale;
+            var scale = Vector3.one - m_startScale;
             var time = 0f;
             do
             {
                 yield return null;
-                time += (ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime) / durationShow;
-                view.localScale = startScale + scale * curve.Evaluate(time);
+                time += (m_ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime) / m_durationShow;
+                m_view.localScale = m_startScale + scale * m_curve.Evaluate(time);
             } while (time < 1f);
 
-            view.localScale = Vector3.one;
+            m_view.localScale = Vector3.one;
             OnShowCompleted();
         }
 
         private IEnumerator IEHide()
         {
-            var executeTime = (ignoreTimeScale ? Time.realtimeSinceStartup : Time.time) + durationHide;
+            var executeTime = (m_ignoreTimeScale ? Time.realtimeSinceStartup : Time.time) + m_durationHide;
             do
             {
                 yield return null;
-            } while ((ignoreTimeScale ? Time.realtimeSinceStartup : Time.time) < executeTime);
+            } while ((m_ignoreTimeScale ? Time.realtimeSinceStartup : Time.time) < executeTime);
 
             OnHideCompleted();
         }

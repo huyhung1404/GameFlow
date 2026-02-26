@@ -122,12 +122,12 @@ namespace GameFlow.Editor
             var selected = (FlowEventListener.EventTriggerType)index;
             var newEntry = selected switch
             {
-                FlowEventListener.EventTriggerType.OnActive => (FlowEventListener.Entry)new FlowEventListener.OnActiveEntry { eventID = selected },
-                FlowEventListener.EventTriggerType.OnActiveWithData => new FlowEventListener.OnActiveWithDataEntry { eventID = selected },
-                FlowEventListener.EventTriggerType.OnShowCompleted => new FlowEventListener.OnShowCompletedEntry { eventID = selected },
-                FlowEventListener.EventTriggerType.OnKeyBack => new FlowEventListener.OnKeyBackEntry { eventID = selected },
-                FlowEventListener.EventTriggerType.OnReFocus => new FlowEventListener.OnReFocusEntry { eventID = selected },
-                FlowEventListener.EventTriggerType.OnRelease => new FlowEventListener.OnReleaseEntry { eventID = selected },
+                FlowEventListener.EventTriggerType.OnActive => (FlowEventListener.Entry)new FlowEventListener.OnActiveEntry { EventID = selected },
+                FlowEventListener.EventTriggerType.OnActiveWithData => new FlowEventListener.OnActiveWithDataEntry { EventID = selected },
+                FlowEventListener.EventTriggerType.OnShowCompleted => new FlowEventListener.OnShowCompletedEntry { EventID = selected },
+                FlowEventListener.EventTriggerType.OnKeyBack => new FlowEventListener.OnKeyBackEntry { EventID = selected },
+                FlowEventListener.EventTriggerType.OnReFocus => new FlowEventListener.OnReFocusEntry { EventID = selected },
+                FlowEventListener.EventTriggerType.OnRelease => new FlowEventListener.OnReleaseEntry { EventID = selected },
                 _ => null
             };
             

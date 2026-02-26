@@ -1,6 +1,7 @@
 ﻿using System;
 using GameFlow.Internal;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFlow
 {
@@ -8,81 +9,81 @@ namespace GameFlow
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeLoading : BaseLoadingTypeController
     {
-        [SerializeField] private float defaultFadeTime = 0.3f;
-        private CanvasGroup canvasGroup;
-        private bool isShowing;
-        private bool isHiding;
-        private float timeExecuteHide;
-        private bool isCacheShowCallback;
+        [SerializeField, FormerlySerializedAs("defaultFadeTime")] private float m_defaultFadeTime = 0.3f;
+        private CanvasGroup _canvasGroup;
+        private bool _isShowing;
+        private bool _isHiding;
+        private float _timeExecuteHide;
+        private bool _isCacheShowCallback;
 
         protected override void OnShow()
         {
             SetUpCanvasGroupIfNeed();
-            timeExecute = defaultFadeTime;
-            isShow = true;
-            isShowing = true;
-            isHiding = false;
+            _timeExecute = m_defaultFadeTime;
+            IsShow = true;
+            _isShowing = true;
+            _isHiding = false;
         }
 
         private void SetUpCanvasGroupIfNeed()
         {
-            if (!ReferenceEquals(canvasGroup, null)) return;
-            canvasGroup = GetComponent<CanvasGroup>();
-            canvasGroup.alpha = 0;
+            if (!ReferenceEquals(_canvasGroup, null)) return;
+            _canvasGroup = GetComponent<CanvasGroup>();
+            _canvasGroup.alpha = 0;
         }
 
         protected override void OnHide()
         {
-            if (!isEnable && !isShow)
+            if (!IsEnable && !IsShow)
             {
-                isHiding = false;
-                isShow = false;
+                _isHiding = false;
+                IsShow = false;
                 return;
             }
 
-            timeExecuteHide = defaultFadeTime;
-            isHiding = true;
+            _timeExecuteHide = m_defaultFadeTime;
+            _isHiding = true;
         }
 
         private void LateUpdate()
         {
-            if (isShowing)
+            if (_isShowing)
             {
                 HandleShowing();
                 return;
             }
 
-            if (!isHiding) return;
+            if (!_isHiding) return;
             HandleHiding();
         }
 
         private void HandleShowing()
         {
-            var alpha = canvasGroup.alpha;
+            var alpha = _canvasGroup.alpha;
             if (alpha >= 1)
             {
-                isShowing = false;
+                _isShowing = false;
                 ExecuteCallback();
                 return;
             }
 
-            var speed = 1 / timeExecute;
-            canvasGroup.alpha = Mathf.Clamp01(alpha + speed * Time.deltaTime);
+            var speed = 1 / _timeExecute;
+            _canvasGroup.alpha = Mathf.Clamp01(alpha + speed * Time.deltaTime);
         }
 
         private void HandleHiding()
         {
-            var alpha = canvasGroup.alpha;
+            var alpha = _canvasGroup.alpha;
             if (alpha <= 0)
             {
-                isHiding = false;
-                isShow = false;
+                _isHiding = false;
+                IsShow = false;
                 ExecuteCallback();
                 return;
             }
 
-            var speed = 1 / timeExecuteHide;
-            canvasGroup.alpha = Mathf.Clamp01(alpha - speed * Time.deltaTime);
+            var speed = 1 / _timeExecuteHide;
+            _canvasGroup.alpha = Mathf.Clamp01(alpha - speed * Time.deltaTime);
         }
 
         /// <summary>
@@ -93,29 +94,29 @@ namespace GameFlow
         /// <returns></returns>
         public override BaseLoadingTypeController OnCompleted(Action onCompleted)
         {
-            if (!isEnable && !isShowing && !isShow)
+            if (!IsEnable && !_isShowing && !IsShow)
             {
-                callback = onCompleted;
+                _callback = onCompleted;
                 ExecuteCallback();
                 return this;
             }
 
-            if (!isShowing || !isHiding || callback == null)
+            if (!_isShowing || !_isHiding || _callback == null)
             {
                 if (ExecuteCallback()) ExecuteCallback();
-                callback = onCompleted;
+                _callback = onCompleted;
                 return this;
             }
 
-            if (isCacheShowCallback)
+            if (_isCacheShowCallback)
             {
-                callback += onCompleted;
+                _callback += onCompleted;
                 return this;
             }
 
-            isCacheShowCallback = true;
-            var showingCallback = callback;
-            callback = () =>
+            _isCacheShowCallback = true;
+            var showingCallback = _callback;
+            _callback = () =>
             {
                 try
                 {
@@ -126,30 +127,30 @@ namespace GameFlow
                     ErrorHandle.LogException(e, "Loading Callback");
                 }
 
-                callback = onCompleted;
-                cacheCallback = true;
-                isCacheShowCallback = false;
+                _callback = onCompleted;
+                _cacheCallback = true;
+                _isCacheShowCallback = false;
             };
             return this;
         }
 
         public override BaseLoadingTypeController SetTime(float time)
         {
-            if (isShowing && !isHiding) timeExecute = time;
-            if (isHiding) timeExecuteHide = time;
+            if (_isShowing && !_isHiding) _timeExecute = time;
+            if (_isHiding) _timeExecuteHide = time;
             return this;
         }
 
         internal void LoadingIsShow()
         {
             Assert.IsTrue(gameObject.activeSelf, "gameObject.activeSelf");
-            Assert.IsTrue(canvasGroup.alpha >= 1, "canvasGroup.alpha >= 1");
+            Assert.IsTrue(_canvasGroup.alpha >= 1, "canvasGroup.alpha >= 1");
         }
 
         internal void LoadingIsHide()
         {
             Assert.IsTrue(!gameObject.activeSelf, "!gameObject.activeSelf");
-            Assert.IsTrue(canvasGroup.alpha <= 0, "canvasGroup.alpha <= 0");
+            Assert.IsTrue(_canvasGroup.alpha <= 0, "canvasGroup.alpha <= 0");
         }
     }
 }

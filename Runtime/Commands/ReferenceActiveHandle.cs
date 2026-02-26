@@ -14,50 +14,50 @@ namespace GameFlow
 
     public class ReferenceActiveHandle
     {
-        private AssetReferenceElement reference;
-        protected readonly AddCommand command;
-        protected ActiveHandleStatus status;
-        protected SceneInstance resultInstance;
-        protected GameObject elementHandle;
-        protected Action<SceneInstance> onCompleted;
-        private Action<ActiveHandleStatus> onLoadResult;
+        private AssetReferenceElement _reference;
+        protected readonly AddCommand _command;
+        protected ActiveHandleStatus _status;
+        protected SceneInstance _resultInstance;
+        protected GameObject _elementHandle;
+        protected Action<SceneInstance> _onCompleted;
+        private Action<ActiveHandleStatus> _onLoadResult;
 
-        public event Action<ActiveHandleStatus> OnLoadResult { add => onLoadResult += value; remove => onLoadResult -= value; }
-        public event Action<SceneInstance> OnCompleted { add => onCompleted += value; remove => onCompleted -= value; }
+        public event Action<ActiveHandleStatus> OnLoadResult { add => _onLoadResult += value; remove => _onLoadResult -= value; }
+        public event Action<SceneInstance> OnCompleted { add => _onCompleted += value; remove => _onCompleted -= value; }
 
         internal ReferenceActiveHandle(AddCommand command)
         {
-            status = ActiveHandleStatus.None;
-            this.command = command;
+            _status = ActiveHandleStatus.None;
+            _command = command;
         }
 
         internal void SetReference(AssetReferenceElement referenceElement)
         {
-            reference = referenceElement;
+            _reference = referenceElement;
         }
 
         internal void OnHandleLoadCompleted(SceneInstance sceneInstance, GameObject elementHandleObject)
         {
-            resultInstance = sceneInstance;
-            elementHandle = elementHandleObject;
-            status = ActiveHandleStatus.Succeeded;
-            onLoadResult?.Invoke(status);
+            _resultInstance = sceneInstance;
+            _elementHandle = elementHandleObject;
+            _status = ActiveHandleStatus.Succeeded;
+            _onLoadResult?.Invoke(_status);
         }
 
         internal void OnHandleLoadFailed()
         {
-            status = ActiveHandleStatus.Failed;
-            onLoadResult?.Invoke(status);
+            _status = ActiveHandleStatus.Failed;
+            _onLoadResult?.Invoke(_status);
         }
 
         public virtual bool ActiveScene()
         {
-            if (status != ActiveHandleStatus.Succeeded) return false;
-            resultInstance.ActivateAsync().completed += _ =>
+            if (_status != ActiveHandleStatus.Succeeded) return false;
+            _resultInstance.ActivateAsync().completed += _ =>
             {
-                onCompleted?.Invoke(resultInstance);
-                onCompleted = null;
-                command.HandleReferencePrefab(elementHandle);
+                _onCompleted?.Invoke(_resultInstance);
+                _onCompleted = null;
+                _command.HandleReferencePrefab(_elementHandle);
             };
 
             return true;
@@ -65,21 +65,21 @@ namespace GameFlow
 
         public float Progress()
         {
-            if (reference == null) return 0;
-            if (!reference.OperationHandle.IsValid()) return 0;
-            if (reference.OperationHandle.IsDone) return 1;
-            return reference.OperationHandle.PercentComplete;
+            if (_reference == null) return 0;
+            if (!_reference.OperationHandle.IsValid()) return 0;
+            if (_reference.OperationHandle.IsDone) return 1;
+            return _reference.OperationHandle.PercentComplete;
         }
 
         public bool IsDone()
         {
-            return reference != null && reference.OperationHandle.IsDone;
+            return _reference != null && _reference.OperationHandle.IsDone;
         }
 
         public override string ToString()
         {
-            return $"[Status:{status}] [Scene:{resultInstance.Scene.name}] [Handle:{elementHandle?.name}] " +
-                   $"[OnCompeted:{onCompleted?.Target}.{onCompleted?.Method.Name}] [OnLoadResult:{onLoadResult?.Target}.{onLoadResult?.Method}]";
+            return $"[Status:{_status}] [Scene:{_resultInstance.Scene.name}] [Handle:{_elementHandle?.name}] " +
+                   $"[OnCompeted:{_onCompleted?.Target}.{_onCompleted?.Method.Name}] [OnLoadResult:{_onLoadResult?.Target}.{_onLoadResult?.Method}]";
         }
     }
 
@@ -91,7 +91,7 @@ namespace GameFlow
 
         public override bool ActiveScene()
         {
-            if (status != ActiveHandleStatus.Succeeded) return false;
+            if (_status != ActiveHandleStatus.Succeeded) return false;
             UIElementsRuntimeManager.ReleaseAllElement(() => base.ActiveScene());
             return true;
         }

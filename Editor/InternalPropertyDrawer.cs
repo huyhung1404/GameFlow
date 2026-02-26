@@ -13,7 +13,7 @@ namespace GameFlow.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            switch (((InternalDrawAttribute)attribute).drawType)
+            switch (((InternalDrawAttribute)attribute).DrawType)
             {
                 default:
                 case DrawType.Element:
@@ -67,7 +67,7 @@ namespace GameFlow.Editor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            switch (((InternalDrawAttribute)attribute).drawType)
+            switch (((InternalDrawAttribute)attribute).DrawType)
             {
                 default:
                 case DrawType.Element:

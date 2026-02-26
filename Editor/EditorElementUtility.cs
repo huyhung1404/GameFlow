@@ -34,11 +34,11 @@ namespace GameFlow.Editor
             switch (property.serializedObject.targetObject)
             {
                 case GameFlowElement element:
-                    return element.reference;
+                    return element.Reference;
                 case GameFlowManager manager:
                 {
                     var index = property.ExtractArrayIndex();
-                    return index == null ? null : manager.elementCollection.GetIndex(index.Value)?.reference;
+                    return index == null ? null : manager.ElementCollection.GetIndex(index.Value)?.Reference;
                 }
                 default:
                     return null;

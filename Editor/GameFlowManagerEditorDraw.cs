@@ -42,7 +42,7 @@ namespace GameFlow.Editor
             rootVisualElement.Add(labelFromUXML);
             _root = rootVisualElement;
             var manager = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
-            if (manager.elementCollection.VerifyData())
+            if (manager.ElementCollection.VerifyData())
             {
                 EditorUtility.SetDirty(manager);
             }
@@ -70,10 +70,10 @@ namespace GameFlow.Editor
             _gameFlowContainer = _root.Q<VisualElement>("game_flow_container");
             _userInterfaceContainer = _root.Q<VisualElement>("ui_flow_container");
             _searchField = _root.Q<ToolbarSearchField>("search_field");
-            _root.Q<IntegerField>("plane_distance").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.planeDistance)));
-            _root.Q<IntegerField>("sorting_order_offset").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.sortingOrderOffset)));
-            _root.Q<IntegerField>("loading_shield_sorting_order").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.loadingShieldSortingOrder)));
-            _root.Q<Vector2Field>("reference_resolution").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.referenceResolution)));
+            _root.Q<IntegerField>("plane_distance").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.PlaneDistance)));
+            _root.Q<IntegerField>("sorting_order_offset").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.SortingOrderOffset)));
+            _root.Q<IntegerField>("loading_shield_sorting_order").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.LoadingShieldSortingOrder)));
+            _root.Q<Vector2Field>("reference_resolution").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.ReferenceResolution)));
             _searchField.RegisterValueChangedCallback(_ => UpdateView());
         }
 
@@ -119,7 +119,7 @@ namespace GameFlow.Editor
             _serializedObject.Update();
             _gameFlowProperties.Clear();
             _userInterfaceFlowProperties.Clear();
-            var property = _serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements");
+            var property = _serializedObject?.FindProperty(nameof(GameFlowManager.ElementCollection)).FindPropertyRelative("elements");
             if (property == null || property.arraySize == 0) return;
             var searchKey = _searchField.value;
             var hasSearchKey = !string.IsNullOrEmpty(searchKey);
@@ -191,7 +191,7 @@ namespace GameFlow.Editor
         {
             try
             {
-                _serializedObject?.FindProperty(nameof(GameFlowManager.elementCollection)).FindPropertyRelative("elements").DeleteArrayElementAtIndex(index);
+                _serializedObject?.FindProperty(nameof(GameFlowManager.ElementCollection)).FindPropertyRelative("elements").DeleteArrayElementAtIndex(index);
                 _serializedObject?.ApplyModifiedProperties();
                 UpdateView();
             }

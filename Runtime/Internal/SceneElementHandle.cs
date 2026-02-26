@@ -11,34 +11,34 @@ namespace GameFlow.Internal
 #if UNITY_EDITOR
             handle.name = "Scene Handle";
 #endif
-            handle.releaseMode = releaseMode;
+            handle._releaseMode = releaseMode;
             return handle;
         }
 
         private struct ActiveData
         {
-            public GameObject o;
-            public bool isActive;
+            public GameObject O;
+            public bool IsActive;
         }
 
-        private ActiveData[] activeData;
-        private ElementReleaseMode releaseMode;
+        private ActiveData[] _activeData;
+        private ElementReleaseMode _releaseMode;
 
         internal void GetRootsGameObjectIfNeed()
         {
-            if (activeData != null) return;
+            if (_activeData != null) return;
             var root = gameObject.scene.GetRootGameObjects();
             var rootLength = root.Length;
-            activeData = new ActiveData[rootLength - 1];
+            _activeData = new ActiveData[rootLength - 1];
             var index = 0;
             for (var i = 0; i < rootLength; i++)
             {
                 var o = root[i];
                 if (gameObject == o) continue;
-                activeData[index] = new ActiveData
+                _activeData[index] = new ActiveData
                 {
-                    o = o,
-                    isActive = o.activeSelf
+                    O = o,
+                    IsActive = o.activeSelf
                 };
                 index++;
             }
@@ -46,20 +46,20 @@ namespace GameFlow.Internal
 
         private void OnEnable()
         {
-            if (activeData == null) return;
-            for (var i = activeData.Length - 1; i >= 0; i--)
+            if (_activeData == null) return;
+            for (var i = _activeData.Length - 1; i >= 0; i--)
             {
-                activeData[i].o.SetActive(activeData[i].isActive);
+                _activeData[i].O.SetActive(_activeData[i].IsActive);
             }
         }
 
         private void OnDisable()
         {
-            if (releaseMode == ElementReleaseMode.NONE_RELEASE) GetRootsGameObjectIfNeed();
-            if (activeData == null) return;
-            for (var i = activeData.Length - 1; i >= 0; i--)
+            if (_releaseMode == ElementReleaseMode.NoneRelease) GetRootsGameObjectIfNeed();
+            if (_activeData == null) return;
+            for (var i = _activeData.Length - 1; i >= 0; i--)
             {
-                if (activeData[i].o) activeData[i].o.SetActive(false);
+                if (_activeData[i].O) _activeData[i].O.SetActive(false);
             }
         }
     }

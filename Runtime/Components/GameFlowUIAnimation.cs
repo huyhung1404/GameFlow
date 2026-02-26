@@ -1,34 +1,35 @@
 using GameFlow.Internal;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GameFlow.Component
 {
     public abstract class GameFlowUIAnimation : ElementMonoBehaviours
     {
-        [SerializeField, InternalDraw(DrawType.Element)] protected UIFlowElement element;
-        protected UIElementCallbackEvent delegates;
-        private ICommandReleaseHandle releaseHandle;
+        [SerializeField, InternalDraw(DrawType.Element), FormerlySerializedAs("element")] protected UIFlowElement m_element;
+        protected UIElementCallbackEvent _delegates;
+        private ICommandReleaseHandle _releaseHandle;
 
         protected virtual void Awake()
         {
-            delegates = FlowObservable.UIEvent(element.GetType());
+            _delegates = FlowObservable.UIEvent(m_element.GetType());
         }
 
         protected virtual void OnEnable()
         {
-            delegates.OnActive += OnShow;
-            delegates.OnHide += OnHide;
+            _delegates.OnActive += OnShow;
+            _delegates.OnHide += OnHide;
         }
 
         protected virtual void OnDisable()
         {
-            delegates.OnActive -= OnShow;
-            delegates.OnHide -= OnHide;
+            _delegates.OnActive -= OnShow;
+            _delegates.OnHide -= OnHide;
         }
 
         private void OnHide(ICommandReleaseHandle handle)
         {
-            releaseHandle = handle;
+            _releaseHandle = handle;
             OnHide();
         }
 
@@ -37,21 +38,21 @@ namespace GameFlow.Component
 
         protected void OnShowCompleted()
         {
-            delegates.RaiseOnShowCompleted();
+            _delegates.RaiseOnShowCompleted();
         }
 
         protected void OnHideCompleted()
         {
-            if (releaseHandle == null) return;
-            releaseHandle.Next();
-            releaseHandle = null;
+            if (_releaseHandle == null) return;
+            _releaseHandle.Next();
+            _releaseHandle = null;
         }
 
         internal override void SetElement(GameFlowElement value, System.Type type)
         {
-            if (element != null && type != element.GetType()) return;
+            if (m_element != null && type != m_element.GetType()) return;
             if (value is not UIFlowElement uiElement) return;
-            element = uiElement;
+            m_element = uiElement;
         }
     }
 }

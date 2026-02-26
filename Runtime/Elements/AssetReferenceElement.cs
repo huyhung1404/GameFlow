@@ -5,6 +5,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -15,19 +16,19 @@ namespace GameFlow
     [Serializable]
     public class AssetReferenceElement : AssetReferenceT<Object>
     {
-        [SerializeField] private bool isScene;
-        private bool isReleasing;
+        [SerializeField, FormerlySerializedAs("isScene")] private bool m_isScene;
+        private bool _isReleasing;
 
         #region Editor Setup
 
         public AssetReferenceElement(string guid) : base(guid)
         {
-            isScene = false;
+            m_isScene = false;
         }
 
         public AssetReferenceElement(string guid, bool isScene) : base(guid)
         {
-            this.isScene = isScene;
+            m_isScene = isScene;
         }
 
         public override bool ValidateAsset(Object obj)
@@ -53,28 +54,28 @@ namespace GameFlow
         public override bool SetEditorAsset(Object value)
         {
             if (!base.SetEditorAsset(value)) return false;
-            isScene = value is SceneAsset;
+            m_isScene = value is SceneAsset;
             return true;
         }
 
         public override bool SetEditorSubObject(Object value)
         {
             if (!base.SetEditorSubObject(value)) return false;
-            isScene = value is SceneAsset;
+            m_isScene = value is SceneAsset;
             return true;
         }
 #endif
 
         #endregion
 
-        internal bool IsReady() => IsDone && !isReleasing;
-        internal bool IsScene() => isScene;
+        internal bool IsReady() => IsDone && !_isReleasing;
+        internal bool IsScene() => m_isScene;
 
         internal void LoadGameObjectHandle(AddCommand command)
         {
-            if (isScene)
+            if (m_isScene)
             {
-                var hasActiveHandle = command.activeHandle != null;
+                var hasActiveHandle = command.ActiveHandle != null;
                 if (hasActiveHandle)
                 {
                     HandleReferenceSceneWithActiveHandle(command);
@@ -111,13 +112,13 @@ namespace GameFlow
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     var elementHandle = MoveGameObjectToScene(handle, command.ReleaseMode());
-                    command.activeHandle.OnHandleLoadCompleted(handle.Result, elementHandle.gameObject);
+                    command.ActiveHandle.OnHandleLoadCompleted(handle.Result, elementHandle.gameObject);
                     return;
                 }
 
                 Addressables.Release(handle);
                 command.HandleReferencePrefab(null);
-                command.activeHandle.OnHandleLoadFailed();
+                command.ActiveHandle.OnHandleLoadFailed();
             };
         }
 
@@ -145,7 +146,7 @@ namespace GameFlow
 
         internal void ReleaseHandlePrefab(GameObject handle, IReleaseCompleted completed)
         {
-            if (isScene)
+            if (m_isScene)
             {
                 HandleReleaseScene(completed);
                 return;
@@ -156,17 +157,17 @@ namespace GameFlow
 
         private void HandleReleaseScene(IReleaseCompleted completed)
         {
-            isReleasing = true;
+            _isReleasing = true;
             Addressables.UnloadSceneAsync(OperationHandle).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     completed.UnloadCompleted(true);
-                    isReleasing = false;
+                    _isReleasing = false;
                     return;
                 }
 
-                isReleasing = false;
+                _isReleasing = false;
                 completed.UnloadCompleted(false);
             };
         }

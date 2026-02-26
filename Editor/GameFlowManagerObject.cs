@@ -74,7 +74,7 @@ namespace GameFlow.Editor
         internal static readonly Template AssemblyDefinition = new Template
         {
             fileName = "GameFlowElements.asmdef",
-            folder = PackagePath.kScriptFolderName,
+            folder = PackagePath.k_ScriptFolderName,
             content = TemplateAssemblyDefinition
         };
 

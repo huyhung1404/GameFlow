@@ -9,9 +9,9 @@ namespace GameFlow.Tests
 {
     public class CallbackHistory
     {
-        public static CallbackHistory current;
-        public readonly List<RecordCallback> executeHistory;
-        public readonly List<RecordObject> recorderObject;
+        public static CallbackHistory Current;
+        public readonly List<RecordCallback> ExecuteHistory;
+        public readonly List<RecordObject> RecorderObjects;
 
         public class RecordObject
         {
@@ -79,13 +79,13 @@ namespace GameFlow.Tests
 
         public CallbackHistory()
         {
-            executeHistory = new List<RecordCallback>();
-            recorderObject = new List<RecordObject>();
+            ExecuteHistory = new List<RecordCallback>();
+            RecorderObjects = new List<RecordObject>();
         }
 
         public void RecorderObject(GameObject o, GameFlowElement element)
         {
-            recorderObject.Add(new RecordObject
+            RecorderObjects.Add(new RecordObject
             {
                 gameObject = o,
                 content = $"GameObject: {o.name}, Element: {element.name} | "
@@ -94,7 +94,7 @@ namespace GameFlow.Tests
 
         public void WriteOnActive(Type type)
         {
-            executeHistory.Add(new OnActiveRecord(type)
+            ExecuteHistory.Add(new OnActiveRecord(type)
             {
                 time = Time.time
             });
@@ -102,7 +102,7 @@ namespace GameFlow.Tests
 
         public void WriteOnActiveWithData(Type type, object data)
         {
-            executeHistory.Add(new OnActiveWithDataRecord(type, data)
+            ExecuteHistory.Add(new OnActiveWithDataRecord(type, data)
             {
                 time = Time.time
             });
@@ -110,7 +110,7 @@ namespace GameFlow.Tests
 
         public void WriteOnRelease(Type type, bool isReleaseImmediately)
         {
-            executeHistory.Add(new OnReleaseRecord(type, isReleaseImmediately)
+            ExecuteHistory.Add(new OnReleaseRecord(type, isReleaseImmediately)
             {
                 time = Time.time
             });
@@ -119,14 +119,14 @@ namespace GameFlow.Tests
         public override string ToString()
         {
             var result = new StringBuilder();
-            result.AppendLine($"Recorder Count: {recorderObject.Count}");
-            foreach (var record in recorderObject)
+            result.AppendLine($"Recorder Count: {RecorderObjects.Count}");
+            foreach (var record in RecorderObjects)
             {
                 result.AppendLine(record.ToString());
             }
 
-            result.AppendLine($"History Count: {executeHistory.Count}");
-            foreach (var recordCallback in executeHistory)
+            result.AppendLine($"History Count: {ExecuteHistory.Count}");
+            foreach (var recordCallback in ExecuteHistory)
             {
                 result.AppendLine(recordCallback.ToString());
             }
@@ -136,28 +136,28 @@ namespace GameFlow.Tests
 
         public static void HistoryCountEquals(int count)
         {
-            Assert.IsTrue(current.executeHistory.Count == count);
+            Assert.IsTrue(Current.ExecuteHistory.Count == count);
         }
 
         public static void RecordCountEquals(int count)
         {
-            Assert.IsTrue(current.recorderObject.Count == count);
+            Assert.IsTrue(Current.RecorderObjects.Count == count);
         }
 
         public static void TotalExecuteHistory<T>(int count) where T : RecordCallback
         {
-            Assert.IsTrue(current.executeHistory.Count(item => item is T) == count);
+            Assert.IsTrue(Current.ExecuteHistory.Count(item => item is T) == count);
         }
 
         public static void CheckHistoryIndex(int index, Type typeRecord, Type typeElement)
         {
-            Assert.IsTrue(current.executeHistory[index].GetType() == typeRecord);
-            Assert.IsTrue(current.executeHistory[index].type == typeElement);
+            Assert.IsTrue(Current.ExecuteHistory[index].GetType() == typeRecord);
+            Assert.IsTrue(Current.ExecuteHistory[index].type == typeElement);
         }
 
         public static RecordObject GetRecord(int index)
         {
-            return current.recorderObject[index];
+            return Current.RecorderObjects[index];
         }
     }
 }

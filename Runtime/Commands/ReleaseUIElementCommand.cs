@@ -5,27 +5,27 @@ namespace GameFlow
 {
     public class ReleaseUIElementCommand : ReleaseCommand, ICommandReleaseHandle
     {
-        private UIFlowElement element;
-        protected override GameFlowElement baseElement { get => element; set => element = (UIFlowElement)value; }
-        private readonly UIElementCallbackEvent delegates;
+        private UIFlowElement _element;
+        protected override GameFlowElement BaseElement { get => _element; set => _element = (UIFlowElement)value; }
+        private readonly UIElementCallbackEvent _delegates;
 
         public ReleaseUIElementCommand(Type elementType) : base(elementType)
         {
-            delegates = FlowObservable.UIEvent(elementType);
+            _delegates = FlowObservable.UIEvent(elementType);
         }
 
         internal override void PreUpdate()
         {
-            element = UIElementsRuntimeManager.GetElement(elementType);
-            if (element) return;
-            ErrorHandle.LogWarning($"Element type {elementType.Name} is not exists in pool");
+            _element = UIElementsRuntimeManager.GetElement(_elementType);
+            if (_element) return;
+            ErrorHandle.LogWarning($"Element type {_elementType.Name} is not exists in pool");
             OnLoadResult(false);
-            isExecute = true;
+            _isExecute = true;
         }
 
         protected override void HandleRelease()
         {
-            if (!ignoreAnimationHide && delegates.RaiseOnHide(this))
+            if (!IgnoreAnimationHide && _delegates.RaiseOnHide(this))
             {
                 return;
             }
@@ -40,24 +40,24 @@ namespace GameFlow
 
         protected override void ReleaseOnClose()
         {
-            delegates.RaiseOnRelease(false);
-            baseElement.reference.ReleaseHandlePrefab(baseElement.runtimeInstance, this);
+            _delegates.RaiseOnRelease(false);
+            BaseElement.Reference.ReleaseHandlePrefab(BaseElement.RuntimeInstance, this);
         }
 
         protected override void NoneRelease()
         {
-            delegates.RaiseOnRelease(false);
-            baseElement.runtimeInstance.SetActive(false);
+            _delegates.RaiseOnRelease(false);
+            BaseElement.RuntimeInstance.SetActive(false);
             OnLoadResult(true);
         }
 
         protected override void OnLoadResult(bool canRelease)
         {
-            onCompleted?.Invoke(canRelease);
+            OnCompleted?.Invoke(canRelease);
             if (canRelease)
             {
-                callbackOnRelease = true;
-                UIElementsRuntimeManager.RemoveElement(element);
+                _callbackOnRelease = true;
+                UIElementsRuntimeManager.RemoveElement(_element);
             }
 
             Release();
@@ -65,7 +65,7 @@ namespace GameFlow
 
         internal override void OnRelease()
         {
-            if (!callbackOnRelease) return;
+            if (!_callbackOnRelease) return;
             base.OnRelease();
             var topElement = UIElementsRuntimeManager.GetTopElement();
             if (topElement == null) return;

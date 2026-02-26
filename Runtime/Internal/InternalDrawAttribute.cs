@@ -12,11 +12,11 @@ namespace GameFlow.Internal
 
     internal class InternalDrawAttribute : PropertyAttribute
     {
-        internal DrawType drawType { get; private set; }
+        internal DrawType DrawType { get; private set; }
 
         internal InternalDrawAttribute(DrawType drawType)
         {
-            this.drawType = drawType;
+            DrawType = drawType;
         }
     }
 }

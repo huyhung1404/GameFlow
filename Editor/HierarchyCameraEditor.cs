@@ -33,7 +33,7 @@ namespace GameFlow.Editor
 
             if (controller == null || controller.Length == 0) return;
             var managerAsset = AssetDatabase.LoadAssetAtPath<GameFlowManager>(PackagePath.ManagerPath());
-            var referenceResolution = managerAsset != null ? managerAsset.referenceResolution : new Vector2(1920, 1080);
+            var referenceResolution = managerAsset != null ? managerAsset.ReferenceResolution : new Vector2(1920, 1080);
 
             foreach (var uiCanvas in controller)
             {

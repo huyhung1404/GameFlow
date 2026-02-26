@@ -1,17 +1,18 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace GameFlow.Component
 {
     [AddComponentMenu("Game Flow/UI Canvas Callback")]
     public class GameFlowUICanvasCallbackEvent : GameFlowUICanvasOnKeyBack
     {
-        [SerializeField] protected UnityEvent<int> onCanvasUpdate;
+        [SerializeField, FormerlySerializedAs("onCanvasUpdate")] protected UnityEvent<int> m_onCanvasUpdate;
 
         protected override void SetUpCanvas()
         {
             base.SetUpCanvas();
-            onCanvasUpdate?.Invoke(element.currentSortingOrder);
+            m_onCanvasUpdate?.Invoke(m_element.CurrentSortingOrder);
         }
     }
 }

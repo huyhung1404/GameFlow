@@ -16,7 +16,7 @@ namespace GameFlow.Tests
             command.Build();
             yield return DelayFrame(30);
             Assert.IsTrue(command.isExecute);
-            ResourcesInstance.runtimeController.CommandsIsEmpty();
+            ResourcesInstance.RuntimeController.CommandsIsEmpty();
         }
 
         [UnityTest,]
@@ -69,7 +69,7 @@ namespace GameFlow.Tests
             Assert.IsTrue(listAdd[1] == listExecute[1], "listAdd[1] == listExecute[1]");
             Assert.IsTrue(listAdd[2] == listExecute[2], "listAdd[2] == listExecute[2]");
             Assert.IsTrue(listAdd[3] == listExecute[3], "listAdd[3] == listExecute[3]");
-            ResourcesInstance.runtimeController.CommandsIsEmpty();
+            ResourcesInstance.RuntimeController.CommandsIsEmpty();
         }
 
         private class AutoReleaseCommand : Command
@@ -92,7 +92,7 @@ namespace GameFlow.Tests
             {
                 if (isExecute) return;
                 isExecute = true;
-                ResourcesInstance.runtimeController.StartCoroutine(IERelease());
+                ResourcesInstance.RuntimeController.StartCoroutine(IERelease());
             }
 
             internal override string GetFullInfo()
@@ -118,14 +118,14 @@ namespace GameFlow.Tests
                 this.data = data;
                 this.listAdd = listAdd;
                 this.listExecute = listExecute;
-                ResourcesInstance.runtimeController.StartCoroutine(IEDelay());
+                ResourcesInstance.RuntimeController.StartCoroutine(IEDelay());
             }
 
             internal override void Update()
             {
                 if (isExecute) return;
                 isExecute = true;
-                ResourcesInstance.runtimeController.StartCoroutine(IERelease());
+                ResourcesInstance.RuntimeController.StartCoroutine(IERelease());
                 listExecute.Add(this);
             }
 

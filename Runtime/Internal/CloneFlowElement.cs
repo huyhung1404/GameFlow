@@ -4,25 +4,25 @@ namespace GameFlow.Internal
 {
     public class CloneFlowElement : CloneElement
     {
-        private readonly GameFlowElement cloneElement;
+        private readonly GameFlowElement _cloneElement;
 
         public CloneFlowElement(GameFlowElement baseElement)
         {
-            cloneElement = (GameFlowElement)ScriptableObject.CreateInstance(baseElement.elementType);
-            cloneElement.runtimeInstance = null;
-            cloneElement.elementType = baseElement.elementType;
-            cloneElement.includeInBuild = true;
-            cloneElement.reference = baseElement.reference;
-            cloneElement.releaseMode = ElementReleaseMode.RELEASE_ON_CLOSE;
-            cloneElement.activeMode = baseElement.activeMode;
+            _cloneElement = (GameFlowElement)ScriptableObject.CreateInstance(baseElement.ElementType);
+            _cloneElement.RuntimeInstance = null;
+            _cloneElement.ElementType = baseElement.ElementType;
+            _cloneElement.IncludeInBuild = true;
+            _cloneElement.Reference = baseElement.Reference;
+            _cloneElement.ReleaseMode = ElementReleaseMode.ReleaseOnClose;
+            _cloneElement.ActiveMode = baseElement.ActiveMode;
         }
 
-        internal override GameFlowElement CloneElementInstance() => cloneElement;
+        internal override GameFlowElement CloneElementInstance() => _cloneElement;
 
         internal override void ActiveElement()
         {
-            cloneElement.runtimeInstance.SetActive(true);
-            ElementsRuntimeManager.AddElement(cloneElement);
+            _cloneElement.RuntimeInstance.SetActive(true);
+            ElementsRuntimeManager.AddElement(_cloneElement);
         }
     }
 }

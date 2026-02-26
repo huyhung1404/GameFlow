@@ -13,21 +13,21 @@ namespace GameFlow.Tests
         public void SetUp()
         {
             LogAssert.ignoreFailingMessages = false;
-            CallbackHistory.current = new CallbackHistory();
+            CallbackHistory.Current = new CallbackHistory();
         }
 
         [UnityTest]
         public IEnumerator Add_Active_SingleElement()
         {
             var next = false;
-            GameCommand.Add<TestScript___SimpleElement>().OnCompleted(_ =>
+            AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleElement>(), _ =>
             {
-                ResourcesInstance.loadingController.IsTransparentOn();
+                ResourcesInstance.LoadingController.IsTransparentOn();
                 next = true;
             }).Build();
             while (!next) yield return null;
-            ResourcesInstance.runtimeController.CommandsIsEmpty();
-            Debug.Log(CallbackHistory.current.ToString());
+            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            Debug.Log(CallbackHistory.Current.ToString());
             CallbackHistory.HistoryCountEquals(1);
             CallbackHistory.RecordCountEquals(1);
             Assert.IsTrue(CallbackHistory.GetRecord(0).gameObject.activeSelf);
@@ -38,15 +38,15 @@ namespace GameFlow.Tests
         public IEnumerator Add_Active_SingleSceneElement()
         {
             var next = false;
-            GameCommand.Add<TestScript___SimpleSceneElement>().OnCompleted(_ =>
+            AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleSceneElement>(), _ =>
             {
-                ResourcesInstance.loadingController.IsTransparentOn();
+                ResourcesInstance.LoadingController.IsTransparentOn();
                 next = true;
             }).Build();
             while (!next) yield return null;
             yield return null;
-            ResourcesInstance.runtimeController.CommandsIsEmpty();
-            Debug.Log(CallbackHistory.current.ToString());
+            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            Debug.Log(CallbackHistory.Current.ToString());
             CallbackHistory.HistoryCountEquals(1);
             CallbackHistory.RecordCountEquals(1);
             Assert.IsTrue(CallbackHistory.GetRecord(0).gameObject.activeSelf);
@@ -62,11 +62,11 @@ namespace GameFlow.Tests
         {
             LogAssert.ignoreFailingMessages = true;
             var next = false;
-            GameCommand.Add<TestScript___NoReference>().OnCompleted(_ => next = true).Build();
+            AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___NoReference>(), _ => next = true).Build();
             while (!next) yield return null;
             yield return null;
-            ResourcesInstance.runtimeController.CommandsIsEmpty();
-            ResourcesInstance.loadingController.IsTransparentOff();
+            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            ResourcesInstance.LoadingController.IsTransparentOff();
         }
 
         [UnityTest]
@@ -74,11 +74,11 @@ namespace GameFlow.Tests
         {
             var next = false;
             GameCommand.Add<TestScript___SimpleElement>().Build();
-            GameCommand.Add<TestScript___SimpleElement>().OnCompleted(_ => { next = true; }).Build();
+            AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleElement>(), _ => { next = true; }).Build();
             while (!next) yield return null;
             yield return null;
-            ResourcesInstance.runtimeController.CommandsIsEmpty();
-            Debug.Log(CallbackHistory.current.ToString());
+            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            Debug.Log(CallbackHistory.Current.ToString());
             CallbackHistory.TotalExecuteHistory<CallbackHistory.OnActiveRecord>(2);
             CallbackHistory.TotalExecuteHistory<CallbackHistory.OnReleaseRecord>(1);
             Assert.IsTrue(CallbackHistory.GetRecord(0).gameObject.activeSelf);
