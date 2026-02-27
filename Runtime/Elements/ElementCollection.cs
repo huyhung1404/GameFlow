@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFlow
 {
     [Serializable]
     internal class ElementCollection
     {
-        [SerializeField, FormerlySerializedAs("elements")] private GameFlowElement[] m_elements;
+        [SerializeField] private GameFlowElement[] m_elements;
 
         internal GameFlowElement GetIndex(int index)
         {

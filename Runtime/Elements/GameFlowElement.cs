@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFlow
 {
@@ -9,10 +8,10 @@ namespace GameFlow
     {
         internal GameObject RuntimeInstance;
         internal Type ElementType;
-        [SerializeField, HideInInspector, FormerlySerializedAs("includeInBuild")] internal bool IncludeInBuild = true;
-        [SerializeField, FormerlySerializedAs("reference")] internal AssetReferenceElement Reference;
-        [SerializeField, FormerlySerializedAs("releaseMode")] internal ElementReleaseMode ReleaseMode;
-        [SerializeField, FormerlySerializedAs("activeMode")] internal ElementActiveMode ActiveMode = ElementActiveMode.ReActive;
+        [SerializeField, HideInInspector] internal bool IncludeInBuild = true;
+        [SerializeField] internal AssetReferenceElement Reference;
+        [SerializeField] internal ElementReleaseMode ReleaseMode;
+        [SerializeField] internal ElementActiveMode ActiveMode = ElementActiveMode.ReActive;
 
         private void OnEnable()
         {

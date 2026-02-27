@@ -1,6 +1,5 @@
 using GameFlow.Internal;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace GameFlow.Component
@@ -8,12 +7,12 @@ namespace GameFlow.Component
     [AddComponentMenu("Game Flow/UI Canvas")]
     public class GameFlowUICanvas : FlowListenerMonoBehaviour
     {
-        [SerializeField, Element, FormerlySerializedAs("element")] protected UIFlowElement m_element;
-        [SerializeField, HideInInspector, FormerlySerializedAs("canvas")] protected Canvas m_canvas;
-        [SerializeField, HideInInspector, FormerlySerializedAs("autoGetComponent")] protected bool m_autoGetComponent = true;
-        [SerializeField, HideInInspector, FormerlySerializedAs("offsetCanvasGroup")] protected int m_offsetCanvasGroup;
-        [SerializeField, HideInInspector, FormerlySerializedAs("safeView")] protected RectTransform m_safeView;
-        [SerializeField, HideInInspector, FormerlySerializedAs("safeAreaIgnore")] protected SafeAreaIgnore m_safeAreaIgnore;
+        [SerializeField, Element] protected UIFlowElement m_element;
+        [SerializeField, HideInInspector] protected Canvas m_canvas;
+        [SerializeField, HideInInspector] protected bool m_autoGetComponent = true;
+        [SerializeField, HideInInspector] protected int m_offsetCanvasGroup;
+        [SerializeField, HideInInspector] protected RectTransform m_safeView;
+        [SerializeField, HideInInspector] protected SafeAreaIgnore m_safeAreaIgnore;
         protected UIElementCallbackEvent _delegates;
         protected CanvasScaler _canvasScale;
         protected RectTransform _rectTransform;

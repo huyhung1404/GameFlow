@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace GameFlow.Component
 {
@@ -13,7 +12,7 @@ namespace GameFlow.Component
     [AddComponentMenu("Game Flow/UI Canvas Callback")]
     public class GameFlowUICanvasCallbackEvent : GameFlowUICanvasOnKeyBack
     {
-        [SerializeField, FormerlySerializedAs("onCanvasUpdate")] protected UnityEventInt m_onCanvasUpdate;
+        [SerializeField] protected UnityEventInt m_onCanvasUpdate;
 
         protected override void SetUpCanvas()
         {

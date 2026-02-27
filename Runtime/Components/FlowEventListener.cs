@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace GameFlow.Component
 {
@@ -22,7 +21,7 @@ namespace GameFlow.Component
         [Serializable]
         internal abstract class Entry
         {
-            [SerializeField, FormerlySerializedAs("eventID")] internal EventTriggerType EventID;
+            [SerializeField] internal EventTriggerType EventID;
             internal abstract void Register(Type type);
             internal abstract void Unregister(Type type);
         }
@@ -30,7 +29,7 @@ namespace GameFlow.Component
         [Serializable]
         internal class OnActiveEntry : Entry
         {
-            [SerializeField, FormerlySerializedAs("callback")] internal UnityEvent Callback;
+            [SerializeField] internal UnityEvent Callback;
 
             internal override void Register(Type type)
             {
@@ -46,7 +45,7 @@ namespace GameFlow.Component
         [Serializable]
         internal class OnActiveWithDataEntry : Entry
         {
-            [SerializeField, FormerlySerializedAs("callback")] internal UnityEvent<object> Callback;
+            [SerializeField] internal UnityEvent<object> Callback;
 
             internal override void Register(Type type)
             {
@@ -62,7 +61,7 @@ namespace GameFlow.Component
         [Serializable]
         internal class OnShowCompletedEntry : Entry
         {
-            [SerializeField, FormerlySerializedAs("callback")] internal UnityEvent Callback;
+            [SerializeField] internal UnityEvent Callback;
 
             internal override void Register(Type type)
             {
@@ -78,7 +77,7 @@ namespace GameFlow.Component
         [Serializable]
         internal class OnKeyBackEntry : Entry
         {
-            [SerializeField, FormerlySerializedAs("callback")] internal UnityEvent Callback;
+            [SerializeField] internal UnityEvent Callback;
 
             internal override void Register(Type type)
             {
@@ -94,7 +93,7 @@ namespace GameFlow.Component
         [Serializable]
         internal class OnReFocusEntry : Entry
         {
-            [SerializeField, FormerlySerializedAs("callback")] internal UnityEvent Callback;
+            [SerializeField] internal UnityEvent Callback;
 
             internal override void Register(Type type)
             {
@@ -110,7 +109,7 @@ namespace GameFlow.Component
         [Serializable]
         internal class OnReleaseEntry : Entry
         {
-            [SerializeField, FormerlySerializedAs("callback")] internal UnityEvent<bool> Callback;
+            [SerializeField] internal UnityEvent<bool> Callback;
 
             internal override void Register(Type type)
             {

@@ -5,7 +5,6 @@ using GameFlow.Component;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace GameFlow.Internal
@@ -14,9 +13,9 @@ namespace GameFlow.Internal
     internal class GameFlowRuntimeController : MonoBehaviour
     {
         private static readonly Queue<Command> s_commands = new Queue<Command>(5);
-        [SerializeField, FormerlySerializedAs("dontDestroyOnLoad")] private bool m_dontDestroyOnLoad = true;
-        [SerializeField, FormerlySerializedAs("elementContainer")] private Transform m_elementContainer;
-        [SerializeField, FormerlySerializedAs("uiElementContainer")] private Transform m_uiElementContainer;
+        [SerializeField] private bool m_dontDestroyOnLoad = true;
+        [SerializeField] private Transform m_elementContainer;
+        [SerializeField] private Transform m_uiElementContainer;
         internal static OnBannerUpdate OnBannerUpdate;
         internal static bool s_UpdateBanner;
         private static GameFlowRuntimeController s_Instance;

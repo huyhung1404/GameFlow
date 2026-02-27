@@ -1,7 +1,6 @@
 using System.Collections;
 using GameFlow.Component;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFlow
 {
@@ -9,9 +8,9 @@ namespace GameFlow
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeUIAnimation : GameFlowUIAnimation
     {
-        [SerializeField, FormerlySerializedAs("ignoreTimeScale")] private bool m_ignoreTimeScale;
-        [SerializeField, FormerlySerializedAs("durationShow")] private float m_durationShow = 0.3f;
-        [SerializeField, FormerlySerializedAs("durationHide")] private float m_durationHide = 0.3f;
+        [SerializeField] private bool m_ignoreTimeScale;
+        [SerializeField] private float m_durationShow = 0.3f;
+        [SerializeField] private float m_durationHide = 0.3f;
         private CanvasGroup _canvasGroup;
 
         protected override void Awake()

@@ -1,7 +1,6 @@
 ﻿using System;
 using GameFlow.Internal;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFlow
 {
@@ -9,7 +8,7 @@ namespace GameFlow
     [RequireComponent(typeof(CanvasGroup))]
     public class FadeLoading : BaseLoadingTypeController
     {
-        [SerializeField, FormerlySerializedAs("defaultFadeTime")] private float m_defaultFadeTime = 0.3f;
+        [SerializeField] private float m_defaultFadeTime = 0.3f;
         private CanvasGroup _canvasGroup;
         private bool _isShowing;
         private bool _isHiding;

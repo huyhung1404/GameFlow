@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFlow
 {
@@ -7,8 +6,8 @@ namespace GameFlow
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class ProgressLoading : BaseLoadingTypeController
     {
-        [SerializeField, FormerlySerializedAs("hideSpeed")] private float m_hideSpeed = 0.15f;
-        [SerializeField, FormerlySerializedAs("moveSpeed")] private float m_moveSpeed = 0.15f;
+        [SerializeField] private float m_hideSpeed = 0.15f;
+        [SerializeField] private float m_moveSpeed = 0.15f;
         private CanvasGroup _canvasGroup;
         private float _currentProgress;
         private float _targetProgress;

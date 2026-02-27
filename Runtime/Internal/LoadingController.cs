@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace GameFlow.Internal
@@ -13,7 +12,7 @@ namespace GameFlow.Internal
     {
         internal static LoadingController Instance { get; set; }
 
-        [SerializeField, FormerlySerializedAs("controllers")] private BaseLoadingTypeController[] m_controllers = Array.Empty<BaseLoadingTypeController>();
+        [SerializeField] private BaseLoadingTypeController[] m_controllers = Array.Empty<BaseLoadingTypeController>();
         internal static bool s_IsInitialization;
         private static int s_totalController;
         private static bool s_transparentEnable;

@@ -1,20 +1,19 @@
 using System.Collections;
 using GameFlow.Component;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GameFlow
 {
     [AddComponentMenu("Game Flow/UI Bubble Animation")]
     public sealed class BubbleUIAnimation : GameFlowUIAnimation
     {
-        [SerializeField, FormerlySerializedAs("ignoreTimeScale")] private bool m_ignoreTimeScale;
-        [SerializeField, FormerlySerializedAs("view")] private Transform m_view;
-        [SerializeField, FormerlySerializedAs("startScale")] private Vector3 m_startScale = new Vector3(0.9f, 0.9f, 1f);
-        [SerializeField, FormerlySerializedAs("durationShow")] private float m_durationShow = 0.25f;
-        [SerializeField, FormerlySerializedAs("durationHide")] private float m_durationHide = 0.15f;
+        [SerializeField] private bool m_ignoreTimeScale;
+        [SerializeField] private Transform m_view;
+        [SerializeField] private Vector3 m_startScale = new Vector3(0.9f, 0.9f, 1f);
+        [SerializeField] private float m_durationShow = 0.25f;
+        [SerializeField] private float m_durationHide = 0.15f;
 
-        [SerializeField, FormerlySerializedAs("curve")] private AnimationCurve m_curve = new AnimationCurve(new[]
+        [SerializeField] private AnimationCurve m_curve = new AnimationCurve(new[]
         {
             new Keyframe(0f, 0.002441406f, 8.881391f, 8.881391f),
             new Keyframe(0.1966633f, 1.066512f, 2.71777f, 2.71777f),

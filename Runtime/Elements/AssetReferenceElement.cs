@@ -5,7 +5,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,7 +15,7 @@ namespace GameFlow
     [Serializable]
     public class AssetReferenceElement : AssetReferenceT<Object>
     {
-        [SerializeField, FormerlySerializedAs("isScene")] private bool m_isScene;
+        [SerializeField] private bool m_isScene;
         private bool _isReleasing;
 
         #region Editor Setup
