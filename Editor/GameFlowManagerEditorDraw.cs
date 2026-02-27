@@ -119,7 +119,7 @@ namespace GameFlow.Editor
             _serializedObject.Update();
             _gameFlowProperties.Clear();
             _userInterfaceFlowProperties.Clear();
-            var property = _serializedObject?.FindProperty(nameof(GameFlowManager.ElementCollection)).FindPropertyRelative("elements");
+            var property = _serializedObject?.FindProperty(nameof(GameFlowManager.ElementCollection)).FindPropertyRelative("m_elements");
             if (property == null || property.arraySize == 0) return;
             var searchKey = _searchField.value;
             var hasSearchKey = !string.IsNullOrEmpty(searchKey);
@@ -191,7 +191,7 @@ namespace GameFlow.Editor
         {
             try
             {
-                _serializedObject?.FindProperty(nameof(GameFlowManager.ElementCollection)).FindPropertyRelative("elements").DeleteArrayElementAtIndex(index);
+                _serializedObject?.FindProperty(nameof(GameFlowManager.ElementCollection)).FindPropertyRelative("m_elements").DeleteArrayElementAtIndex(index);
                 _serializedObject?.ApplyModifiedProperties();
                 UpdateView();
             }

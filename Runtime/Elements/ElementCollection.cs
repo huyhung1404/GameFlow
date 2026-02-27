@@ -23,7 +23,7 @@ namespace GameFlow
                 var element = m_elements[i];
                 if (type != element.ElementType) continue;
 #if !UNITY_EDITOR
-                if (!element.includeInBuild) return null;
+                if (!element.IncludeInBuild) return null;
 #endif
                 return element;
             }
