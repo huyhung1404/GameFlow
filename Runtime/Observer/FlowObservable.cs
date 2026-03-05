@@ -31,7 +31,10 @@ namespace GameFlow
 
         internal static UIElementCallbackEvent UIEvent(Type type)
         {
-            return (UIElementCallbackEvent)Event(type);
+            var e = Event(type);
+            if (e is not UIElementCallbackEvent uiEvent)
+                throw new InvalidOperationException($"FlowObservable.UIEvent: type '{type.Name}' is not a UIFlowElement.");
+            return uiEvent;
         }
 
         public static void ReleaseEvent<T>() where T : GameFlowElement

@@ -106,18 +106,22 @@ namespace GameFlow
             return CurrentCanvasCount() == 0 ? null : UIElementsRuntimeManager.ElementsRuntime[CurrentCanvasCount() - 1];
         }
 
-        public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame)
+        public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame, float timeoutSeconds = 30f)
         {
+            var deadline = UnityEngine.Time.realtimeSinceStartup + timeoutSeconds;
             while (CurrentCanvasCount() != totalCanvas)
             {
+                if (UnityEngine.Time.realtimeSinceStartup > deadline) yield break;
                 for (var i = 0; i < delayFrame; i++) yield return null;
             }
         }
 
-        public static IEnumerator IEWaitingTopCanvasIs<T>(int delayFrame) where T : UIFlowElement
+        public static IEnumerator IEWaitingTopCanvasIs<T>(int delayFrame, float timeoutSeconds = 30f) where T : UIFlowElement
         {
+            var deadline = UnityEngine.Time.realtimeSinceStartup + timeoutSeconds;
             while (!IsTopCanvas<T>())
             {
+                if (UnityEngine.Time.realtimeSinceStartup > deadline) yield break;
                 for (var i = 0; i < delayFrame; i++) yield return null;
             }
         }

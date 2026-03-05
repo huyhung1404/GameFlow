@@ -83,7 +83,7 @@ namespace GameFlow
         internal override string GetFullInfo()
         {
             return $@"<b><size=11>isRelease:</size></b> {IsRelease}
-<b><size=11>onCompleted:</size></b> {OnCompleted.Target}.{OnCompleted.Method.Name}
+<b><size=11>onCompleted:</size></b> {(OnCompleted != null ? $"{OnCompleted.Target}.{OnCompleted.Method.Name}" : "None")}
 <b><size=11>isExecute:</size></b> {_isExecute}
 <b><size=11>isUserInterface:</size></b> {this is ReleaseUIElementCommand}";
         }
