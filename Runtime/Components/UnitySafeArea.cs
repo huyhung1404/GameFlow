@@ -19,7 +19,7 @@ namespace GameFlow.Component
 
     public static class UnitySafeArea
     {
-        public static void ApplySafeArea(this RectTransform panel, Rect safeArea, SafeAreaIgnore ignore)
+        public static void ApplySafeArea(this RectTransform panel, SafeAreaIgnore ignore = SafeAreaIgnore.None)
         {
             if (ignore == SafeAreaIgnore.All)
             {
@@ -31,6 +31,7 @@ namespace GameFlow.Component
             var screenWidth = Screen.width;
             var screenHeight = Screen.height;
 
+            var safeArea = Screen.safeArea;
             var anchorMin = safeArea.position;
             var anchorMax = safeArea.position + safeArea.size;
 

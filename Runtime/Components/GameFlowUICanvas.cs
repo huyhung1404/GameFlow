@@ -56,7 +56,7 @@ namespace GameFlow.Component
             var sortingOrder = m_element.CurrentSortingOrder;
             m_canvas.sortingOrder = sortingOrder + m_offsetCanvasGroup;
             m_canvas.planeDistance = GameFlowRuntimeController.Manager().PlaneDistance;
-            if (_hasSafeView) m_safeView.ApplySafeArea(Screen.safeArea, m_safeAreaIgnore);
+            if (_hasSafeView) m_safeView.ApplySafeArea(m_safeAreaIgnore);
             OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }
 
