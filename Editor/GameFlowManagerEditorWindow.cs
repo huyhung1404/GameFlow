@@ -236,14 +236,13 @@ namespace GameFlow.Editor
 
             GUILayout.Space(20);
             GUILayout.BeginHorizontal();
-            GUILayout.Space(50);
             GUI.skin.label.wordWrap = true;
             GUI.skin.label.richText = true;
-            GUILayout.Space(20);
+            GUILayout.FlexibleSpace();
             GUILayout.Label("Click the \"Create\" button above or simply drag an asset into this window to start using Addressables." +
                             "  Once you begin, the Addressables system will save some assets to your project to keep up with its data " +
                             "\n <b>Game flow management system using Unity Addressable asset structure.</b>");
-            GUILayout.Space(50);
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
 
@@ -265,18 +264,17 @@ namespace GameFlow.Editor
             }
 
             GUILayout.Space(50);
-            if (GUILayout.Button("Create Game Flow Settings"))
+            if (GUILayout.Button("Create Game Flow Folder"))
             {
                 GameFlowManagerObject.CreateDefaultInstance();
             }
 
             GUILayout.Space(20);
             GUILayout.BeginHorizontal();
-            GUILayout.Space(50);
             GUI.skin.label.wordWrap = true;
-            GUILayout.Space(20);
+            GUILayout.FlexibleSpace();
             GUILayout.Label("Click the \"Create\" button to start using Game Flow.");
-            GUILayout.Space(50);
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
         }
     }
