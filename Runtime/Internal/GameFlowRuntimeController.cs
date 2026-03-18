@@ -5,7 +5,6 @@ using GameFlow.Component;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.UI;
 
 namespace GameFlow.Internal
 {
@@ -46,24 +45,6 @@ namespace GameFlow.Internal
         }
 
         internal static GameFlowManager Manager() => s_Instance._manager;
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (GetComponentInChildren<LoadingController>()) return;
-            var loadingController = new GameObject("Loading Controller").AddComponent<LoadingController>();
-            loadingController.transform.SetParent(transform);
-            loadingController.GetComponent<Image>().color = Color.clear;
-            var canvas = loadingController.GetComponent<Canvas>();
-            canvas.sortingOrder = 100;
-            canvas.planeDistance = _manager.PlaneDistance;
-            UnityEditor.EditorUtility.SetDirty(gameObject);
-            m_elementContainer = new GameObject("Elements").transform;
-            m_elementContainer.SetParent(transform);
-            m_uiElementContainer = new GameObject("UI Elements").transform;
-            m_uiElementContainer.SetParent(transform);
-        }
-#endif
 
         private void Awake()
         {
@@ -178,7 +159,7 @@ namespace GameFlow.Internal
             }
         }
 
-        private void KeyBackHandle()
+        private static void KeyBackHandle()
         {
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
             if (s_DisableKeyBack) return;

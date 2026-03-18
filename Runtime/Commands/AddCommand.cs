@@ -8,7 +8,7 @@ namespace GameFlow
 
     public abstract class AddCommand : Command
     {
-        internal int LoadingId = -1;
+        internal LoadingId? LoadingId;
         internal bool IsPreload;
         internal object ActiveData;
         internal OnAddCommandCompleted OnCompleted;
@@ -93,7 +93,7 @@ namespace GameFlow
         private void Loading()
         {
             BaseLoadingTypeController loading = null;
-            if (LoadingId >= 0) loading = LoadingController.Instance.LoadingOn(LoadingId);
+            if (LoadingId.HasValue) loading = LoadingController.Instance.LoadingOn(LoadingId.Value);
             if (ReferenceEquals(loading, null))
             {
                 BaseElement.Reference.LoadGameObjectHandle(this);
@@ -118,7 +118,7 @@ namespace GameFlow
                     return;
                 case ElementActiveMode.MultiInstance:
                     new CloneCommand(_elementType, this).BuildClone();
-                    if (LoadingId >= 0 && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId);
+                    if (LoadingId.HasValue && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId.Value);
                     Release();
                     return;
             }
@@ -149,7 +149,7 @@ namespace GameFlow
         protected void OnLoadResult(GameObject result)
         {
             OnCompleted?.Invoke(result);
-            if (LoadingId >= 0 && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId);
+            if (LoadingId.HasValue && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId.Value);
             Release();
         }
 

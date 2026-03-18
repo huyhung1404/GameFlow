@@ -6,6 +6,8 @@ namespace GameFlow
 {
     public abstract class BaseLoadingTypeController : MonoBehaviour
     {
+        [SerializeField] private string m_Id;
+        public string ID => m_Id;
         public bool IsShow { get; protected set; }
         public bool IsEnable { get; private set; }
         protected Action _callback;

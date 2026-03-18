@@ -69,7 +69,7 @@ namespace GameFlow
         private void Loading()
         {
             BaseLoadingTypeController loading = null;
-            if (_baseCommand.LoadingId >= 0) loading = LoadingController.Instance.LoadingOn(_baseCommand.LoadingId);
+            if (_baseCommand.LoadingId.HasValue) loading = LoadingController.Instance.LoadingOn(_baseCommand.LoadingId.Value);
             if (ReferenceEquals(loading, null))
             {
                 HandleReferencePrefab();
@@ -113,7 +113,7 @@ namespace GameFlow
         protected void OnLoadResult(GameObject result)
         {
             _baseCommand.OnCompleted?.Invoke(result);
-            if (_baseCommand.LoadingId >= 0 && _isLoadingOn) LoadingController.Instance.LoadingOff(_baseCommand.LoadingId);
+            if (_baseCommand.LoadingId.HasValue && _isLoadingOn) LoadingController.Instance.LoadingOff(_baseCommand.LoadingId.Value);
             Release();
         }
 

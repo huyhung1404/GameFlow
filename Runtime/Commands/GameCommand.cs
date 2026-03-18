@@ -39,19 +39,34 @@ namespace GameFlow
             return type.IsSubclassOf(s_UIElementType) ? new ReleaseUIElementCommand(type) : new ReleaseElementCommand(type);
         }
 
-        public static BaseLoadingTypeController LoadingOn(int i)
+        public static BaseLoadingTypeController LoadingOn(int index)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOn(i);
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOn(new LoadingId(index));
         }
 
-        public static BaseLoadingTypeController LoadingOff(int i)
+        public static BaseLoadingTypeController LoadingOn(string id)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOff(i);
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOn(new LoadingId(id));
         }
 
-        public static BaseLoadingTypeController Get(int i)
+        public static BaseLoadingTypeController LoadingOff(int index)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.Get(i);
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOff(new LoadingId(index));
+        }
+
+        public static BaseLoadingTypeController LoadingOff(string id)
+        {
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOff(new LoadingId(id));
+        }
+
+        public static BaseLoadingTypeController GetLoading(int index)
+        {
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.Get(new LoadingId(index));
+        }
+
+        public static BaseLoadingTypeController GetLoading(string id)
+        {
+            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.Get(new LoadingId(id));
         }
 
         public static void LockFlow()
@@ -88,14 +103,14 @@ namespace GameFlow
             return UIElementsRuntimeManager.ElementsRuntime[^1].GetType() == typeof(T);
         }
 
-        public static UnityEngine.Canvas GetCanvas<T>() where T : UIFlowElement
+        public static Canvas GetCanvas<T>() where T : UIFlowElement
         {
             if (CurrentCanvasCount() == 0) return null;
             var type = typeof(T);
             for (var i = UIElementsRuntimeManager.ElementsRuntime.Count - 1; i >= 0; i--)
             {
                 var element = UIElementsRuntimeManager.ElementsRuntime[i];
-                if (element.GetType() == type) return element.RuntimeInstance.GetComponent<UnityEngine.Canvas>();
+                if (element.GetType() == type) return element.RuntimeInstance.GetComponent<Canvas>();
             }
 
             return null;
@@ -108,20 +123,20 @@ namespace GameFlow
 
         public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame, float timeoutSeconds = 30f)
         {
-            var deadline = UnityEngine.Time.realtimeSinceStartup + timeoutSeconds;
+            var deadline = Time.realtimeSinceStartup + timeoutSeconds;
             while (CurrentCanvasCount() != totalCanvas)
             {
-                if (UnityEngine.Time.realtimeSinceStartup > deadline) yield break;
+                if (Time.realtimeSinceStartup > deadline) yield break;
                 for (var i = 0; i < delayFrame; i++) yield return null;
             }
         }
 
         public static IEnumerator IEWaitingTopCanvasIs<T>(int delayFrame, float timeoutSeconds = 30f) where T : UIFlowElement
         {
-            var deadline = UnityEngine.Time.realtimeSinceStartup + timeoutSeconds;
+            var deadline = Time.realtimeSinceStartup + timeoutSeconds;
             while (!IsTopCanvas<T>())
             {
-                if (UnityEngine.Time.realtimeSinceStartup > deadline) yield break;
+                if (Time.realtimeSinceStartup > deadline) yield break;
                 for (var i = 0; i < delayFrame; i++) yield return null;
             }
         }
@@ -135,14 +150,26 @@ namespace GameFlow
     public static class AddCommandBuilder
     {
         /// <summary>
+        /// Set Loading Index
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="index">iddex less than 0 => loading type is none</param>
+        /// <returns></returns>
+        public static AddCommand LoadingID(this AddCommand command, int index)
+        {
+            command.LoadingId = index < 0 ? null : new LoadingId(index);
+            return command;
+        }
+
+        /// <summary>
         /// Set Loading ID
         /// </summary>
         /// <param name="command"></param>
-        /// <param name="id">id less than 0 => loading type is none</param>
+        /// <param name="id">id is null => loading type is none</param>
         /// <returns></returns>
-        public static AddCommand LoadingID(this AddCommand command, int id)
+        public static AddCommand LoadingID(this AddCommand command, string id)
         {
-            command.LoadingId = id;
+            command.LoadingId = string.IsNullOrEmpty(id) ? null : new LoadingId(id);
             return command;
         }
 

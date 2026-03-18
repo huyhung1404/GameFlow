@@ -1,9 +1,26 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace GameFlow.Internal
 {
+    internal struct LoadingId
+    {
+        public readonly string Id;
+        public readonly int Index;
+
+        internal LoadingId(string id)
+        {
+            Id = id;
+            Index = -1;
+        }
+
+        internal LoadingId(int index)
+        {
+            Id = null;
+            Index = index;
+        }
+    }
+
     [AddComponentMenu("")]
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(GraphicRaycaster))]
@@ -12,7 +29,7 @@ namespace GameFlow.Internal
     {
         internal static LoadingController Instance { get; set; }
 
-        [SerializeField] private BaseLoadingTypeController[] m_controllers = Array.Empty<BaseLoadingTypeController>();
+        [SerializeField] private BaseLoadingTypeController[] m_controllers;
         internal static bool s_IsInitialization;
         private static int s_totalController;
         private static bool s_transparentEnable;
@@ -83,23 +100,52 @@ namespace GameFlow.Internal
             return false;
         }
 
-        internal BaseLoadingTypeController LoadingOn(int i)
+        internal BaseLoadingTypeController LoadingOn(LoadingId id)
         {
-            if (i < s_totalController) return m_controllers[i].On();
-            ErrorHandle.LogError($"Loading controller not exists id {i}");
+            if (id.Index < 0)
+            {
+                foreach (var controller in m_controllers)
+                {
+                    if (controller.ID == id.Id) return controller.On();
+                }
+
+                ErrorHandle.LogError($"Loading controller not exists id {id.Id}");
+                return null;
+            }
+
+            if (id.Index < s_totalController) return m_controllers[id.Index].On();
+            ErrorHandle.LogError($"Loading controller not exists index {id.Index}");
             return null;
         }
 
-        internal BaseLoadingTypeController LoadingOff(int i)
+        internal BaseLoadingTypeController LoadingOff(LoadingId id)
         {
-            if (i < s_totalController) return m_controllers[i].Off();
-            ErrorHandle.LogError($"Loading controller not exists id {i}");
+            if (id.Index < 0)
+            {
+                foreach (var controller in m_controllers)
+                {
+                    if (controller.ID == id.Id) return controller.Off();
+                }
+
+                ErrorHandle.LogError($"Loading controller not exists id {id.Id}");
+                return null;
+            }
+
+            if (id.Index < s_totalController) return m_controllers[id.Index].Off();
+            ErrorHandle.LogError($"Loading controller not exists index {id.Index}");
             return null;
         }
 
-        internal BaseLoadingTypeController Get(int i)
+        internal BaseLoadingTypeController Get(LoadingId id)
         {
-            return i < s_totalController ? m_controllers[i] : null;
+            if (id.Index >= 0) return id.Index < s_totalController ? m_controllers[id.Index] : null;
+            for (var i = m_controllers.Length - 1; i >= 0; i--)
+            {
+                var controller = m_controllers[i];
+                if (controller.ID == id.Id) return controller;
+            }
+
+            return null;
         }
 
         private void LateUpdate()
