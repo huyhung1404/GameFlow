@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
+using UnityEngine;
 
 namespace GameFlow.Internal
 {
@@ -21,28 +21,28 @@ namespace GameFlow.Internal
         }
     }
 
-    [AddComponentMenu("")]
-    [RequireComponent(typeof(Canvas))]
-    [RequireComponent(typeof(GraphicRaycaster))]
-    [RequireComponent(typeof(Image))]
+    [AddComponentMenu("Game Flow/Loading Controller")]
     internal class LoadingController : MonoBehaviour
     {
         internal static LoadingController Instance { get; set; }
 
         [SerializeField] private BaseLoadingTypeController[] m_controllers;
+        [SerializeField] private ShieldType m_shieldType;
         internal static bool s_IsInitialization;
         private static int s_totalController;
-        private static bool s_transparentEnable;
-        private Image _transparent;
+        private static LoadingShield s_shieldInstance;
 
         private void Awake()
         {
             Instance = this;
             s_IsInitialization = true;
             s_totalController = m_controllers.Length;
-            _transparent = GetComponent<Image>();
-            _transparent.raycastTarget = true;
-            _transparent.enabled = s_transparentEnable;
+            s_shieldInstance = m_shieldType switch
+            {
+                ShieldType.UIImage => gameObject.AddComponent<UIImageShield>(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            s_shieldInstance.SetUp();
         }
 
         internal void SetUpShieldSortingOrder(int sortingOrder)
@@ -50,28 +50,24 @@ namespace GameFlow.Internal
             GetComponent<Canvas>().sortingOrder = sortingOrder;
         }
 
-        internal static void EnableTransparent()
+        internal static void EnableShield()
         {
-            if (s_transparentEnable) return;
-            Instance._transparent.enabled = true;
-            s_transparentEnable = true;
+            s_shieldInstance.OpenShield();
         }
 
-        internal void IsTransparentOff()
+        internal static void IsShieldOff()
         {
-            Assert.IsTrue(!s_transparentEnable);
+            Assert.IsTrue(!s_shieldInstance.IsShieldEnabled);
         }
 
-        internal void IsTransparentOn()
+        internal static void IsShieldOn()
         {
-            Assert.IsTrue(s_transparentEnable);
+            Assert.IsTrue(s_shieldInstance.IsShieldEnabled);
         }
 
-        internal static void DisableTransparent()
+        internal static void DisableShield()
         {
-            if (!s_transparentEnable) return;
-            Instance._transparent.enabled = false;
-            s_transparentEnable = false;
+            s_shieldInstance.CloseShield();
         }
 
         public void RegisterControllers(bool isAppend, params BaseLoadingTypeController[] registerControllers)

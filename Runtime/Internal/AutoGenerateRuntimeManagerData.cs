@@ -6,31 +6,34 @@ namespace GameFlow.Internal
     [Serializable]
     internal class AutoGenerateRuntimeManagerData
     {
-        public AutoGenerateCameraData[] Cameras;
+        [SerializeField] internal AutoGenerateCameraData[] Cameras;
+
+        [SerializeField] internal ShieldType ShieldType;
+        [SerializeField] internal BaseLoadingTypeController[] Loadings;
     }
 
     [Serializable]
     internal class AutoGenerateCameraData
     {
-        public bool IsMainUICamera;
-        public Camera CameraPrefab;
+        [SerializeField] internal bool IsMainUICamera;
+        [SerializeField] internal Camera CameraPrefab;
     }
 
-    public abstract class PresetCamera
+    internal abstract class PresetCamera
     {
-        public abstract void Preset(Camera camera);
+        internal abstract void Preset(Camera camera);
     }
 
-    public class NormalUICameraPreset : PresetCamera
+    internal class NormalUICameraPreset : PresetCamera
     {
-        public override void Preset(Camera camera)
+        internal override void Preset(Camera camera)
         {
         }
     }
 
-    public class BackgroundCameraPreset : PresetCamera
+    internal class BackgroundCameraPreset : PresetCamera
     {
-        public override void Preset(Camera camera)
+        internal override void Preset(Camera camera)
         {
         }
     }

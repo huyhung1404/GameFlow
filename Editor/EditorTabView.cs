@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine.UIElements;
 
 namespace GameFlow.Editor
@@ -6,8 +7,7 @@ namespace GameFlow.Editor
     [UxmlElement]
     public partial class EditorTabView : VisualElement
     {
-        [UxmlAttribute("default-tab-id")]
-        public string DefaultTabId { get; set; } = "";
+        [UxmlAttribute("default-tab-id")] public string DefaultTabId { get; set; } = "";
 #else
     public class EditorTabView : VisualElement
     {
@@ -30,7 +30,9 @@ namespace GameFlow.Editor
 
         private VisualElement _indicator;
         private string _currentTabId = "";
-        private bool _isInitialized = false;
+        private bool _isInitialized;
+
+        private string GetPrefKey() => $"GameFlow_TabView_{name ?? "Default"}_LastTabId";
 
         public EditorTabView()
         {
@@ -43,10 +45,17 @@ namespace GameFlow.Editor
         private void OnAttachToPanel(AttachToPanelEvent evt)
         {
             _indicator = this.Query<VisualElement>("", "gameflow-tabview__indicator").First();
-            
+
             EditorTab tabToActivate = null;
 
-            if (!string.IsNullOrEmpty(DefaultTabId))
+            string savedTabId = EditorPrefs.GetString(GetPrefKey(), DefaultTabId);
+
+            if (!string.IsNullOrEmpty(savedTabId))
+            {
+                tabToActivate = this.Query<EditorTab>().Where(t => t.TargetId == savedTabId).First();
+            }
+
+            if (tabToActivate == null && !string.IsNullOrEmpty(DefaultTabId))
             {
                 tabToActivate = this.Query<EditorTab>().Where(t => t.TargetId == DefaultTabId).First();
             }
@@ -58,7 +67,7 @@ namespace GameFlow.Editor
 
             if (tabToActivate != null)
             {
-                _currentTabId = ""; 
+                _currentTabId = "";
                 SelectTab(tabToActivate.TargetId, false);
             }
         }
@@ -84,7 +93,7 @@ namespace GameFlow.Editor
 
             if (tab != null)
             {
-                SelectTab(tab.TargetId, true);
+                SelectTab(tab.TargetId);
                 evt.StopPropagation();
             }
         }
@@ -94,6 +103,8 @@ namespace GameFlow.Editor
             if (string.IsNullOrEmpty(targetId) || _currentTabId == targetId) return;
 
             _currentTabId = targetId;
+
+            EditorPrefs.SetString(GetPrefKey(), _currentTabId);
 
             var allTabs = this.Query<EditorTab>().ToList();
             var allContents = this.Query<EditorTabContent>().ToList();

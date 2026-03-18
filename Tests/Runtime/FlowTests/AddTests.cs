@@ -1,4 +1,5 @@
 using System.Collections;
+using GameFlow.Internal;
 using GameFlow.Tests.Build;
 using NUnit.Framework;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace GameFlow.Tests
             var next = false;
             AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleElement>(), _ =>
             {
-                ResourcesInstance.LoadingController.IsTransparentOn();
+                LoadingController.IsShieldOn();
                 next = true;
             }).Build();
             while (!next) yield return null;
@@ -40,7 +41,7 @@ namespace GameFlow.Tests
             var next = false;
             AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleSceneElement>(), _ =>
             {
-                ResourcesInstance.LoadingController.IsTransparentOn();
+                LoadingController.IsShieldOn();
                 next = true;
             }).Build();
             while (!next) yield return null;
@@ -66,7 +67,7 @@ namespace GameFlow.Tests
             while (!next) yield return null;
             yield return null;
             ResourcesInstance.RuntimeController.CommandsIsEmpty();
-            ResourcesInstance.LoadingController.IsTransparentOff();
+            LoadingController.IsShieldOff();
         }
 
         [UnityTest]

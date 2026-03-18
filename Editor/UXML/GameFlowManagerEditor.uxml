@@ -2,7 +2,7 @@
     <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/GameFlowManagerEditor.uss?fileID=7433441132597879392&amp;guid=94ba401c7ace54244a7776fb7cda0ef7&amp;type=3#GameFlowManagerEditor"/>
     <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/EditorTabStyles.uss?fileID=7433441132597879392&amp;guid=f9cd6dd4703d8ce47a1bface279499f8&amp;type=3#EditorTabStyles"/>
     <ui:ScrollView name="manager_content" horizontal-scroller-visibility="Hidden">
-        <GameFlow.Editor.EditorTabView name="gameflow-tabview" default-tab-id="tab-2" class="gameflow-tabview">
+        <GameFlow.Editor.EditorTabView name="gameflow-tabview" default-tab-id="tab-1" class="gameflow-tabview">
             <ui:VisualElement name="gameflow-tabview__header" class="gameflow-tabview__header" style="flex-grow: 1; flex-direction: row;">
                 <GameFlow.Editor.EditorTab text="Elements" target-id="tab-1" icon-name="GUISkin On Icon" name="elements_tab"/>
                 <GameFlow.Editor.EditorTab target-id="tab-2" icon-name="d_Profiler.Memory@2x" text="Core" name="core_tab"/>

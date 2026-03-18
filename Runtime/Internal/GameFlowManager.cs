@@ -9,7 +9,7 @@ namespace GameFlow.Internal
         [SerializeField] internal int PlaneDistance = 100;
         [SerializeField] internal int LoadingShieldSortingOrder = 100;
         [SerializeField] internal Vector2 ReferenceResolution = new Vector2(1080f, 2280f);
-        [SerializeField] internal bool AutoGenerateRuntimeManager;
+        [SerializeField] internal bool AutoGenerateRuntimeManager = true;
         [SerializeField] internal AutoGenerateRuntimeManagerData AutoGenerateRuntimeManagerData;
     }
 }

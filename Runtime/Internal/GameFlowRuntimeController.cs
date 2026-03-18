@@ -94,11 +94,11 @@ namespace GameFlow.Internal
             if (!IsActive) return;
             if (!CommandHandle())
             {
-                LoadingController.EnableTransparent();
+                LoadingController.EnableShield();
                 return;
             }
 
-            LoadingController.DisableTransparent();
+            LoadingController.DisableShield();
             KeyBackHandle();
         }
 
