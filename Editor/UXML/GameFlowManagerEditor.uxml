@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/GameFlowManagerEditor.uss?fileID=7433441132597879392&amp;guid=94ba401c7ace54244a7776fb7cda0ef7&amp;type=3#GameFlowManagerEditor" />
-    <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/EditorTabStyles.uss?fileID=7433441132597879392&amp;guid=f9cd6dd4703d8ce47a1bface279499f8&amp;type=3#EditorTabStyles" />
+    <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/EditorTabStyles.uss?fileID=7433441132597879392&amp;guid=f9cd6dd4703d8ce47a1bface279499f8&amp;type=3" />
     <ui:ScrollView name="manager_content" horizontal-scroller-visibility="Hidden">
         <GameFlow.Editor.EditorTabView name="gameflow-tabview" default-tab-id="tab-2" class="gameflow-tabview">
             <ui:VisualElement name="gameflow-tabview__header" class="gameflow-tabview__header" style="flex-grow: 1; flex-direction: row;">
@@ -31,12 +31,14 @@
                 </GameFlow.Editor.EditorTabContent>
                 <GameFlow.Editor.EditorTabContent name="core_content" target-id="tab-2" />
                 <GameFlow.Editor.EditorTabContent target-id="tab-3" name="setting_content">
-                    <ui:Label text="Canvas Settings" class="title" style="margin-left: 3px;" />
-                    <ui:VisualElement style="flex-grow: 1; left: 2%; width: 98%;">
-                        <uie:IntegerField label="Plane Distance" value="0" binding-path="planeDistance" name="plane_distance" />
-                        <uie:IntegerField label="Sorting Order Offset" value="0" binding-path="sortingOrderOffset" name="sorting_order_offset" />
-                        <uie:IntegerField label="Loading Shield Sorting Order" value="42" name="loading_shield_sorting_order" binding-path="loadingShieldSortingOrder" />
-                        <uie:Vector2Field label="Reference Resolution" name="reference_resolution" binding-path="referenceResolution" />
+                    <ui:VisualElement name="settings-card" class="settings-card" style="flex-grow: 1;">
+                        <ui:VisualElement name="settings-card__header" class="settings-card__header" style="flex-grow: 1;">
+                            <ui:Label text="Canvas" class="settings-card__title" />
+                        </ui:VisualElement>
+                        <uie:Vector2Field label="Resolution" name="reference_resolution" binding-path="referenceResolution" />
+                        <ui:VisualElement name="settings-divider" class="settings-divider" style="flex-grow: 1;" />
+                        <uie:IntegerField label="Sorting Offset" value="0" binding-path="sortingOrderOffset" name="sorting_order_offset" />
+                        <uie:IntegerField label="Loading Sort" value="42" name="loading_shield_sorting_order" binding-path="loadingShieldSortingOrder" />
                     </ui:VisualElement>
                 </GameFlow.Editor.EditorTabContent>
             </ui:VisualElement>

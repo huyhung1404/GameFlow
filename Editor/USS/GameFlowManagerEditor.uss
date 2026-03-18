@@ -79,3 +79,80 @@
     left: auto;
     top: 1px;
 }
+
+.settings-card {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.settings-card__header {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.settings-card__title {
+    unity-font-style: bold;
+    font-size: 14px;
+    color: var(--unity-colors-default-text);
+}
+
+.settings-divider {
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.15);
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.settings-card .unity-base-field__label {
+    min-width: 200px;
+    padding-right: 15px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settings-card .unity-base-field > .unity-base-field__label {
+    min-width: 180px;
+    padding-right: 15px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settings-card .unity-composite-field__field > .unity-base-field__label {
+    min-width: 15px;
+    width: 15px;
+    padding-right: 2px;
+    -unity-text-align: middle-left;
+    color: rgba(255, 255, 255, 0.5);
+    padding-left: 4px;
+}
+
+.settings-card .unity-composite-field__input {
+    flex-grow: 1;
+    padding-right: 0;
+    margin-right: 0;
+}
+
+.settings-card .unity-composite-field__field {
+    flex-grow: 1;
+    flex-basis: 0;
+    padding-right: 0;
+    margin-right: 0;
+}
+
+.settings-card .unity-composite-field__field-spacer {
+    width: 0%;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    min-width: 0;
+    max-width: 0;
+}
