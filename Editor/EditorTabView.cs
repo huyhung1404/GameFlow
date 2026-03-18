@@ -5,12 +5,27 @@ namespace GameFlow.Editor
 #if UNITY_6000_0_OR_NEWER
     [UxmlElement]
     public partial class EditorTabView : VisualElement
+    {
+        [UxmlAttribute("default-tab-id")]
+        public string DefaultTabId { get; set; } = "";
 #else
     public class EditorTabView : VisualElement
-#endif
     {
-#if !UNITY_6000_0_OR_NEWER
         public new class UxmlFactory : UxmlFactory<EditorTabView, UxmlTraits> { }
+
+        public new class UxmlTraits : VisualElement.UxmlTraits
+        {
+            private UxmlStringAttributeDescription m_defaultTabId = new UxmlStringAttributeDescription { name = "default-tab-id", defaultValue = "" };
+
+            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
+            {
+                base.Init(ve, bag, cc);
+                var view = (EditorTabView)ve;
+                view.DefaultTabId = m_defaultTabId.GetValueFromBag(bag, cc);
+            }
+        }
+
+        public string DefaultTabId { get; set; } = "";
 #endif
 
         private VisualElement _indicator;
@@ -22,17 +37,29 @@ namespace GameFlow.Editor
             AddToClassList("gameflow-tabview");
             RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
             RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
-
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
         private void OnAttachToPanel(AttachToPanelEvent evt)
         {
             _indicator = this.Query<VisualElement>("", "gameflow-tabview__indicator").First();
-            var firstTab = this.Query<EditorTab>().First();
-            if (firstTab != null)
+            
+            EditorTab tabToActivate = null;
+
+            if (!string.IsNullOrEmpty(DefaultTabId))
             {
-                SelectTab(firstTab.TargetId, false);
+                tabToActivate = this.Query<EditorTab>().Where(t => t.TargetId == DefaultTabId).First();
+            }
+
+            if (tabToActivate == null)
+            {
+                tabToActivate = this.Query<EditorTab>().First();
+            }
+
+            if (tabToActivate != null)
+            {
+                _currentTabId = ""; 
+                SelectTab(tabToActivate.TargetId, false);
             }
         }
 

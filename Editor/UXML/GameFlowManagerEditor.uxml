@@ -2,10 +2,11 @@
     <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/GameFlowManagerEditor.uss?fileID=7433441132597879392&amp;guid=94ba401c7ace54244a7776fb7cda0ef7&amp;type=3#GameFlowManagerEditor" />
     <Style src="project://database/Packages/com.huyhung1404.gameflow/Editor/USS/EditorTabStyles.uss?fileID=7433441132597879392&amp;guid=f9cd6dd4703d8ce47a1bface279499f8&amp;type=3#EditorTabStyles" />
     <ui:ScrollView name="manager_content" horizontal-scroller-visibility="Hidden">
-        <GameFlow.Editor.EditorTabView name="gameflow-tabview" class="gameflow-tabview">
+        <GameFlow.Editor.EditorTabView name="gameflow-tabview" default-tab-id="tab-2" class="gameflow-tabview">
             <ui:VisualElement name="gameflow-tabview__header" class="gameflow-tabview__header" style="flex-grow: 1; flex-direction: row;">
                 <GameFlow.Editor.EditorTab text="Elements" target-id="tab-1" icon-name="GUISkin On Icon" name="elements_tab" />
-                <GameFlow.Editor.EditorTab text="Settings" target-id="tab-2" icon-name="d_Settings Icon" name="setting_tab" />
+                <GameFlow.Editor.EditorTab target-id="tab-2" icon-name="d_Profiler.Memory@2x" text="Core" name="core_tab" />
+                <GameFlow.Editor.EditorTab text="Settings" target-id="tab-3" icon-name="d_Settings Icon" name="setting_tab" />
                 <ui:VisualElement class="gameflow-tabview__indicator" style="flex-grow: 1;" />
             </ui:VisualElement>
             <ui:VisualElement name="gameflow-tabview__content-container" class="gameflow-tabview__content-container" style="flex-grow: 1;">
@@ -28,13 +29,15 @@
                         </ui:Foldout>
                     </ui:VisualElement>
                 </GameFlow.Editor.EditorTabContent>
-                <GameFlow.Editor.EditorTabContent target-id="tab-2" name="setting_content">
-                    <ui:Foldout text="Settings" value="false" style="font-size: 10px; margin-left: 13px; margin-top: 5px;">
+                <GameFlow.Editor.EditorTabContent name="core_content" target-id="tab-2" />
+                <GameFlow.Editor.EditorTabContent target-id="tab-3" name="setting_content">
+                    <ui:Label text="Canvas Settings" class="title" style="margin-left: 3px;" />
+                    <ui:VisualElement style="flex-grow: 1; left: 2%; width: 98%;">
                         <uie:IntegerField label="Plane Distance" value="0" binding-path="planeDistance" name="plane_distance" />
                         <uie:IntegerField label="Sorting Order Offset" value="0" binding-path="sortingOrderOffset" name="sorting_order_offset" />
                         <uie:IntegerField label="Loading Shield Sorting Order" value="42" name="loading_shield_sorting_order" binding-path="loadingShieldSortingOrder" />
                         <uie:Vector2Field label="Reference Resolution" name="reference_resolution" binding-path="referenceResolution" />
-                    </ui:Foldout>
+                    </ui:VisualElement>
                 </GameFlow.Editor.EditorTabContent>
             </ui:VisualElement>
         </GameFlow.Editor.EditorTabView>
