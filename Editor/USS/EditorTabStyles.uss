@@ -1,0 +1,102 @@
+.gameflow-tabview {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--unity-colors-window-background);
+    border-width: 1px;
+    border-radius: 6px;
+    margin-top: 0;
+    overflow: hidden;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+
+.gameflow-tabview__header {
+    flex-direction: row;
+    height: 28px;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0);
+    border-bottom-width: 1px;
+    border-color: rgba(0, 0, 0, 0.12);
+    border-left-color: rgba(0, 0, 0, 0.3);
+    border-right-color: rgba(0, 0, 0, 0.3);
+    border-top-color: rgba(0, 0, 0, 0.3);
+    border-bottom-color: rgba(0, 0, 0, 0.3);
+}
+
+.gameflow-tab {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding-left: 14px;
+    padding-right: 14px;
+    border-right-width: 1px;
+    border-color: rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    transition-property: background-color;
+    transition-duration: 0.1s;
+    border-left-color: rgba(0, 0, 0, 0.3);
+    border-right-color: rgba(0, 0, 0, 0.3);
+    border-top-color: rgba(0, 0, 0, 0.3);
+    border-bottom-color: rgba(0, 0, 0, 0.3);
+}
+
+.gameflow-tab:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.gameflow-tab--active {
+    background-color: var(--unity-colors-window-background);
+}
+
+.gameflow-tab__icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.gameflow-tab__label {
+    -unity-text-align: middle-center;
+    flex-shrink: 1;
+    unity-font-style: bold;
+    color: var(--unity-colors-default-text);
+}
+
+.gameflow-tabview__indicator {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background-color: var(--unity-colors-highlight-background, rgb(58, 122, 245));
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    transition-property: left, width;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-out-back;
+}
+
+.gameflow-tabview__content-container {
+    flex-grow: 1;
+    padding: 12px;
+    padding-top: 0;
+    padding-right: 1px;
+    padding-bottom: 0;
+    padding-left: 1px;
+}
+
+.gameflow-tab-content {
+    display: none;
+    opacity: 0;
+    translate: 0 15px;
+    transition-property: opacity, translate;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-out;
+    flex-grow: 1;
+}
+
+.gameflow-tab-content--visible {
+    display: flex;
+    opacity: 1;
+    translate: 0 0;
+}

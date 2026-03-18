@@ -1,0 +1,124 @@
+using UnityEngine.UIElements;
+
+namespace GameFlow.Editor
+{
+#if UNITY_6000_0_OR_NEWER
+    [UxmlElement]
+    public partial class EditorTabView : VisualElement
+#else
+    public class EditorTabView : VisualElement
+#endif
+    {
+#if !UNITY_6000_0_OR_NEWER
+        public new class UxmlFactory : UxmlFactory<EditorTabView, UxmlTraits> { }
+#endif
+
+        private VisualElement _indicator;
+        private string _currentTabId = "";
+        private bool _isInitialized = false;
+
+        public EditorTabView()
+        {
+            AddToClassList("gameflow-tabview");
+            RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
+            RegisterCallback<AttachToPanelEvent>(OnAttachToPanel);
+
+            RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        }
+
+        private void OnAttachToPanel(AttachToPanelEvent evt)
+        {
+            _indicator = this.Query<VisualElement>("", "gameflow-tabview__indicator").First();
+            var firstTab = this.Query<EditorTab>().First();
+            if (firstTab != null)
+            {
+                SelectTab(firstTab.TargetId, false);
+            }
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (_isInitialized || _indicator == null || string.IsNullOrEmpty(_currentTabId)) return;
+
+            var activeTab = this.Query<EditorTab>().Where(t => t.TargetId == _currentTabId).First();
+            if (activeTab != null && activeTab.layout.width > 0)
+            {
+                _isInitialized = true;
+                UpdateIndicatorPosition(activeTab, false);
+            }
+        }
+
+        private void OnPointerDown(PointerDownEvent evt)
+        {
+            if (evt.target is not VisualElement clickedElement) return;
+
+            var tab = clickedElement.GetFirstAncestorOfType<EditorTab>();
+            if (tab == null && clickedElement is EditorTab directTab) tab = directTab;
+
+            if (tab != null)
+            {
+                SelectTab(tab.TargetId, true);
+                evt.StopPropagation();
+            }
+        }
+
+        public void SelectTab(string targetId, bool animate = true)
+        {
+            if (string.IsNullOrEmpty(targetId) || _currentTabId == targetId) return;
+
+            _currentTabId = targetId;
+
+            var allTabs = this.Query<EditorTab>().ToList();
+            var allContents = this.Query<EditorTabContent>().ToList();
+            EditorTab activeTabElement = null;
+
+            foreach (var tab in allTabs)
+            {
+                if (tab.TargetId == targetId)
+                {
+                    tab.AddToClassList("gameflow-tab--active");
+                    activeTabElement = tab;
+                }
+                else
+                {
+                    tab.RemoveFromClassList("gameflow-tab--active");
+                }
+            }
+
+            foreach (var content in allContents)
+            {
+                if (content.TargetId == targetId)
+                    content.AddToClassList("gameflow-tab-content--visible");
+                else
+                    content.RemoveFromClassList("gameflow-tab-content--visible");
+            }
+
+            if (_isInitialized && activeTabElement != null)
+            {
+                UpdateIndicatorPosition(activeTabElement, animate);
+            }
+        }
+
+        private void UpdateIndicatorPosition(EditorTab activeTabElement, bool animate)
+        {
+            if (_indicator == null) return;
+
+            _indicator.schedule.Execute(() =>
+            {
+                float targetLeft = activeTabElement.layout.x;
+                float targetWidth = activeTabElement.layout.width;
+
+                if (animate)
+                {
+                    _indicator.experimental.animation.Start(_indicator.resolvedStyle.left, targetLeft, 200, (ve, val) => ve.style.left = val);
+                    _indicator.experimental.animation.Start(_indicator.resolvedStyle.width, targetWidth, 200, (ve, val) => ve.style.width = val);
+                }
+                else
+                {
+                    _indicator.style.left = targetLeft;
+                    _indicator.style.width = targetWidth;
+                }
+            });
+        }
+    }
+}
