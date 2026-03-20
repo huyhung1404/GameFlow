@@ -35,14 +35,24 @@ namespace GameFlow.Internal
         private void Awake()
         {
             Instance = this;
-            s_IsInitialization = true;
+            if (m_controllers == null) return;
+            SetUp(m_shieldType, m_controllers);
+        }
+
+        public void SetUp(ShieldType shieldType, BaseLoadingTypeController[] controllers)
+        {
+            m_shieldType = shieldType;
+            m_controllers = controllers;
+
             s_totalController = m_controllers.Length;
             s_shieldInstance = m_shieldType switch
             {
-                ShieldType.UIImage => gameObject.AddComponent<UIImageShield>(),
+                ShieldType.CanvasOverlay => gameObject.AddComponent<CanvasOverlayShield>(),
+                ShieldType.CanvasCamera => gameObject.AddComponent<CanvasCameraShield>(),
                 _ => throw new ArgumentOutOfRangeException()
             };
             s_shieldInstance.SetUp();
+            s_IsInitialization = true;
         }
 
         internal void SetUpShieldSortingOrder(int sortingOrder)

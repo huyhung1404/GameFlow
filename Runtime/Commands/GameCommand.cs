@@ -143,7 +143,7 @@ namespace GameFlow
 
         public static Vector2 CanvasReferenceResolution()
         {
-            return GameFlowRuntimeController.Manager().ReferenceResolution;
+            return InstanceManager.Manager.ReferenceResolution;
         }
     }
 

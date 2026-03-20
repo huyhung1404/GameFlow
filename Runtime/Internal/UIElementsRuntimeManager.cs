@@ -28,7 +28,7 @@ namespace GameFlow.Internal
         {
             var elementCount = ElementsRuntime.Count;
             if (elementCount == 0) return 0;
-            return ElementsRuntime[elementCount - 1].CurrentSortingOrder + GameFlowRuntimeController.Manager().SortingOrderOffset;
+            return ElementsRuntime[elementCount - 1].CurrentSortingOrder + InstanceManager.Manager.SortingOrderOffset;
         }
 
         internal static UIFlowElement GetElement(Type type)

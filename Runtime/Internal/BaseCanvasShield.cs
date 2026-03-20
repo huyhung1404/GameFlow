@@ -7,25 +7,28 @@ namespace GameFlow.Internal
     [RequireComponent(typeof(GraphicRaycaster))]
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(CanvasScaler))]
-    internal class UIImageShield : LoadingShield
+    internal abstract class BaseCanvasShield : LoadingShield
     {
         private Image _transparent;
 
-        public override void SetUp()
+        internal override void SetUp()
         {
             _transparent = GetComponent<Image>();
             _transparent.raycastTarget = true;
             _transparent.enabled = IsShieldEnabled;
+            SetUpCanvas();
         }
 
-        public override void OpenShield()
+        protected abstract void SetUpCanvas();
+
+        internal override void OpenShield()
         {
             if (IsShieldEnabled) return;
             _transparent.enabled = true;
             IsShieldEnabled = true;
         }
 
-        public override void CloseShield()
+        internal override void CloseShield()
         {
             if (!IsShieldEnabled) return;
             _transparent.enabled = false;

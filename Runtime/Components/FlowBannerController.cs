@@ -33,7 +33,7 @@ namespace GameFlow.Component
             var height = s_isShowBanner ? s_bannerHeight : 0;
             if (CurrentBannerHeight == height) return;
             CurrentBannerHeight = height;
-            GameFlowRuntimeController.s_UpdateBanner = true;
+            GameFlowRuntimeController.UpdateBanner = true;
         }
 
         public static float Dp2Px(float dp) => dp * (Screen.dpi / 160);

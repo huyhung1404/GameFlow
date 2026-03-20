@@ -55,7 +55,8 @@ namespace GameFlow.Component
         {
             var sortingOrder = m_element.CurrentSortingOrder;
             m_canvas.sortingOrder = sortingOrder + m_offsetCanvasGroup;
-            m_canvas.planeDistance = GameFlowRuntimeController.Manager().PlaneDistance;
+            m_canvas.planeDistance = InstanceManager.Manager.PlaneDistance;
+            m_canvas.vertexColorAlwaysGammaSpace = InstanceManager.Manager.VertexColorAlwaysGammaSpace;
             if (_hasSafeView) m_safeView.ApplySafeArea(m_safeAreaIgnore);
             OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }
@@ -68,7 +69,8 @@ namespace GameFlow.Component
 
         protected virtual void HandleCanvasScaler()
         {
-            _canvasScale.referenceResolution = GameFlowRuntimeController.Manager().ReferenceResolution;
+            _canvasScale.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            _canvasScale.referenceResolution = InstanceManager.Manager.ReferenceResolution;
             _canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < _canvasScale.referenceResolution.x / _canvasScale.referenceResolution.y ? 0 : 1;
         }
 

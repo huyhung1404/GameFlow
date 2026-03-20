@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GameFlow.Component;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace GameFlow.Internal
 {
@@ -12,43 +9,48 @@ namespace GameFlow.Internal
     internal class GameFlowRuntimeController : MonoBehaviour
     {
         private static readonly Queue<Command> s_commands = new Queue<Command>(5);
+        internal static OnBannerUpdate OnBannerUpdate;
+        public static bool UpdateBanner { get; set; }
+        private static bool s_isLock;
+        private static bool s_disableKeyBack;
+
         [SerializeField] private bool m_dontDestroyOnLoad = true;
         [SerializeField] private Transform m_elementContainer;
         [SerializeField] private Transform m_uiElementContainer;
-        internal static OnBannerUpdate OnBannerUpdate;
-        internal static bool s_UpdateBanner;
-        private static GameFlowRuntimeController s_Instance;
-        private static bool s_IsLock;
-        private static bool s_DisableKeyBack;
-        private GameFlowManager _manager;
+
         private Command _current;
         internal bool IsActive { get; private set; }
 
         internal static void SetLock(bool value)
         {
-            s_IsLock = value;
+            s_isLock = value;
         }
 
         internal static void SetDisableKeyBack(bool value)
         {
-            s_DisableKeyBack = value;
+            s_disableKeyBack = value;
         }
 
         internal static ElementCollection GetElements()
         {
-            return s_Instance._manager.ElementCollection;
+            return InstanceManager.Manager.ElementCollection;
+        }
+
+        internal void SetContainer(Transform elementContainer, Transform uiElementContainer)
+        {
+            m_elementContainer = elementContainer;
+            m_uiElementContainer = uiElementContainer;
         }
 
         internal static Transform PrefabElementContainer(bool isUI)
         {
-            return isUI ? s_Instance.m_uiElementContainer : s_Instance.m_elementContainer;
+            var instance = InstanceManager.Instance;
+            return isUI ? instance.m_uiElementContainer : instance.m_elementContainer;
         }
-
-        internal static GameFlowManager Manager() => s_Instance._manager;
 
         private void Awake()
         {
-            if (s_Instance != null)
+            if (InstanceManager.Instance != null && InstanceManager.Instance != this)
             {
                 Destroy(gameObject);
                 return;
@@ -59,39 +61,19 @@ namespace GameFlow.Internal
 
         private void Initialization()
         {
-            s_Instance = this;
-            if (m_dontDestroyOnLoad) DontDestroyOnLoad(this);
-            LoadManager(3);
-        }
-
-        private void LoadManager(int timeTryGetManager)
-        {
-            if (timeTryGetManager <= 0) return;
-            Addressables.LoadAssetAsync<GameFlowManager>(PackagePath.ManagerPath()).Completed += operationHandle =>
+            InstanceManager.SetInstance(this);
+            if (m_dontDestroyOnLoad) DontDestroyOnLoad(gameObject);
+            InstanceManager.ConfirmIsInitialized(() =>
             {
-                if (operationHandle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    _manager = operationHandle.Result;
-                    LoadingController.Instance?.SetUpShieldSortingOrder(_manager.LoadingShieldSortingOrder);
-                    IsActive = true;
-                    return;
-                }
-
-                ErrorHandle.LogError($"[{timeTryGetManager}] Load Game Flow Manager fail at path {PackagePath.ManagerPath()}");
-                Addressables.Release(operationHandle);
-                StartCoroutine(IELoadManager(timeTryGetManager - 1));
-            };
-        }
-
-        private IEnumerator IELoadManager(int timeTryGetManager)
-        {
-            yield return new WaitForSeconds(1);
-            LoadManager(timeTryGetManager);
+                LoadingController.Instance?.SetUpShieldSortingOrder(InstanceManager.Manager.LoadingShieldSortingOrder);
+                IsActive = true;
+            });
         }
 
         private void Update()
         {
             if (!IsActive) return;
+
             if (!CommandHandle())
             {
                 LoadingController.EnableShield();
@@ -104,8 +86,8 @@ namespace GameFlow.Internal
 
         private void LateUpdate()
         {
-            if (!s_UpdateBanner) return;
-            s_UpdateBanner = false;
+            if (!UpdateBanner) return;
+            UpdateBanner = false;
             OnBannerUpdate?.Invoke(FlowBannerController.CurrentBannerHeight);
         }
 
@@ -114,32 +96,26 @@ namespace GameFlow.Internal
             s_commands.Enqueue(command);
         }
 
-        /// <summary>
-        /// Call before release old command
-        /// </summary>
-        /// <param name="command"></param>
         internal static void OverriderCommand(CloneCommand command)
         {
-            s_Instance._current = command;
-            s_Instance._current.PreUpdate();
+            var instance = InstanceManager.Instance;
+            instance._current = command;
+            instance._current.PreUpdate();
         }
 
-        /// <summary>
-        /// Handle command
-        /// </summary>
-        /// <returns>True is can handle key back action</returns>
         private bool CommandHandle()
         {
             if (_current != null)
             {
                 _current.Update();
                 if (!_current.IsRelease) return false;
+
                 _current.OnRelease();
                 _current = null;
             }
 
-            if (s_IsLock) return true;
-            if (s_commands.Count == 0) return true;
+            if (s_isLock || s_commands.Count == 0) return true;
+
             _current = s_commands.Dequeue();
             _current.PreUpdate();
             return false;
@@ -147,7 +123,7 @@ namespace GameFlow.Internal
 
         internal void CommandsIsEmpty()
         {
-            Assert.IsNotNull(s_Instance);
+            Assert.IsNotNull(InstanceManager.Instance);
             Assert.IsTrue(s_commands.Count == 0 && _current == null, CommandCountErrorMessage());
             return;
 
@@ -162,21 +138,19 @@ namespace GameFlow.Internal
         private static void KeyBackHandle()
         {
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
-            if (s_DisableKeyBack) return;
-            if (s_IsLock) return;
-            if (LoadingController.IsShow()) return;
+            if (s_disableKeyBack || s_isLock || LoadingController.IsShow()) return;
+
             UIElementsRuntimeManager.OnKeyBack();
         }
 
         private void OnDestroy()
         {
-            if (s_Instance != null) IsActive = false;
-            StopAllCoroutines();
+            if (InstanceManager.Instance == this) IsActive = false;
         }
 
         internal static Queue<Command> GetInfo(out Command currentCommand)
         {
-            currentCommand = s_Instance?._current;
+            currentCommand = InstanceManager.Instance?._current;
             return s_commands;
         }
     }

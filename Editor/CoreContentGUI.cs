@@ -120,10 +120,9 @@ namespace GameFlow.Editor
 
                 var hasCamera = camProp.objectReferenceValue != null;
                 EditorGUI.BeginDisabledGroup(!hasCamera);
-                if (GUILayout.Button(new GUIContent("Edit", "Toggle Camera Properties"), EditorStyles.miniButton, GUILayout.Width(40)))
-                {
-                    elementProp.isExpanded = !elementProp.isExpanded;
-                }
+                
+                elementProp.isExpanded = GUILayout.Toggle(elementProp.isExpanded, new GUIContent("Edit", "Toggle Controller Properties"), EditorStyles.miniButton,
+                    GUILayout.Width(40));
 
                 EditorGUI.EndDisabledGroup();
 
@@ -284,8 +283,7 @@ namespace GameFlow.Editor
 
             foreach (var type in presetTypes)
             {
-                var cleanName = type.Name.EndsWith("Preset") ? type.Name.Substring(0, type.Name.Length - 6) : type.Name;
-                cleanName = Regex.Replace(cleanName, "([a-z])([A-Z])", "$1 $2");
+                var cleanName = Regex.Replace(type.Name, "([a-z])([A-Z])", "$1 $2");
 
                 menu.AddItem(new GUIContent(cleanName), false, () =>
                 {
