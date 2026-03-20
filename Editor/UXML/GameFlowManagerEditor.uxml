@@ -39,6 +39,7 @@
                         <ui:VisualElement name="settings-divider" class="settings-divider" style="flex-grow: 1;"/>
                         <uie:IntegerField label="Plane Distance" value="0" binding-path="PlaneDistance" name="plane_distance"/>
                         <uie:IntegerField label="Sorting Offset" value="0" binding-path="SortingOrderOffset" name="sorting_order_offset"/>
+                        <ui:Toggle label="Vertex Color Gamma Space" name="vertex_color_always_gamma_space" binding-path="VertexColorAlwaysGammaSpace"/>
                         <uie:IntegerField label="Loading Sort" value="42" name="loading_shield_sorting_order" binding-path="LoadingShieldSortingOrder"/>
                     </ui:VisualElement>
                 </GameFlow.Editor.EditorTabContent>

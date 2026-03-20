@@ -73,6 +73,7 @@ namespace GameFlow.Editor
             _root.Q<IntegerField>("plane_distance").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.PlaneDistance)));
             _root.Q<IntegerField>("sorting_order_offset").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.SortingOrderOffset)));
             _root.Q<IntegerField>("loading_shield_sorting_order").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.LoadingShieldSortingOrder)));
+            _root.Q<Toggle>("vertex_color_always_gamma_space").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.VertexColorAlwaysGammaSpace)));
             _root.Q<Vector2Field>("reference_resolution").BindProperty(_serializedObject.FindProperty(nameof(GameFlowManager.ReferenceResolution)));
             _searchField.RegisterValueChangedCallback(_ => UpdateView());
             CoreContentUI.RegisterCoreContent(_root.Q<VisualElement>("core_content"),
