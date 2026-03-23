@@ -52,16 +52,32 @@ namespace GameFlow.Internal
         private static async Task LoadManagerAsync(int maxRetries)
         {
             s_isLoading = true;
+
+            var checkHandle = Addressables.LoadResourceLocationsAsync(PackagePath.ManagerPath());
+            await checkHandle.Task;
+
+            if (checkHandle.Status != AsyncOperationStatus.Succeeded || checkHandle.Result.Count == 0)
+            {
+                Addressables.Release(checkHandle);
+                s_isLoading = false;
+
+                s_onManagerInitialized?.Invoke();
+                s_onManagerInitialized = null;
+                return;
+            }
+
+            Addressables.Release(checkHandle);
+
             var currentTry = 0;
 
             while (currentTry < maxRetries)
             {
-                var operationHandle = Addressables.LoadAssetAsync<GameFlowManager>(PackagePath.ManagerPath());
-                await operationHandle.Task;
+                var loadHandle = Addressables.LoadAssetAsync<GameFlowManager>(PackagePath.ManagerPath());
+                await loadHandle.Task;
 
-                if (operationHandle.Status == AsyncOperationStatus.Succeeded)
+                if (loadHandle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    Manager = operationHandle.Result;
+                    Manager = loadHandle.Result;
                     s_isLoading = false;
 
                     if (Manager.AutoGenerateRuntimeManager && Instance == null)
@@ -76,7 +92,7 @@ namespace GameFlow.Internal
 
                 currentTry++;
                 ErrorHandle.LogError($"[{currentTry}/{maxRetries}] Load Game Flow Manager fail at path {PackagePath.ManagerPath()}");
-                Addressables.Release(operationHandle);
+                Addressables.Release(loadHandle);
 
                 if (currentTry < maxRetries)
                 {
@@ -86,6 +102,9 @@ namespace GameFlow.Internal
 
             ErrorHandle.LogError($"Failed to load GameFlowManager after {maxRetries} attempts.");
             s_isLoading = false;
+
+            s_onManagerInitialized?.Invoke();
+            s_onManagerInitialized = null;
         }
 
         private static void InitEnvironment()
