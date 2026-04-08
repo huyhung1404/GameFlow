@@ -1,5 +1,4 @@
 using System.Collections;
-using GameFlow.Internal;
 using GameFlow.Tests.Build;
 using NUnit.Framework;
 using UnityEngine;
@@ -23,11 +22,11 @@ namespace GameFlow.Tests
             var next = false;
             AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleElement>(), _ =>
             {
-                LoadingController.IsShieldOn();
+                ResourcesInstance.LoadingController.IsShieldOn();
                 next = true;
             }).Build();
             while (!next) yield return null;
-            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            ResourcesInstance.RuntimeController.AssertCommandsEmpty();
             Debug.Log(CallbackHistory.Current.ToString());
             CallbackHistory.HistoryCountEquals(1);
             CallbackHistory.RecordCountEquals(1);
@@ -41,12 +40,12 @@ namespace GameFlow.Tests
             var next = false;
             AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleSceneElement>(), _ =>
             {
-                LoadingController.IsShieldOn();
+                ResourcesInstance.LoadingController.IsShieldOn();
                 next = true;
             }).Build();
             while (!next) yield return null;
             yield return null;
-            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            ResourcesInstance.RuntimeController.AssertCommandsEmpty();
             Debug.Log(CallbackHistory.Current.ToString());
             CallbackHistory.HistoryCountEquals(1);
             CallbackHistory.RecordCountEquals(1);
@@ -66,8 +65,8 @@ namespace GameFlow.Tests
             AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___NoReference>(), _ => next = true).Build();
             while (!next) yield return null;
             yield return null;
-            ResourcesInstance.RuntimeController.CommandsIsEmpty();
-            LoadingController.IsShieldOff();
+            ResourcesInstance.RuntimeController.AssertCommandsEmpty();
+            ResourcesInstance.LoadingController.IsShieldOff();
         }
 
         [UnityTest]
@@ -78,7 +77,7 @@ namespace GameFlow.Tests
             AddCommandBuilder.OnCompleted(GameCommand.Add<TestScript___SimpleElement>(), _ => { next = true; }).Build();
             while (!next) yield return null;
             yield return null;
-            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            ResourcesInstance.RuntimeController.AssertCommandsEmpty();
             Debug.Log(CallbackHistory.Current.ToString());
             CallbackHistory.TotalExecuteHistory<CallbackHistory.OnActiveRecord>(2);
             CallbackHistory.TotalExecuteHistory<CallbackHistory.OnReleaseRecord>(1);

@@ -13,10 +13,10 @@ namespace GameFlow
 
         internal override void PreUpdate()
         {
-            BaseElement = ElementsRuntimeManager.GetElement(_elementType);
+            BaseElement = Context.ElementsRuntime.GetElement(_elementType);
             if (BaseElement) return;
             ErrorHandle.LogWarning($"Element type {_elementType.Name} is not exists in pool");
-            OnLoadResult(false);
+            OnReleaseResult(false);
             _isExecute = true;
         }
 
@@ -35,16 +35,16 @@ namespace GameFlow
         {
             FlowObservable.Event(_elementType).RaiseOnRelease(false);
             BaseElement.RuntimeInstance.SetActive(false);
-            OnLoadResult(true);
+            OnReleaseResult(true);
         }
 
-        protected override void OnLoadResult(bool canRelease)
+        protected override void OnReleaseResult(bool canRelease)
         {
             OnCompleted?.Invoke(canRelease);
             if (canRelease)
             {
                 _callbackOnRelease = true;
-                ElementsRuntimeManager.RemoveElement(BaseElement);
+                Context.ElementsRuntime.RemoveElement(BaseElement);
             }
 
             Release();

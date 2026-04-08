@@ -220,7 +220,9 @@ namespace GameFlow.Tests.Build
         {
             var instance = (GameFlowElement)ScriptableObject.CreateInstance(type);
             instance.IncludeInBuild = true;
+#if UNITY_EDITOR
             s_manager.ElementCollection.GenerateElement(instance);
+#endif
             if (!Directory.Exists(PackagePath.AssetsScriptableObjectFolderPath()))
             {
                 Directory.CreateDirectory(PackagePath.AssetsScriptableObjectFolderPath());

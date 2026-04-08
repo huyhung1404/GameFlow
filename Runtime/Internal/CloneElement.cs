@@ -18,6 +18,6 @@ namespace GameFlow.Internal
             }
         }
 
-        internal abstract void ActiveElement();
+        internal abstract void ActiveElement(GameFlowContext context);
     }
 }

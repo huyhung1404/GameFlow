@@ -24,7 +24,7 @@ namespace GameFlow
 
         internal override void PreUpdate()
         {
-            var collection = GameFlowRuntimeController.GetElements();
+            var collection = Context.RuntimeController.GetElements();
             if (collection.TryGetElement(_elementType, out var element))
             {
                 _clone = element is UIFlowElement uiFlow ? new UICloneElement(uiFlow) : new CloneFlowElement(element);
@@ -68,21 +68,24 @@ namespace GameFlow
 
         private void Loading()
         {
-            BaseLoadingTypeController loading = null;
-            if (_baseCommand.LoadingId.HasValue) loading = LoadingController.Instance.LoadingOn(_baseCommand.LoadingId.Value);
-            if (ReferenceEquals(loading, null))
+            var loading = Context.Loading;
+            BaseLoadingTypeController loadingController = null;
+            if (_baseCommand.LoadingId.HasValue && loading != null)
+                loadingController = loading.LoadingOn(_baseCommand.LoadingId.Value);
+            if (ReferenceEquals(loadingController, null))
             {
                 HandleReferencePrefab();
                 return;
             }
 
             _isLoadingOn = true;
-            loading.OnCompleted(HandleReferencePrefab);
+            loadingController.OnCompleted(HandleReferencePrefab);
         }
 
         private void HandleReferencePrefab()
         {
-            _clone.CloneElementInstance().Reference.InstantiateAsync(GameFlowRuntimeController.PrefabElementContainer(_baseCommand is AddUICommand)).Completed += handle =>
+            var container = Context.RuntimeController.PrefabElementContainer(_baseCommand is AddUICommand);
+            _clone.CloneElementInstance().Reference.InstantiateAsync(container).Completed += handle =>
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
@@ -105,7 +108,7 @@ namespace GameFlow
 
             _clone.CloneElementInstance().RuntimeInstance = handle;
             _clone.ReplaceElement();
-            _clone.ActiveElement();
+            _clone.ActiveElement(Context);
             _callbackOnRelease = true;
             Release();
         }
@@ -113,7 +116,8 @@ namespace GameFlow
         protected void OnLoadResult(GameObject result)
         {
             _baseCommand.OnCompleted?.Invoke(result);
-            if (_baseCommand.LoadingId.HasValue && _isLoadingOn) LoadingController.Instance.LoadingOff(_baseCommand.LoadingId.Value);
+            if (_baseCommand.LoadingId.HasValue && _isLoadingOn && Context.Loading != null)
+                Context.Loading.LoadingOff(_baseCommand.LoadingId.Value);
             Release();
         }
 
@@ -141,7 +145,8 @@ namespace GameFlow
 
         internal void BuildClone()
         {
-            GameFlowRuntimeController.OverriderCommand(this);
+            Context = _baseCommand.Context;
+            Context.RuntimeController.OverrideCurrentCommand(this);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections;
-using GameFlow.Component;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +8,7 @@ namespace GameFlow.Internal
     {
         protected override void SetUpCanvas()
         {
-            var manager = InstanceManager.Manager;
+            var manager = GameFlowContext.Current.Manager;
             var canvas = GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.sortingOrder = manager.LoadingShieldSortingOrder;
@@ -24,8 +23,8 @@ namespace GameFlow.Internal
 
         private static IEnumerator IELoadCamera(Canvas canvas)
         {
-            while (FlowUICamera.Instance == null) yield return null;
-            canvas.worldCamera = FlowUICamera.Instance;
+            while (GameFlowContext.Current?.UICamera == null) yield return null;
+            canvas.worldCamera = GameFlowContext.Current.UICamera;
         }
     }
 }

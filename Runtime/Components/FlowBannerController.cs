@@ -9,12 +9,30 @@ namespace GameFlow.Component
     {
         public static event OnBannerUpdate OnBannerUpdate
         {
-            add => GameFlowRuntimeController.OnBannerUpdate += value; 
-            remove => GameFlowRuntimeController.OnBannerUpdate -= value;
+            add
+            {
+                var controller = GameFlowContext.Current?.RuntimeController;
+                if (controller != null) controller.OnBannerUpdateEvent += value;
+            }
+            remove
+            {
+                var controller = GameFlowContext.Current?.RuntimeController;
+                if (controller != null) controller.OnBannerUpdateEvent -= value;
+            }
         }
         public static int CurrentBannerHeight { get; private set; }
         private static bool s_isShowBanner;
         private static int s_bannerHeight;
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
+        {
+            CurrentBannerHeight = 0;
+            s_isShowBanner = false;
+            s_bannerHeight = 0;
+        }
+#endif
 
         public static void UpdateBannerStatus(bool isShow)
         {
@@ -33,7 +51,8 @@ namespace GameFlow.Component
             var height = s_isShowBanner ? s_bannerHeight : 0;
             if (CurrentBannerHeight == height) return;
             CurrentBannerHeight = height;
-            GameFlowRuntimeController.UpdateBanner = true;
+            var controller = GameFlowContext.Current?.RuntimeController;
+            if (controller != null) controller.NeedUpdateBanner = true;
         }
 
         public static float Dp2Px(float dp) => dp * (Screen.dpi / 160);

@@ -1,40 +1,23 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameFlow.Internal
 {
-    internal struct LoadingId
-    {
-        public readonly string Id;
-        public readonly int Index;
-
-        internal LoadingId(string id)
-        {
-            Id = id;
-            Index = -1;
-        }
-
-        internal LoadingId(int index)
-        {
-            Id = null;
-            Index = index;
-        }
-    }
-
     [AddComponentMenu("Game Flow/Loading Controller")]
     internal class LoadingController : MonoBehaviour
     {
-        internal static LoadingController Instance { get; set; }
-
         [SerializeField] private BaseLoadingTypeController[] m_controllers;
         [SerializeField] private ShieldType m_shieldType;
-        internal static bool s_IsInitialization;
-        private static int s_totalController;
-        private static LoadingShield s_shieldInstance;
+        private int _totalController;
+        private LoadingShield _shieldInstance;
 
         private void Awake()
         {
-            Instance = this;
+            var context = GameFlowContext.Current;
+            if (context != null)
+                context.SetLoadingController(this);
+            else
+                InstanceManager.SetInstance(this);
+
             if (m_controllers == null) return;
             SetUp(m_shieldType, m_controllers);
         }
@@ -44,15 +27,22 @@ namespace GameFlow.Internal
             m_shieldType = shieldType;
             m_controllers = controllers;
 
-            s_totalController = m_controllers.Length;
-            s_shieldInstance = m_shieldType switch
+            _totalController = m_controllers.Length;
+            _shieldInstance = m_shieldType switch
             {
                 ShieldType.CanvasOverlay => gameObject.AddComponent<CanvasOverlayShield>(),
                 ShieldType.CanvasCamera => gameObject.AddComponent<CanvasCameraShield>(),
-                _ => throw new ArgumentOutOfRangeException()
+                _ => FallbackShield()
             };
-            s_shieldInstance.SetUp();
-            s_IsInitialization = true;
+            
+            _shieldInstance.SetUp();
+            GameFlowContext.Current?.SetLoadingController(this);
+        }
+
+        private LoadingShield FallbackShield()
+        {
+            ErrorHandle.LogError($"Unknown ShieldType '{m_shieldType}', falling back to CanvasOverlay.");
+            return gameObject.AddComponent<CanvasOverlayShield>();
         }
 
         internal void SetUpShieldSortingOrder(int sortingOrder)
@@ -60,24 +50,24 @@ namespace GameFlow.Internal
             GetComponent<Canvas>().sortingOrder = sortingOrder;
         }
 
-        internal static void EnableShield()
+        internal void EnableShield()
         {
-            s_shieldInstance.OpenShield();
+            _shieldInstance?.OpenShield();
         }
 
-        internal static void IsShieldOff()
+        internal void IsShieldOff()
         {
-            Assert.IsTrue(!s_shieldInstance.IsShieldEnabled);
+            Assert.IsTrue(_shieldInstance == null || !_shieldInstance.IsShieldEnabled);
         }
 
-        internal static void IsShieldOn()
+        internal void IsShieldOn()
         {
-            Assert.IsTrue(s_shieldInstance.IsShieldEnabled);
+            Assert.IsTrue(_shieldInstance != null && _shieldInstance.IsShieldEnabled);
         }
 
-        internal static void DisableShield()
+        internal void DisableShield()
         {
-            s_shieldInstance.CloseShield();
+            _shieldInstance?.CloseShield();
         }
 
         public void RegisterControllers(bool isAppend, params BaseLoadingTypeController[] registerControllers)
@@ -85,22 +75,22 @@ namespace GameFlow.Internal
             if (!isAppend)
             {
                 m_controllers = registerControllers;
-                s_totalController = m_controllers.Length;
+                _totalController = m_controllers.Length;
                 return;
             }
 
-            var mergedArray = new BaseLoadingTypeController[s_totalController + registerControllers.Length];
+            var mergedArray = new BaseLoadingTypeController[_totalController + registerControllers.Length];
             m_controllers.CopyTo(mergedArray, 0);
-            registerControllers.CopyTo(mergedArray, s_totalController);
+            registerControllers.CopyTo(mergedArray, _totalController);
             m_controllers = mergedArray;
-            s_totalController = m_controllers.Length;
+            _totalController = m_controllers.Length;
         }
 
-        internal static bool IsShow()
+        internal bool IsShow()
         {
-            for (var i = 0; i < s_totalController; i++)
+            for (var i = 0; i < _totalController; i++)
             {
-                if (Instance.m_controllers[i].IsShow) return true;
+                if (m_controllers[i].IsShow) return true;
             }
 
             return false;
@@ -119,7 +109,7 @@ namespace GameFlow.Internal
                 return null;
             }
 
-            if (id.Index < s_totalController) return m_controllers[id.Index].On();
+            if (id.Index < _totalController) return m_controllers[id.Index].On();
             ErrorHandle.LogError($"Loading controller not exists index {id.Index}");
             return null;
         }
@@ -137,14 +127,14 @@ namespace GameFlow.Internal
                 return null;
             }
 
-            if (id.Index < s_totalController) return m_controllers[id.Index].Off();
+            if (id.Index < _totalController) return m_controllers[id.Index].Off();
             ErrorHandle.LogError($"Loading controller not exists index {id.Index}");
             return null;
         }
 
         internal BaseLoadingTypeController Get(LoadingId id)
         {
-            if (id.Index >= 0) return id.Index < s_totalController ? m_controllers[id.Index] : null;
+            if (id.Index >= 0) return id.Index < _totalController ? m_controllers[id.Index] : null;
             for (var i = m_controllers.Length - 1; i >= 0; i--)
             {
                 var controller = m_controllers[i];
@@ -156,7 +146,7 @@ namespace GameFlow.Internal
 
         private void LateUpdate()
         {
-            for (var i = 0; i < s_totalController; i++)
+            for (var i = 0; i < _totalController; i++)
             {
                 var typeController = m_controllers[i];
                 if (typeController.IsShow == typeController.IsEnable) continue;

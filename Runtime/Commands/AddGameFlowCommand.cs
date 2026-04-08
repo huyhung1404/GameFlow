@@ -23,7 +23,7 @@ namespace GameFlow
         protected override void ActiveElement()
         {
             BaseElement.RuntimeInstance.SetActive(true);
-            ElementsRuntimeManager.AddElement(BaseElement);
+            Context.ElementsRuntime.AddElement(BaseElement);
             _callbackOnRelease = true;
             Release();
         }

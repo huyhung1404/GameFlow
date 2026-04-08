@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -7,20 +8,57 @@ namespace GameFlow
     [Serializable]
     internal class ElementCollection
     {
+        private const int k_lookupCacheThreshold = 150;
         [SerializeField] private GameFlowElement[] m_elements;
+        private Dictionary<Type, GameFlowElement> _lookupCache;
+
+        private void InvalidateLookupCache()
+        {
+            _lookupCache = null;
+        }
+
+        private void EnsureLookupCache()
+        {
+            if (_lookupCache != null) return;
+            if (m_elements == null || m_elements.Length <= k_lookupCacheThreshold) return;
+
+            _lookupCache = new Dictionary<Type, GameFlowElement>();
+            foreach (var element in m_elements)
+            {
+                if (ReferenceEquals(element, null)) continue;
+                var t = element.ElementType;
+                if (_lookupCache.ContainsKey(t)) continue;
+                _lookupCache[t] = element;
+            }
+        }
 
         internal GameFlowElement GetIndex(int index)
         {
-            return index >= m_elements.Length ? null : m_elements[index];
+            if (index < 0 || index >= m_elements.Length) return null;
+            return m_elements[index];
         }
 
         internal GameFlowElement GetElement(Type type)
         {
+            if (m_elements.Length > k_lookupCacheThreshold)
+            {
+                EnsureLookupCache();
+                if (_lookupCache != null && _lookupCache.TryGetValue(type, out var cached))
+                {
+#if !UNITY_EDITOR
+                    if (!cached.IncludeInBuild) return null;
+#endif
+                    return cached;
+                }
+
+                return null;
+            }
+
             var elementCount = m_elements.Length;
             for (var i = 0; i < elementCount; i++)
             {
                 var element = m_elements[i];
-                if (type != element.ElementType) continue;
+                if (ReferenceEquals(element, null) || type != element.ElementType) continue;
 #if !UNITY_EDITOR
                 if (!element.IncludeInBuild) return null;
 #endif
@@ -35,6 +73,8 @@ namespace GameFlow
             element = GetElement(type);
             return !ReferenceEquals(element, null);
         }
+
+#if UNITY_EDITOR
 
         internal void GenerateElement(GameFlowElement element)
         {
@@ -51,6 +91,7 @@ namespace GameFlow
 
             if (isAdd) listElements.Add(element);
             m_elements = listElements.ToArray();
+            InvalidateLookupCache();
         }
 
         internal bool VerifyData()
@@ -66,7 +107,9 @@ namespace GameFlow
             }
 
             m_elements = listElements.ToArray();
+            InvalidateLookupCache();
             return isChange;
         }
+#endif
     }
 }

@@ -3,35 +3,37 @@ using System.Collections.Generic;
 
 namespace GameFlow.Internal
 {
-    public static class UIElementsRuntimeManager
+    internal class UIElementsRuntimeManager
     {
-        internal static List<UIFlowElement> ElementsRuntime { get; }
+        internal List<UIFlowElement> ElementsRuntime { get; }
+        private readonly GameFlowContext _context;
 
-        static UIElementsRuntimeManager()
+        internal UIElementsRuntimeManager(GameFlowContext context)
         {
+            _context = context;
             ElementsRuntime = new List<UIFlowElement>();
         }
 
-        internal static void AddUserInterfaceElement(UIFlowElement userInterfaceFlowElement)
+        internal void AddUserInterfaceElement(UIFlowElement userInterfaceFlowElement)
         {
             userInterfaceFlowElement.CurrentSortingOrder = GetSortingOrder();
             ElementsRuntime.Add(userInterfaceFlowElement);
         }
 
-        internal static Type GetTopElement()
+        internal Type GetTopElement()
         {
             var elementCount = ElementsRuntime.Count;
             return elementCount == 0 ? null : ElementsRuntime[elementCount - 1].ElementType;
         }
 
-        internal static int GetSortingOrder()
+        internal int GetSortingOrder()
         {
             var elementCount = ElementsRuntime.Count;
             if (elementCount == 0) return 0;
-            return ElementsRuntime[elementCount - 1].CurrentSortingOrder + InstanceManager.Manager.SortingOrderOffset;
+            return ElementsRuntime[elementCount - 1].CurrentSortingOrder + _context.Manager.SortingOrderOffset;
         }
 
-        internal static UIFlowElement GetElement(Type type)
+        internal UIFlowElement GetElement(Type type)
         {
             for (var i = ElementsRuntime.Count - 1; i >= 0; i--)
             {
@@ -42,12 +44,12 @@ namespace GameFlow.Internal
             return null;
         }
 
-        internal static void RemoveElement(UIFlowElement element)
+        internal void RemoveElement(UIFlowElement element)
         {
             ElementsRuntime.Remove(element);
         }
 
-        internal static void ReleaseAllElement(Action onReleaseCompleted)
+        internal void ReleaseAllElement(Action onReleaseCompleted)
         {
             var elementCount = ElementsRuntime.Count;
             if (elementCount == 0)
@@ -63,7 +65,7 @@ namespace GameFlow.Internal
             }
         }
 
-        private static void ReleaseElement(UIFlowElement element, ReleaseCount releaseCount)
+        private void ReleaseElement(UIFlowElement element, ReleaseCount releaseCount)
         {
             FlowObservable.Event(element.GetType()).RaiseOnRelease(true);
             switch (element.ReleaseMode)
@@ -80,7 +82,7 @@ namespace GameFlow.Internal
             }
         }
 
-        internal static void OnKeyBack()
+        internal void OnKeyBack()
         {
             var type = GetTopElement();
             if (type == null) return;
@@ -89,14 +91,14 @@ namespace GameFlow.Internal
 
         internal class ReleaseCount : IReleaseCompleted
         {
-            private readonly Action onCompleted;
-            private readonly int totalCount;
-            private int current;
+            private readonly Action _onCompleted;
+            private readonly int _totalCount;
+            private int _current;
 
             internal ReleaseCount(Action onCompleted, int totalCount)
             {
-                this.onCompleted = onCompleted;
-                this.totalCount = totalCount;
+                _onCompleted = onCompleted;
+                _totalCount = totalCount;
             }
 
             void IReleaseCompleted.UnloadCompleted(bool isSuccess)
@@ -106,7 +108,7 @@ namespace GameFlow.Internal
 
             internal void Count()
             {
-                if (++current == totalCount) onCompleted.Invoke();
+                if (++_current == _totalCount) _onCompleted.Invoke();
             }
         }
     }

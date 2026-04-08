@@ -92,7 +92,8 @@ namespace GameFlow
         public override bool ActiveScene()
         {
             if (_status != ActiveHandleStatus.Succeeded) return false;
-            UIElementsRuntimeManager.ReleaseAllElement(() => base.ActiveScene());
+            var context = GameFlowContext.Current;
+            context?.UIElementsRuntime.ReleaseAllElement(() => base.ActiveScene());
             return true;
         }
     }

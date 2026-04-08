@@ -45,7 +45,9 @@ namespace GameFlow.Tests.Build
             }
 
             if (currentTimeOut >= timeOut) Debug.LogError("Time out!");
-            Manager = InstanceManager.Manager;
+            var manager = ScriptableObject.CreateInstance<GameFlowManager>();
+            var context = new GameFlowContext(manager);
+            Manager = context.Manager;
         }
 
         public static IEnumerator Unload()

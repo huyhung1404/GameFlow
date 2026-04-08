@@ -41,52 +41,52 @@ namespace GameFlow
 
         public static BaseLoadingTypeController LoadingOn(int index)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOn(new LoadingId(index));
+            return GameFlowContext.Current?.Loading?.LoadingOn(new LoadingId(index));
         }
 
         public static BaseLoadingTypeController LoadingOn(string id)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOn(new LoadingId(id));
+            return GameFlowContext.Current?.Loading?.LoadingOn(new LoadingId(id));
         }
 
         public static BaseLoadingTypeController LoadingOff(int index)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOff(new LoadingId(index));
+            return GameFlowContext.Current?.Loading?.LoadingOff(new LoadingId(index));
         }
 
         public static BaseLoadingTypeController LoadingOff(string id)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.LoadingOff(new LoadingId(id));
+            return GameFlowContext.Current?.Loading?.LoadingOff(new LoadingId(id));
         }
 
         public static BaseLoadingTypeController GetLoading(int index)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.Get(new LoadingId(index));
+            return GameFlowContext.Current?.Loading?.Get(new LoadingId(index));
         }
 
         public static BaseLoadingTypeController GetLoading(string id)
         {
-            return !LoadingController.s_IsInitialization ? null : LoadingController.Instance.Get(new LoadingId(id));
+            return GameFlowContext.Current?.Loading?.Get(new LoadingId(id));
         }
 
         public static void LockFlow()
         {
-            GameFlowRuntimeController.SetLock(true);
+            GameFlowContext.Current?.RuntimeController?.SetLock(true);
         }
 
         public static void UnlockFlow()
         {
-            GameFlowRuntimeController.SetLock(false);
+            GameFlowContext.Current?.RuntimeController?.SetLock(false);
         }
 
         public static void EnableKeyBack()
         {
-            GameFlowRuntimeController.SetDisableKeyBack(false);
+            GameFlowContext.Current?.RuntimeController?.SetDisableKeyBack(false);
         }
 
         public static void DisableKeyBack()
         {
-            GameFlowRuntimeController.SetDisableKeyBack(true);
+            GameFlowContext.Current?.RuntimeController?.SetDisableKeyBack(true);
         }
     }
 
@@ -94,22 +94,27 @@ namespace GameFlow
     {
         public static int CurrentCanvasCount()
         {
-            return UIElementsRuntimeManager.ElementsRuntime.Count;
+            var context = GameFlowContext.Current;
+            return context?.UIElementsRuntime.ElementsRuntime.Count ?? 0;
         }
 
         public static bool IsTopCanvas<T>() where T : UIFlowElement
         {
             if (CurrentCanvasCount() == 0) return false;
-            return UIElementsRuntimeManager.ElementsRuntime[^1].GetType() == typeof(T);
+            var elements = GameFlowContext.Current.UIElementsRuntime.ElementsRuntime;
+            return elements[^1].GetType() == typeof(T);
         }
 
         public static Canvas GetCanvas<T>() where T : UIFlowElement
         {
-            if (CurrentCanvasCount() == 0) return null;
+            var context = GameFlowContext.Current;
+            if (context == null) return null;
+            var elements = context.UIElementsRuntime.ElementsRuntime;
+            if (elements.Count == 0) return null;
             var type = typeof(T);
-            for (var i = UIElementsRuntimeManager.ElementsRuntime.Count - 1; i >= 0; i--)
+            for (var i = elements.Count - 1; i >= 0; i--)
             {
-                var element = UIElementsRuntimeManager.ElementsRuntime[i];
+                var element = elements[i];
                 if (element.GetType() == type) return element.RuntimeInstance.GetComponent<Canvas>();
             }
 
@@ -118,7 +123,10 @@ namespace GameFlow
 
         public static UIFlowElement TopElement()
         {
-            return CurrentCanvasCount() == 0 ? null : UIElementsRuntimeManager.ElementsRuntime[CurrentCanvasCount() - 1];
+            var context = GameFlowContext.Current;
+            if (context == null) return null;
+            var elements = context.UIElementsRuntime.ElementsRuntime;
+            return elements.Count == 0 ? null : elements[elements.Count - 1];
         }
 
         public static IEnumerator IEWaitingTargetTotalCanvas(int totalCanvas, int delayFrame, float timeoutSeconds = 30f)
@@ -143,7 +151,7 @@ namespace GameFlow
 
         public static Vector2 CanvasReferenceResolution()
         {
-            return InstanceManager.Manager.ReferenceResolution;
+            return GameFlowContext.Current?.Manager.ReferenceResolution ?? Vector2.zero;
         }
     }
 
@@ -153,7 +161,7 @@ namespace GameFlow
         /// Set Loading Index
         /// </summary>
         /// <param name="command"></param>
-        /// <param name="index">iddex less than 0 => loading type is none</param>
+        /// <param name="index">index less than 0 => loading type is none</param>
         /// <returns></returns>
         public static AddCommand LoadingID(this AddCommand command, int index)
         {

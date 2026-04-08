@@ -1,3 +1,4 @@
+using GameFlow.Internal;
 using UnityEngine;
 
 namespace GameFlow.Component
@@ -6,11 +7,16 @@ namespace GameFlow.Component
     [AddComponentMenu("Game Flow/UI Camera")]
     public class FlowUICamera : MonoBehaviour
     {
-        public static Camera Instance { get; private set; }
+        public static Camera Instance => GameFlowContext.Current?.UICamera;
 
         private void Awake()
         {
-            Instance = GetComponent<Camera>();
+            var cam = GetComponent<Camera>();
+            var context = GameFlowContext.Current;
+            if (context != null)
+                context.SetUICamera(cam);
+            else
+                InstanceManager.SetInstance(cam);
         }
     }
 }

@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 namespace GameFlow.Internal
 {
-    internal static class ElementsRuntimeManager
+    internal class ElementsRuntimeManager
     {
-        internal static List<GameFlowElement> ElementsRuntime { get; }
+        internal List<GameFlowElement> ElementsRuntime { get; }
 
-        static ElementsRuntimeManager()
+        internal ElementsRuntimeManager()
         {
             ElementsRuntime = new List<GameFlowElement>();
         }
 
-        internal static void AddElement(GameFlowElement element)
+        internal void AddElement(GameFlowElement element)
         {
             ElementsRuntime.Add(element);
         }
 
-        internal static GameFlowElement GetElement(Type type)
+        internal GameFlowElement GetElement(Type type)
         {
             for (var i = ElementsRuntime.Count - 1; i >= 0; i--)
             {
@@ -28,7 +28,7 @@ namespace GameFlow.Internal
             return null;
         }
 
-        internal static void RemoveElement(GameFlowElement element)
+        internal void RemoveElement(GameFlowElement element)
         {
             ElementsRuntime.Remove(element);
         }

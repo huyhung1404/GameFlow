@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameFlow.Internal;
 
 namespace GameFlow
 {
     public static class FlowObservable
     {
-        internal static readonly Dictionary<Type, ElementCallbackEvent> s_CallbackEvents = new Dictionary<Type, ElementCallbackEvent>();
+        private static Dictionary<Type, ElementCallbackEvent> CallbackEvents
+            => GameFlowContext.Current?.CallbackEvents;
 
         public static ElementCallbackEvent Event<T>() where T : GameFlowElement
         {
@@ -14,13 +16,20 @@ namespace GameFlow
 
         public static ElementCallbackEvent Event(Type type)
         {
-            if (s_CallbackEvents.TryGetValue(type, out var elementCallbackEvent))
+            var events = CallbackEvents;
+            if (events == null)
+            {
+                ErrorHandle.LogError("FlowObservable: GameFlowContext is not initialized.");
+                return type.IsSubclassOf(GameCommand.s_UIElementType) ? new UIElementCallbackEvent() : new ElementCallbackEvent();
+            }
+
+            if (events.TryGetValue(type, out var elementCallbackEvent))
             {
                 return elementCallbackEvent;
             }
 
             var elementEvent = type.IsSubclassOf(GameCommand.s_UIElementType) ? new UIElementCallbackEvent() : new ElementCallbackEvent();
-            s_CallbackEvents.Add(type, elementEvent);
+            events.Add(type, elementEvent);
             return elementEvent;
         }
 
@@ -44,7 +53,7 @@ namespace GameFlow
 
         public static bool ReleaseEvent(Type type)
         {
-            return s_CallbackEvents.Remove(type);
+            return CallbackEvents?.Remove(type) ?? false;
         }
     }
 }

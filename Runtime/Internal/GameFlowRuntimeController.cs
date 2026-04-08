@@ -8,32 +8,33 @@ namespace GameFlow.Internal
     [AddComponentMenu("Game Flow/Runtime Controller")]
     internal class GameFlowRuntimeController : MonoBehaviour
     {
-        private static readonly Queue<Command> s_commands = new Queue<Command>(5);
-        internal static OnBannerUpdate OnBannerUpdate;
-        public static bool UpdateBanner { get; set; }
-        private static bool s_isLock;
-        private static bool s_disableKeyBack;
-
         [SerializeField] private bool m_dontDestroyOnLoad = true;
         [SerializeField] private Transform m_elementContainer;
         [SerializeField] private Transform m_uiElementContainer;
 
+        private readonly Queue<Command> _commands = new Queue<Command>(5);
         private Command _current;
+        private GameFlowContext _context;
+        private bool _isLock;
+        private bool _disableKeyBack;
+        internal bool NeedUpdateBanner;
+        internal OnBannerUpdate OnBannerUpdateEvent;
+
         internal bool IsActive { get; private set; }
 
-        internal static void SetLock(bool value)
+        internal void SetLock(bool value)
         {
-            s_isLock = value;
+            _isLock = value;
         }
 
-        internal static void SetDisableKeyBack(bool value)
+        internal void SetDisableKeyBack(bool value)
         {
-            s_disableKeyBack = value;
+            _disableKeyBack = value;
         }
 
-        internal static ElementCollection GetElements()
+        internal ElementCollection GetElements()
         {
-            return InstanceManager.Manager.ElementCollection;
+            return _context.Manager.ElementCollection;
         }
 
         internal void SetContainer(Transform elementContainer, Transform uiElementContainer)
@@ -42,15 +43,15 @@ namespace GameFlow.Internal
             m_uiElementContainer = uiElementContainer;
         }
 
-        internal static Transform PrefabElementContainer(bool isUI)
+        internal Transform PrefabElementContainer(bool isUI)
         {
-            var instance = InstanceManager.Instance;
-            return isUI ? instance.m_uiElementContainer : instance.m_elementContainer;
+            return isUI ? m_uiElementContainer : m_elementContainer;
         }
 
         private void Awake()
         {
-            if (InstanceManager.Instance != null && InstanceManager.Instance != this)
+            var context = GameFlowContext.Current;
+            if (context?.RuntimeController != null && context.RuntimeController != this)
             {
                 Destroy(gameObject);
                 return;
@@ -61,46 +62,82 @@ namespace GameFlow.Internal
 
         private void Initialization()
         {
-            InstanceManager.SetInstance(this);
             if (m_dontDestroyOnLoad) DontDestroyOnLoad(gameObject);
-            InstanceManager.ConfirmIsInitialized(() =>
+            InstanceManager.SetInstance(this);
+            InstanceManager.ConfirmIsInitialized(OnContextReady);
+        }
+
+        private void OnContextReady()
+        {
+            _context = GameFlowContext.Current;
+            if (_context == null) return;
+
+            if (_context.RuntimeController != null && _context.RuntimeController != this)
             {
-                LoadingController.Instance?.SetUpShieldSortingOrder(InstanceManager.Manager.LoadingShieldSortingOrder);
-                IsActive = true;
-            });
+                Destroy(gameObject);
+                return;
+            }
+
+            _context.SetRuntimeController(this);
+            _context.Loading?.SetUpShieldSortingOrder(_context.Manager.LoadingShieldSortingOrder);
+            IsActive = true;
         }
 
         private void Update()
         {
             if (!IsActive) return;
-
+#if UNITY_EDITOR
+            CheckLeakedCommands();
+#endif
             if (!CommandHandle())
             {
-                LoadingController.EnableShield();
+                _context.Loading?.EnableShield();
                 return;
             }
 
-            LoadingController.DisableShield();
+            _context.Loading?.DisableShield();
             KeyBackHandle();
         }
 
+#if UNITY_EDITOR
+        private const int k_leakCheckDelayFrames = 60;
+
+        private void CheckLeakedCommands()
+        {
+            var waitList = Command.s_WaitBuildCommands;
+            var currentFrame = Time.frameCount;
+            for (var i = waitList.Count - 1; i >= 0; i--)
+            {
+                var command = waitList[i];
+                if (currentFrame - command.CreatedFrame < k_leakCheckDelayFrames) continue;
+                ErrorHandle.LogWarning($"Command {command.GetType().Name} for '{command}' was created {currentFrame - command.CreatedFrame} frames ago but Build() was never called.");
+                waitList.RemoveAt(i);
+            }
+        }
+#endif
+
         private void LateUpdate()
         {
-            if (!UpdateBanner) return;
-            UpdateBanner = false;
-            OnBannerUpdate?.Invoke(FlowBannerController.CurrentBannerHeight);
+            if (!NeedUpdateBanner) return;
+            NeedUpdateBanner = false;
+            OnBannerUpdateEvent?.Invoke(FlowBannerController.CurrentBannerHeight);
         }
 
-        internal static void AddCommand(Command command)
+        internal void AddCommand(Command command)
         {
-            s_commands.Enqueue(command);
+            _commands.Enqueue(command);
         }
 
-        internal static void OverriderCommand(CloneCommand command)
+        internal void OverrideCurrentCommand(CloneCommand command)
         {
-            var instance = InstanceManager.Instance;
-            instance._current = command;
-            instance._current.PreUpdate();
+            if (_current != null && !_current.IsRelease)
+            {
+                ErrorHandle.LogWarning($"Overriding active command '{_current}' with clone command for '{command}'.");
+            }
+
+            _current = command;
+            _current.Context = _context;
+            _current.PreUpdate();
         }
 
         private bool CommandHandle()
@@ -114,44 +151,48 @@ namespace GameFlow.Internal
                 _current = null;
             }
 
-            if (s_isLock || s_commands.Count == 0) return true;
+            if (_isLock || _commands.Count == 0) return true;
 
-            _current = s_commands.Dequeue();
+            _current = _commands.Dequeue();
+            _current.Context = _context;
             _current.PreUpdate();
             return false;
         }
 
-        internal void CommandsIsEmpty()
+        internal void AssertCommandsEmpty()
         {
-            Assert.IsNotNull(InstanceManager.Instance);
-            Assert.IsTrue(s_commands.Count == 0 && _current == null, CommandCountErrorMessage());
+            Assert.IsTrue(_commands.Count == 0 && _current == null, CommandCountErrorMessage());
             return;
 
             string CommandCountErrorMessage()
             {
-                var message = "Command Count: " + s_commands.Count;
+                var message = "Command Count: " + _commands.Count;
                 message += $"\n Current: {(_current == null ? "Empty" : _current)}";
-                return s_commands.Aggregate(message, (s, c) => s + ("\n" + c));
+                return _commands.Aggregate(message, (s, c) => s + ("\n" + c));
             }
         }
 
-        private static void KeyBackHandle()
+        private void KeyBackHandle()
         {
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
-            if (s_disableKeyBack || s_isLock || LoadingController.IsShow()) return;
+            if (_disableKeyBack || _isLock || (_context.Loading != null && _context.Loading.IsShow())) return;
 
-            UIElementsRuntimeManager.OnKeyBack();
+            _context.UIElementsRuntime.OnKeyBack();
         }
 
         private void OnDestroy()
         {
-            if (InstanceManager.Instance == this) IsActive = false;
+            var context = GameFlowContext.Current;
+            if (context != null && context.RuntimeController == this)
+            {
+                IsActive = false;
+            }
         }
 
-        internal static Queue<Command> GetInfo(out Command currentCommand)
+        internal Queue<Command> GetInfo(out Command currentCommand)
         {
-            currentCommand = InstanceManager.Instance?._current;
-            return s_commands;
+            currentCommand = _current;
+            return _commands;
         }
     }
 }

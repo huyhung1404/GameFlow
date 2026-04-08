@@ -1,4 +1,7 @@
+using GameFlow.Internal;
 using NUnit.Framework;
+using UnityEngine;
+using Assert = NUnit.Framework.Assert;
 
 namespace GameFlow.Tests
 {
@@ -20,9 +23,17 @@ namespace GameFlow.Tests
         [SetUp]
         public void SetUp()
         {
-            FlowObservable.s_CallbackEvents.Clear();
+            var manager = ScriptableObject.CreateInstance<GameFlowManager>();
+            var context = new GameFlowContext(manager);
+            GameFlowContext.SetCurrent(context);
             TestScript___EventCallback1.timeRun = 0;
             TestScript___EventCallback2.timeRun = 0;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            GameFlowContext.SetCurrent(null);
         }
 
         [Test]

@@ -19,10 +19,10 @@ namespace GameFlow.Internal
 
         internal override GameFlowElement CloneElementInstance() => _cloneElement;
 
-        internal override void ActiveElement()
+        internal override void ActiveElement(GameFlowContext context)
         {
             _cloneElement.RuntimeInstance.SetActive(true);
-            ElementsRuntimeManager.AddElement(_cloneElement);
+            context.ElementsRuntime.AddElement(_cloneElement);
         }
     }
 }

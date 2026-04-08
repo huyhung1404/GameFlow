@@ -27,7 +27,7 @@ namespace GameFlow.Component
             _canvasScale = m_canvas.GetComponent<CanvasScaler>();
             _rectTransform = m_canvas.GetComponent<RectTransform>();
             _hasSafeView = m_safeView != null;
-            m_canvas.worldCamera = FlowUICamera.Instance;
+            m_canvas.worldCamera = GameFlowContext.Current?.UICamera;
             _isGotComponents = true;
         }
 
@@ -53,10 +53,11 @@ namespace GameFlow.Component
 
         protected virtual void SetUpCanvas()
         {
+            var context = GameFlowContext.Current;
             var sortingOrder = m_element.CurrentSortingOrder;
             m_canvas.sortingOrder = sortingOrder + m_offsetCanvasGroup;
-            m_canvas.planeDistance = InstanceManager.Manager.PlaneDistance;
-            m_canvas.vertexColorAlwaysGammaSpace = InstanceManager.Manager.VertexColorAlwaysGammaSpace;
+            m_canvas.planeDistance = context.Manager.PlaneDistance;
+            m_canvas.vertexColorAlwaysGammaSpace = context.Manager.VertexColorAlwaysGammaSpace;
             if (_hasSafeView) m_safeView.ApplySafeArea(m_safeAreaIgnore);
             OnBannerUpdate(FlowBannerController.CurrentBannerHeight);
         }
@@ -69,8 +70,9 @@ namespace GameFlow.Component
 
         protected virtual void HandleCanvasScaler()
         {
+            var context = GameFlowContext.Current;
             _canvasScale.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            _canvasScale.referenceResolution = InstanceManager.Manager.ReferenceResolution;
+            _canvasScale.referenceResolution = context.Manager.ReferenceResolution;
             _canvasScale.matchWidthOrHeight = (float)Screen.width / Screen.height < _canvasScale.referenceResolution.x / _canvasScale.referenceResolution.y ? 0 : 1;
         }
 

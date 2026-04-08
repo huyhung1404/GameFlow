@@ -7,7 +7,7 @@ namespace GameFlow.Internal
     {
         protected override void SetUpCanvas()
         {
-            var manager = InstanceManager.Manager;
+            var manager = GameFlowContext.Current.Manager;
             var canvas = GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = manager.LoadingShieldSortingOrder;

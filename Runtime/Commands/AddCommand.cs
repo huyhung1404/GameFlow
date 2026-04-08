@@ -29,7 +29,7 @@ namespace GameFlow
 
         internal override void PreUpdate()
         {
-            var collection = GameFlowRuntimeController.GetElements();
+            var collection = Context.RuntimeController.GetElements();
             if (collection.TryGetElement(_elementType, out var element))
             {
                 BaseElement = element;
@@ -92,16 +92,17 @@ namespace GameFlow
 
         private void Loading()
         {
-            BaseLoadingTypeController loading = null;
-            if (LoadingId.HasValue) loading = LoadingController.Instance.LoadingOn(LoadingId.Value);
-            if (ReferenceEquals(loading, null))
+            var loading = Context.Loading;
+            BaseLoadingTypeController loadingController = null;
+            if (LoadingId.HasValue && loading != null) loadingController = loading.LoadingOn(LoadingId.Value);
+            if (ReferenceEquals(loadingController, null))
             {
                 BaseElement.Reference.LoadGameObjectHandle(this);
                 return;
             }
 
             _isLoadingOn = true;
-            loading.OnCompleted(() => BaseElement.Reference.LoadGameObjectHandle(this));
+            loadingController.OnCompleted(() => BaseElement.Reference.LoadGameObjectHandle(this));
         }
 
         private void HandleActiveMode()
@@ -118,7 +119,8 @@ namespace GameFlow
                     return;
                 case ElementActiveMode.MultiInstance:
                     new CloneCommand(_elementType, this).BuildClone();
-                    if (LoadingId.HasValue && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId.Value);
+                    if (LoadingId.HasValue && _isLoadingOn && Context.Loading != null)
+                        Context.Loading.LoadingOff(LoadingId.Value);
                     Release();
                     return;
             }
@@ -149,7 +151,8 @@ namespace GameFlow
         protected void OnLoadResult(GameObject result)
         {
             OnCompleted?.Invoke(result);
-            if (LoadingId.HasValue && _isLoadingOn) LoadingController.Instance.LoadingOff(LoadingId.Value);
+            if (LoadingId.HasValue && _isLoadingOn && Context.Loading != null)
+                Context.Loading.LoadingOff(LoadingId.Value);
             Release();
         }
 

@@ -10,29 +10,72 @@ namespace GameFlow.Internal
 {
     internal static class InstanceManager
     {
-        internal static GameFlowRuntimeController Instance { get; private set; }
-        internal static GameFlowManager Manager { get; private set; }
-
-        private static Action s_onManagerInitialized;
+        private static Action s_onContextReady;
         private static bool s_isLoading;
+        private static GameFlowRuntimeController s_pendingController;
+        private static LoadingController s_pendingLoading;
+        private static Camera s_pendingCamera;
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
+        {
+            s_onContextReady = null;
+            s_isLoading = false;
+            s_pendingController = null;
+            s_pendingLoading = null;
+            s_pendingCamera = null;
+        }
+#endif
+
+        internal static void SetInstance(GameFlowRuntimeController controller)
+        {
+            var context = GameFlowContext.Current;
+            if (context != null)
+            {
+                context.SetRuntimeController(controller);
+                return;
+            }
+
+            s_pendingController = controller;
+        }
+
+        internal static void SetInstance(LoadingController loading)
+        {
+            var context = GameFlowContext.Current;
+            if (context != null)
+            {
+                context.SetLoadingController(loading);
+                return;
+            }
+
+            s_pendingLoading = loading;
+        }
+
+        internal static void SetInstance(Camera camera)
+        {
+            var context = GameFlowContext.Current;
+            if (context != null)
+            {
+                context.SetUICamera(camera);
+                return;
+            }
+
+            s_pendingCamera = camera;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void InitializeOnLoad()
         {
-            if (!s_isLoading && Manager == null)
+            if (!s_isLoading && GameFlowContext.Current == null)
             {
                 _ = LoadManagerAsync(3);
             }
         }
 
-        public static void SetInstance(GameFlowRuntimeController runtimeController)
-        {
-            Instance = runtimeController;
-        }
-
         public static void ConfirmIsInitialized(Action callback)
         {
-            if (Manager != null)
+            if (GameFlowContext.Current != null)
             {
                 callback?.Invoke();
                 return;
@@ -40,7 +83,7 @@ namespace GameFlow.Internal
 
             if (callback != null)
             {
-                s_onManagerInitialized += callback;
+                s_onContextReady += callback;
             }
 
             if (!s_isLoading)
@@ -61,8 +104,8 @@ namespace GameFlow.Internal
                 Addressables.Release(checkHandle);
                 s_isLoading = false;
 
-                s_onManagerInitialized?.Invoke();
-                s_onManagerInitialized = null;
+                s_onContextReady?.Invoke();
+                s_onContextReady = null;
                 return;
             }
 
@@ -77,16 +120,21 @@ namespace GameFlow.Internal
 
                 if (loadHandle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    Manager = loadHandle.Result;
+                    var manager = loadHandle.Result;
+                    var context = new GameFlowContext(manager);
+                    GameFlowContext.SetCurrent(context);
+
                     s_isLoading = false;
 
-                    if (Manager.AutoGenerateRuntimeManager && Instance == null)
+                    ApplyPendingRegistrations(context);
+
+                    if (manager.AutoGenerateRuntimeManager && context.RuntimeController == null)
                     {
-                        InitEnvironment();
+                        InitEnvironment(context);
                     }
 
-                    s_onManagerInitialized?.Invoke();
-                    s_onManagerInitialized = null;
+                    s_onContextReady?.Invoke();
+                    s_onContextReady = null;
                     return;
                 }
 
@@ -103,30 +151,51 @@ namespace GameFlow.Internal
             ErrorHandle.LogError($"Failed to load GameFlowManager after {maxRetries} attempts.");
             s_isLoading = false;
 
-            s_onManagerInitialized?.Invoke();
-            s_onManagerInitialized = null;
+            s_onContextReady?.Invoke();
+            s_onContextReady = null;
         }
 
-        private static void InitEnvironment()
+        private static void ApplyPendingRegistrations(GameFlowContext context)
+        {
+            if (s_pendingController != null)
+            {
+                context.SetRuntimeController(s_pendingController);
+                s_pendingController = null;
+            }
+
+            if (s_pendingLoading != null)
+            {
+                context.SetLoadingController(s_pendingLoading);
+                s_pendingLoading = null;
+            }
+
+            if (s_pendingCamera != null)
+            {
+                context.SetUICamera(s_pendingCamera);
+                s_pendingCamera = null;
+            }
+        }
+
+        private static void InitEnvironment(GameFlowContext context)
         {
             var runtimeControllerObj = new GameObject("[Auto] Flow Controller");
-            Instance = runtimeControllerObj.AddComponent<GameFlowRuntimeController>();
+            var controller = runtimeControllerObj.AddComponent<GameFlowRuntimeController>();
 
-            CreateCameras();
-            CreateLoadingControllerInstance();
+            CreateCameras(context);
+            CreateLoadingController(context);
 
             var elementContainer = new GameObject("Element Container");
-            elementContainer.transform.SetParent(Instance.transform);
+            elementContainer.transform.SetParent(controller.transform);
 
             var uiElementContainer = new GameObject("UI Element Container");
-            uiElementContainer.transform.SetParent(Instance.transform);
+            uiElementContainer.transform.SetParent(controller.transform);
 
-            Instance.SetContainer(elementContainer.transform, uiElementContainer.transform);
+            controller.SetContainer(elementContainer.transform, uiElementContainer.transform);
         }
 
-        private static void CreateCameras()
+        private static void CreateCameras(GameFlowContext context)
         {
-            var camerasData = Manager.AutoGenerateRuntimeManagerData.Cameras;
+            var camerasData = context.Manager.AutoGenerateRuntimeManagerData.Cameras;
             if (camerasData == null || camerasData.Length == 0) return;
             var camera = new GameObject("[Auto] Cameras");
             Object.DontDestroyOnLoad(camera);
@@ -137,17 +206,20 @@ namespace GameFlow.Internal
             }
         }
 
-        private static void CreateLoadingControllerInstance()
+        private static void CreateLoadingController(GameFlowContext context)
         {
+            var controller = context.RuntimeController;
+            if (controller == null) return;
+
             var loadingObject = new GameObject("Loading");
-            loadingObject.transform.SetParent(Instance.transform);
+            loadingObject.transform.SetParent(controller.transform);
             var loading = loadingObject.AddComponent<LoadingController>();
             loading.gameObject.layer = LayerMask.NameToLayer("UI");
 
-            var loadingData = Manager.AutoGenerateRuntimeManagerData.Loadings;
+            var loadingData = context.Manager.AutoGenerateRuntimeManagerData.Loadings;
             if (loadingData == null || loadingData.Length == 0)
             {
-                loading.SetUp(Manager.AutoGenerateRuntimeManagerData.ShieldType, Array.Empty<BaseLoadingTypeController>());
+                loading.SetUp(context.Manager.AutoGenerateRuntimeManagerData.ShieldType, Array.Empty<BaseLoadingTypeController>());
                 return;
             }
 
@@ -159,7 +231,7 @@ namespace GameFlow.Internal
                 loadingTypeControllers[i].gameObject.layer = LayerMask.NameToLayer("UI");
             }
 
-            loading.SetUp(Manager.AutoGenerateRuntimeManagerData.ShieldType, loadingTypeControllers);
+            loading.SetUp(context.Manager.AutoGenerateRuntimeManagerData.ShieldType, loadingTypeControllers);
         }
     }
 }

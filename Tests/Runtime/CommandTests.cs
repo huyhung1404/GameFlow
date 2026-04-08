@@ -16,7 +16,7 @@ namespace GameFlow.Tests
             command.Build();
             yield return DelayFrame(30);
             Assert.IsTrue(command.isExecute);
-            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            ResourcesInstance.RuntimeController.AssertCommandsEmpty();
         }
 
         [UnityTest,]
@@ -69,7 +69,7 @@ namespace GameFlow.Tests
             Assert.IsTrue(listAdd[1] == listExecute[1], "listAdd[1] == listExecute[1]");
             Assert.IsTrue(listAdd[2] == listExecute[2], "listAdd[2] == listExecute[2]");
             Assert.IsTrue(listAdd[3] == listExecute[3], "listAdd[3] == listExecute[3]");
-            ResourcesInstance.RuntimeController.CommandsIsEmpty();
+            ResourcesInstance.RuntimeController.AssertCommandsEmpty();
         }
 
         private class AutoReleaseCommand : Command

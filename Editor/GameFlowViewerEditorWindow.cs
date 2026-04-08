@@ -170,7 +170,9 @@ namespace GameFlow.Editor
 
         internal static void OnGUIList()
         {
-            var commands = GameFlowRuntimeController.GetInfo(out var current);
+            var controller = GameFlowContext.Current?.RuntimeController;
+            if (controller == null) { EditorGUILayout.EndScrollView(); return; }
+            var commands = controller.GetInfo(out var current);
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             int index;
@@ -204,7 +206,9 @@ namespace GameFlow.Editor
         internal static void OnGUIInfo()
         {
             if (currentCommand == null) return;
-            GameFlowRuntimeController.GetInfo(out var current);
+            var controller = GameFlowContext.Current?.RuntimeController;
+            if (controller == null) return;
+            controller.GetInfo(out var current);
             var isCurrent = currentCommand == current;
             var isWaitBuild = Command.s_WaitBuildCommands.Contains(currentCommand);
             scrollInfoPosition = EditorGUILayout.BeginScrollView(scrollInfoPosition);
@@ -249,7 +253,9 @@ namespace GameFlow.Editor
         {
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             var index = 0;
-            foreach (var keyValue in FlowObservable.s_CallbackEvents)
+            var callbackEvents = GameFlowContext.Current?.CallbackEvents;
+            if (callbackEvents == null) { EditorGUILayout.EndScrollView(); return; }
+            foreach (var keyValue in callbackEvents)
             {
                 DrawElement(index, keyValue.Key, keyValue.Value);
                 index++;
@@ -305,14 +311,16 @@ namespace GameFlow.Editor
         {
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
+            var context = GameFlowContext.Current;
+            if (context == null) { EditorGUILayout.EndScrollView(); return; }
             var index = 0;
-            foreach (var element in UIElementsRuntimeManager.ElementsRuntime)
+            foreach (var element in context.UIElementsRuntime.ElementsRuntime)
             {
                 DrawElement(index, element, true);
                 index++;
             }
 
-            foreach (var element in ElementsRuntimeManager.ElementsRuntime)
+            foreach (var element in context.ElementsRuntime.ElementsRuntime)
             {
                 DrawElement(index, element, false);
                 index++;

@@ -36,7 +36,7 @@ namespace GameFlow
             catch (Exception e)
             {
                 ErrorHandle.LogException(e, $"Release Command Error: {_elementType.Name}");
-                OnLoadResult(false);
+                OnReleaseResult(false);
                 return true;
             }
         }
@@ -63,16 +63,16 @@ namespace GameFlow
             if (isSuccess)
             {
                 BaseElement.RuntimeInstance = null;
-                OnLoadResult(true);
+                OnReleaseResult(true);
                 return;
             }
 
-            OnLoadResult(false);
+            OnReleaseResult(false);
         }
 
         protected abstract void ReleaseOnClose();
         protected abstract void NoneRelease();
-        protected abstract void OnLoadResult(bool canRelease);
+        protected abstract void OnReleaseResult(bool canRelease);
 
         internal override void OnRelease()
         {

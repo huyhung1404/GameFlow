@@ -3,24 +3,44 @@ using UnityEngine;
 
 namespace GameFlow.Internal
 {
-    internal static class ErrorHandle
+    public enum FlowLogLevel
     {
-        private const string k_LogFormat = "GameFlow: {0}";
+        Warning,
+        Error,
+        Exception
+    }
 
-        public static void LogError(string content)
+    public static class ErrorHandle
+    {
+        private const string k_logFormat = "GameFlow: {0}";
+
+        public static event Action<FlowLogLevel, string, Exception> OnLog;
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
         {
-            Debug.LogErrorFormat(k_LogFormat, content);
+            OnLog = null;
+        }
+#endif
+
+        internal static void LogError(string content)
+        {
+            Debug.LogErrorFormat(k_logFormat, content);
+            OnLog?.Invoke(FlowLogLevel.Error, content, null);
         }
 
-        public static void LogWarning(string content)
+        internal static void LogWarning(string content)
         {
-            Debug.LogWarningFormat(k_LogFormat, content);
+            Debug.LogWarningFormat(k_logFormat, content);
+            OnLog?.Invoke(FlowLogLevel.Warning, content, null);
         }
 
-        public static void LogException(Exception e, string content)
+        internal static void LogException(Exception e, string content)
         {
             Debug.LogError(content);
             Debug.LogException(e);
+            OnLog?.Invoke(FlowLogLevel.Exception, content, e);
         }
     }
 }
