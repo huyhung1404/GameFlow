@@ -27,13 +27,13 @@ namespace GameFlow
 
         protected override void ReleaseOnClose()
         {
-            FlowObservable.Event(_elementType).RaiseOnRelease(false);
+            BaseElement.CallbackEvent.RaiseOnRelease(false);
             BaseElement.Reference.ReleaseHandlePrefab(BaseElement.RuntimeInstance, this);
         }
 
         protected override void NoneRelease()
         {
-            FlowObservable.Event(_elementType).RaiseOnRelease(false);
+            BaseElement.CallbackEvent.RaiseOnRelease(false);
             BaseElement.RuntimeInstance.SetActive(false);
             OnReleaseResult(true);
         }

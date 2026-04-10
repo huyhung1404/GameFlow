@@ -22,8 +22,8 @@ namespace GameFlow.Component
         internal abstract class Entry
         {
             [SerializeField] internal EventTriggerType EventID;
-            internal abstract void Register(Type type);
-            internal abstract void Unregister(Type type);
+            internal abstract void Register(ElementCallbackEvent callbackEvent);
+            internal abstract void Unregister(ElementCallbackEvent callbackEvent);
         }
 
         [Serializable]
@@ -31,14 +31,14 @@ namespace GameFlow.Component
         {
             [SerializeField] internal UnityEvent Callback;
 
-            internal override void Register(Type type)
+            internal override void Register(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.Event(type).OnActive += Callback.Invoke;
+                callbackEvent.OnActive += Callback.Invoke;
             }
 
-            internal override void Unregister(Type type)
+            internal override void Unregister(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.Event(type).OnActive -= Callback.Invoke;
+                callbackEvent.OnActive -= Callback.Invoke;
             }
         }
 
@@ -47,14 +47,14 @@ namespace GameFlow.Component
         {
             [SerializeField] internal UnityEvent<object> Callback;
 
-            internal override void Register(Type type)
+            internal override void Register(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.Event(type).OnActiveWithData += Callback.Invoke;
+                callbackEvent.OnActiveWithData += Callback.Invoke;
             }
 
-            internal override void Unregister(Type type)
+            internal override void Unregister(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.Event(type).OnActiveWithData -= Callback.Invoke;
+                callbackEvent.OnActiveWithData -= Callback.Invoke;
             }
         }
 
@@ -63,14 +63,16 @@ namespace GameFlow.Component
         {
             [SerializeField] internal UnityEvent Callback;
 
-            internal override void Register(Type type)
+            internal override void Register(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.UIEvent(type).OnShowCompleted += Callback.Invoke;
+                if (callbackEvent is UIElementCallbackEvent uiEvent)
+                    uiEvent.OnShowCompleted += Callback.Invoke;
             }
 
-            internal override void Unregister(Type type)
+            internal override void Unregister(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.UIEvent(type).OnShowCompleted -= Callback.Invoke;
+                if (callbackEvent is UIElementCallbackEvent uiEvent)
+                    uiEvent.OnShowCompleted -= Callback.Invoke;
             }
         }
 
@@ -79,14 +81,16 @@ namespace GameFlow.Component
         {
             [SerializeField] internal UnityEvent Callback;
 
-            internal override void Register(Type type)
+            internal override void Register(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.UIEvent(type).OnKeyBack += Callback.Invoke;
+                if (callbackEvent is UIElementCallbackEvent uiEvent)
+                    uiEvent.OnKeyBack += Callback.Invoke;
             }
 
-            internal override void Unregister(Type type)
+            internal override void Unregister(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.UIEvent(type).OnKeyBack -= Callback.Invoke;
+                if (callbackEvent is UIElementCallbackEvent uiEvent)
+                    uiEvent.OnKeyBack -= Callback.Invoke;
             }
         }
 
@@ -95,14 +99,16 @@ namespace GameFlow.Component
         {
             [SerializeField] internal UnityEvent Callback;
 
-            internal override void Register(Type type)
+            internal override void Register(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.UIEvent(type).OnReFocus += Callback.Invoke;
+                if (callbackEvent is UIElementCallbackEvent uiEvent)
+                    uiEvent.OnReFocus += Callback.Invoke;
             }
 
-            internal override void Unregister(Type type)
+            internal override void Unregister(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.UIEvent(type).OnReFocus -= Callback.Invoke;
+                if (callbackEvent is UIElementCallbackEvent uiEvent)
+                    uiEvent.OnReFocus -= Callback.Invoke;
             }
         }
 
@@ -111,36 +117,52 @@ namespace GameFlow.Component
         {
             [SerializeField] internal UnityEvent<bool> Callback;
 
-            internal override void Register(Type type)
+            internal override void Register(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.Event(type).OnRelease += Callback.Invoke;
+                callbackEvent.OnRelease += Callback.Invoke;
             }
 
-            internal override void Unregister(Type type)
+            internal override void Unregister(ElementCallbackEvent callbackEvent)
             {
-                FlowObservable.Event(type).OnRelease -= Callback.Invoke;
+                callbackEvent.OnRelease -= Callback.Invoke;
             }
         }
 
         [SerializeField] private GameFlowElement m_element;
         [SerializeReference] private List<Entry> m_delegates;
+        private ElementCallbackEvent _callbackEvent;
 
         private void OnEnable()
         {
-            var type = m_element.ElementType;
-            for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Register(type);
+            m_element.EnsureCallbackEvent();
+            _callbackEvent = m_element.CallbackEvent;
+            for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Register(_callbackEvent);
         }
 
         private void OnDisable()
         {
-            var type = m_element.ElementType;
-            for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Unregister(type);
+            if (_callbackEvent == null) return;
+            for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Unregister(_callbackEvent);
         }
 
         internal override void SetElement(GameFlowElement value, Type type)
         {
             if (m_element != null && type != m_element.GetType()) return;
+
+            var wasRegistered = _callbackEvent != null && isActiveAndEnabled;
+            if (wasRegistered)
+            {
+                for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Unregister(_callbackEvent);
+            }
+
             m_element = value;
+            m_element.EnsureCallbackEvent();
+            _callbackEvent = m_element.CallbackEvent;
+
+            if (wasRegistered)
+            {
+                for (var i = m_delegates.Count - 1; i >= 0; i--) m_delegates[i].Register(_callbackEvent);
+            }
         }
     }
 }

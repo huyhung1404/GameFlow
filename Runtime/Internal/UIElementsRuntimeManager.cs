@@ -67,7 +67,7 @@ namespace GameFlow.Internal
 
         private void ReleaseElement(UIFlowElement element, ReleaseCount releaseCount)
         {
-            FlowObservable.Event(element.GetType()).RaiseOnRelease(true);
+            element.CallbackEvent?.RaiseOnRelease(true);
             switch (element.ReleaseMode)
             {
                 default:
@@ -84,9 +84,11 @@ namespace GameFlow.Internal
 
         internal void OnKeyBack()
         {
-            var type = GetTopElement();
-            if (type == null) return;
-            FlowObservable.UIEvent(type).RaiseOnKeyBack();
+            var elementCount = ElementsRuntime.Count;
+            if (elementCount == 0) return;
+            var topElement = ElementsRuntime[elementCount - 1];
+            if (topElement.CallbackEvent is UIElementCallbackEvent uiEvent)
+                uiEvent.RaiseOnKeyBack();
         }
 
         internal class ReleaseCount : IReleaseCompleted
