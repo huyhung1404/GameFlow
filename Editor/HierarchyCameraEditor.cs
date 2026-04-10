@@ -22,8 +22,8 @@ namespace GameFlow.Editor
             var prefab = PrefabStageUtility.GetCurrentPrefabStage();
 
 #if UNITY_6000_0_OR_NEWER
-            var controller = prefab == null 
-                ? FindObjectsByType<GameFlowUICanvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None) 
+            var controller = prefab == null
+                ? FindObjectsByType<GameFlowUICanvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
                 : prefab.prefabContentsRoot.GetComponentsInChildren<GameFlowUICanvas>();
 #else
             var controller = prefab == null
@@ -39,9 +39,8 @@ namespace GameFlow.Editor
             {
                 var canvas = uiCanvas.GetCanvas();
                 if (canvas == null) continue;
-
-                canvas.renderMode = RenderMode.ScreenSpaceCamera;
-
+                canvas.planeDistance = managerAsset.PlaneDistance;
+                canvas.vertexColorAlwaysGammaSpace = managerAsset.VertexColorAlwaysGammaSpace;
                 var scale = canvas.GetComponent<CanvasScaler>();
                 if (scale != null)
                 {
@@ -49,7 +48,6 @@ namespace GameFlow.Editor
                 }
 
                 if (canvas.worldCamera != null) continue;
-
                 canvas.worldCamera = InitializationCamera(uiCanvas);
             }
         }

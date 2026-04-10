@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6673496399411173317
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5117071871698072443}
+  - component: {fileID: 5474865091902933012}
+  m_Layer: 0
+  m_Name: TemplateGameFlowElement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5117071871698072443
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673496399411173317}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5474865091902933012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6673496399411173317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d497ae3a5b8ca441a76568a10670981, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.huyhung1404.gameflow::GameFlow.Component.FlowEventListener
+  m_element: {fileID: 0}
+  m_delegates:
+  - rid: 8153341843243270211
+  - rid: 8153341843243270212
+  references:
+    version: 2
+    RefIds:
+    - rid: 8153341843243270211
+      type: {class: FlowEventListener/OnActiveEntry, ns: GameFlow.Component, asm: com.huyhung1404.gameflow}
+      data:
+        EventID: 0
+        Callback:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 6673496399411173317}
+              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+              m_MethodName: SetActive
+              m_Mode: 6
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 1
+              m_CallState: 2
+    - rid: 8153341843243270212
+      type: {class: FlowEventListener/OnReleaseEntry, ns: GameFlow.Component, asm: com.huyhung1404.gameflow}
+      data:
+        EventID: 5
+        Callback:
+          m_PersistentCalls:
+            m_Calls:
+            - m_Target: {fileID: 6673496399411173317}
+              m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+              m_MethodName: SetActive
+              m_Mode: 6
+              m_Arguments:
+                m_ObjectArgument: {fileID: 0}
+                m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+                m_IntArgument: 0
+                m_FloatArgument: 0
+                m_StringArgument: 
+                m_BoolArgument: 0
+              m_CallState: 2
