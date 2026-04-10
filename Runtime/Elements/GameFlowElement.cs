@@ -13,10 +13,17 @@ namespace GameFlow
         [SerializeField] internal ElementReleaseMode ReleaseMode;
         [SerializeField] internal ElementActiveMode ActiveMode = ElementActiveMode.ReActive;
 
+        internal ElementCallbackEvent CallbackEvent { get; set; }
+
         private void OnEnable()
         {
             ElementType = GetType();
             hideFlags = HideFlags.DontUnloadUnusedAsset;
+        }
+
+        internal void EnsureCallbackEvent()
+        {
+            CallbackEvent ??= FlowObservable.Event(ElementType);
         }
 
         internal string GetInfo()

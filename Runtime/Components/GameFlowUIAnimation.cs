@@ -11,7 +11,8 @@ namespace GameFlow.Component
 
         protected virtual void Awake()
         {
-            _delegates = FlowObservable.UIEvent(m_element.GetType());
+            m_element.EnsureCallbackEvent();
+            _delegates = (UIElementCallbackEvent)m_element.CallbackEvent;
         }
 
         protected virtual void OnEnable()
@@ -51,7 +52,23 @@ namespace GameFlow.Component
         {
             if (m_element != null && type != m_element.GetType()) return;
             if (value is not UIFlowElement uiElement) return;
+
+            var wasSubscribed = _delegates != null && isActiveAndEnabled;
+            if (wasSubscribed)
+            {
+                _delegates.OnActive -= OnShow;
+                _delegates.OnHide -= OnHide;
+            }
+
             m_element = uiElement;
+            m_element.EnsureCallbackEvent();
+            _delegates = (UIElementCallbackEvent)m_element.CallbackEvent;
+
+            if (wasSubscribed)
+            {
+                _delegates.OnActive += OnShow;
+                _delegates.OnHide += OnHide;
+            }
         }
     }
 }

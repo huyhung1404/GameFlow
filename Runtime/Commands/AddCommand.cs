@@ -160,7 +160,7 @@ namespace GameFlow
         {
             if (!_callbackOnRelease) return;
             OnLoadResult(BaseElement.RuntimeInstance);
-            var delegates = FlowObservable.Event(_elementType);
+            var delegates = BaseElement.CallbackEvent;
             if (!ReferenceEquals(ActiveData, null)) delegates.RaiseOnActiveWithData(ActiveData);
             delegates.RaiseOnActive();
         }

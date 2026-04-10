@@ -125,7 +125,7 @@ namespace GameFlow
         {
             if (!_callbackOnRelease) return;
             OnLoadResult(_clone.RuntimeInstance());
-            var delegates = FlowObservable.Event(_elementType);
+            var delegates = _clone.CloneElementInstance().CallbackEvent;
             if (!ReferenceEquals(_baseCommand.ActiveData, null)) delegates.RaiseOnActiveWithData(_baseCommand.ActiveData);
             delegates.RaiseOnActive();
         }

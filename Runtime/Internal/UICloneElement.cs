@@ -15,6 +15,7 @@ namespace GameFlow.Internal
             _cloneElement.Reference = baseElement.Reference;
             _cloneElement.ReleaseMode = ElementReleaseMode.ReleaseOnClose;
             _cloneElement.ActiveMode = baseElement.ActiveMode;
+            _cloneElement.CallbackEvent = new UIElementCallbackEvent();
         }
 
         internal override GameFlowElement CloneElementInstance() => _cloneElement;
