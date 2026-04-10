@@ -14,6 +14,7 @@ namespace GameFlow.Internal
         internal override void SetUp()
         {
             _transparent = GetComponent<Image>();
+            _transparent.color = Color.clear;
             _transparent.raycastTarget = true;
             _transparent.enabled = IsShieldEnabled;
             SetUpCanvas();
