@@ -7,24 +7,20 @@ namespace GameFlow
     {
         private UIFlowElement _element;
         protected override GameFlowElement BaseElement { get => _element; set => _element = (UIFlowElement)value; }
-        private UIElementCallbackEvent _delegates;
+        private readonly UIElementCallbackEvent _delegates;
 
         public ReleaseUIElementCommand(Type elementType) : base(elementType)
         {
+            _delegates = FlowObservable.UIEvent(elementType);
         }
 
         internal override void PreUpdate()
         {
             _element = Context.UIElementsRuntime.GetElement(_elementType);
-            if (!_element)
-            {
-                ErrorHandle.LogWarning($"Element type {_elementType.Name} is not exists in pool");
-                OnReleaseResult(false);
-                _isExecute = true;
-                return;
-            }
-
-            _delegates = (UIElementCallbackEvent)_element.CallbackEvent;
+            if (_element) return;
+            ErrorHandle.LogWarning($"Element type {_elementType.Name} is not exists in pool");
+            OnReleaseResult(false);
+            _isExecute = true;
         }
 
         protected override void HandleRelease()
@@ -71,11 +67,9 @@ namespace GameFlow
         {
             if (!_callbackOnRelease) return;
             base.OnRelease();
-            var elements = Context.UIElementsRuntime.ElementsRuntime;
-            if (elements.Count == 0) return;
-            var topElement = elements[elements.Count - 1];
-            if (topElement.CallbackEvent is UIElementCallbackEvent uiEvent)
-                uiEvent.RaiseOnReFocus();
+            var topElement = Context.UIElementsRuntime.GetTopElement();
+            if (topElement == null) return;
+            FlowObservable.UIEvent(topElement).RaiseOnReFocus();
         }
     }
 }

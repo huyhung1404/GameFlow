@@ -33,7 +33,7 @@ namespace GameFlow.Component
 
         protected void OnShowCompleted()
         {
-            _delegates.RaiseOnShowCompleted();
+            FlowObservable.UIEvent(m_element.ElementType).RaiseOnShowCompleted();
         }
 
         protected void OnHideCompleted()

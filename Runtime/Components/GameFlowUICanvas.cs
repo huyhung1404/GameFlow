@@ -22,8 +22,7 @@ namespace GameFlow.Component
         protected void GetComponentsIfNeed()
         {
             if (_isGotComponents) return;
-            m_element.EnsureCallbackEvent();
-            _delegates = (UIElementCallbackEvent)m_element.CallbackEvent;
+            _delegates = FlowObservable.UIEvent(m_element.ElementType);
             if (m_autoGetComponent) m_canvas = GetComponent<Canvas>();
             _canvasScale = m_canvas.GetComponent<CanvasScaler>();
             _rectTransform = m_canvas.GetComponent<RectTransform>();
@@ -102,16 +101,7 @@ namespace GameFlow.Component
         {
             if (m_element != null && type != m_element.GetType()) return;
             if (value is not UIFlowElement uiElement) return;
-
-            var wasRegistered = _delegates != null && isActiveAndEnabled;
-            if (wasRegistered) _delegates.UnregisterListener(this);
-
             m_element = uiElement;
-            m_element.EnsureCallbackEvent();
-            _delegates = (UIElementCallbackEvent)m_element.CallbackEvent;
-            _isGotComponents = false;
-
-            if (wasRegistered) _delegates.RegisterListener(this);
         }
     }
 }

@@ -13,8 +13,7 @@ namespace GameFlow
 
         protected override void ReActiveElement()
         {
-            BaseElement.EnsureCallbackEvent();
-            BaseElement.CallbackEvent.RaiseOnRelease(true);
+            FlowObservable.Event(_elementType).RaiseOnRelease(true);
             BaseElement.RuntimeInstance.SetActive(false);
             BaseElement.RuntimeInstance.SetActive(true);
             _callbackOnRelease = true;
@@ -23,7 +22,6 @@ namespace GameFlow
 
         protected override void ActiveElement()
         {
-            BaseElement.EnsureCallbackEvent();
             BaseElement.RuntimeInstance.SetActive(true);
             Context.ElementsRuntime.AddElement(BaseElement);
             _callbackOnRelease = true;
