@@ -17,6 +17,12 @@ namespace GameFlow.Editor
             GameFlowViewerEditorWindow.OpenWindow();
         }
 
+        [MenuItem("GameFlow/Configs", priority = 2)]
+        public static void OpenConfigs()
+        {
+            GameFlowConfigsEditorWindow.OpenWindow();
+        }
+
         [MenuItem("GameFlow/Documentation")]
         public static void OpenDocumentation()
         {

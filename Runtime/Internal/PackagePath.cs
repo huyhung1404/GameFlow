@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GameFlow.Internal
 {
@@ -18,26 +17,41 @@ namespace GameFlow.Internal
         private const string k_assetsElementsFolderName = "GameFlowElements";
         private const string k_assetsUserInterfaceElementsFolderName = "UserInterfaceFlowElements";
         private const string k_assetSOFolderName = "ElementControllers";
+        internal const string k_ConfigResourceName = "GameFlowConfig.FolderPath";
+
+#if UNITY_EDITOR
+        internal static string s_editorFolderPath;
+#else
+        private static string s_cachedFolderPath;
+        private static bool s_isFolderPathLoaded;
+#endif
 
         internal static string ProjectFolderPath(PathType type = PathType.UnityPath)
         {
 #if UNITY_EDITOR
-            var folderParentName = EditorPrefs.GetString("com.huyhung1404.gameflow.folderParentName", string.Empty);
+            var folderPath = s_editorFolderPath;
+#else
+            var folderPath = LoadFolderPathFromResources();
+#endif
             if (type == PathType.UnityPath)
             {
-                return $"Assets/{folderParentName}{k_defaultProjectFolderName}";
+                return $"Assets/{folderPath}{k_defaultProjectFolderName}";
             }
 
-            return $"{Application.dataPath}/{folderParentName}{k_defaultProjectFolderName}";
-#else
-             if (type == PathType.UnityPath)
-             {
-                 return $"Assets/{k_defaultProjectFolderName}";
-             }
- 
-             return $"{Application.dataPath}/{k_defaultProjectFolderName}";
-#endif
+            return $"{Application.dataPath}/{folderPath}{k_defaultProjectFolderName}";
         }
+
+#if !UNITY_EDITOR
+        private static string LoadFolderPathFromResources()
+        {
+            if (s_isFolderPathLoaded) return s_cachedFolderPath;
+            s_isFolderPathLoaded = true;
+
+            var textAsset = Resources.Load<TextAsset>(k_ConfigResourceName);
+            s_cachedFolderPath = textAsset != null ? textAsset.text : null;
+            return s_cachedFolderPath;
+        }
+#endif
 
         internal static string ManagerPath(PathType type = PathType.UnityPath)
         {

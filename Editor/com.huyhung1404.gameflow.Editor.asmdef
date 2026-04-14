@@ -4,7 +4,8 @@
     "references": [
         "com.huyhung1404.gameflow",
         "Unity.Addressables",
-        "Unity.Addressables.Editor"
+        "Unity.Addressables.Editor",
+        "Unity.AutoGroupGenerator.Editor"
     ],
     "includePlatforms": [
         "Editor"
@@ -17,6 +18,12 @@
     "defineConstraints": [
         "UNITY_EDITOR"
     ],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.addressables",
+            "expression": "2.9.1",
+            "define": "AUTO_GROUP_GENERATOR"
+        }
+    ],
     "noEngineReferences": false
 }

@@ -22,7 +22,7 @@ namespace GameFlow.Editor
                 assetPath.Contains("GameFlow_ExcludeFromBuild.asset") || 
                 assetPath.Contains("GameFlowManager.asset"))
             {
-                Debug.LogError("[GameFlow System] Access Denied! This Addressable Group is hard-locked by code. Deletion is blocked! ⛔");
+                Debug.LogError("[GameFlow System] Access Denied! This Addressable Group is hard-locked by code. Deletion is blocked!");
                 return AssetDeleteResult.FailedDelete; 
             }
 
@@ -38,8 +38,17 @@ namespace GameFlow.Editor
         private const string k_controllerName = "GameFlowManager";
 
         private static bool s_isInternalModifying;
-        private static bool s_isSystemLocked = true;
-        
+
+        private static bool s_isSystemLocked
+        {
+            get => !Configs.instance.AddressableFolderUnlock;
+            set
+            {
+                Configs.instance.AddressableFolderUnlock = !value;
+                Configs.instance.SaveData();
+            }
+        }
+
         private static Dictionary<string, HashSet<string>> s_lockedGroupCache = new Dictionary<string, HashSet<string>>();
 
         public static bool IsSystemLocked => s_isSystemLocked;
@@ -79,7 +88,7 @@ namespace GameFlow.Editor
             }
 
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true);
-            Debug.LogWarning("[GameFlow System] Addressables System is UNLOCKED. Manual modifications are now allowed. ⚠️");
+            Debug.LogWarning("[GameFlow System] Addressables System is UNLOCKED. Manual modifications are now allowed.");
         }
         
         public static void LockSystem()
@@ -95,7 +104,7 @@ namespace GameFlow.Editor
             UpdateSnapshotCache(settings);
             
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true);
-            Debug.Log("[GameFlow System] Addressables System is LOCKED. Security protocols re-activated. 🛡️");
+            Debug.Log("[GameFlow System] Addressables System is LOCKED. Security protocols re-activated.");
         }
 
         private static void InitializeSystem()

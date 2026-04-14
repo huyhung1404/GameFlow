@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GameFlow.Component;
+using GameFlow.Editor;
 using GameFlow.Internal;
 using UnityEngine;
 using UnityEditor;
@@ -31,7 +32,7 @@ namespace GameFlow.Tests.Build
 
         public static void PresetResources()
         {
-            EditorPrefs.SetString("com.huyhung1404.gameflow.folderParentName", k_FolderParentName + "/");
+            PackagePath.s_editorFolderPath = k_FolderParentName + "/";
 #if UNITY_EDITOR
             AddressableAssetIsAvailable();
 #endif
@@ -47,7 +48,7 @@ namespace GameFlow.Tests.Build
 
         public static void CleanupResources()
         {
-            EditorPrefs.SetString("com.huyhung1404.gameflow.folderParentName", string.Empty);
+            PackagePath.s_editorFolderPath = Configs.instance.FolderPath;
             AssetDatabase.Refresh();
         }
 
