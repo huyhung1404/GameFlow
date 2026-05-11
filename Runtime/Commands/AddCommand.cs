@@ -10,6 +10,7 @@ namespace GameFlow
     {
         internal LoadingId? LoadingId;
         internal bool IsPreload;
+        internal bool ActiveSceneOnLoadCompleted = true;
         internal object ActiveData;
         internal OnAddCommandCompleted OnCompleted;
         internal ReferenceActiveHandle ActiveHandle;
@@ -173,6 +174,7 @@ namespace GameFlow
 <b><size=11>activeData:</size></b> {ActiveData}
 <b><size=11>onCompleted:</size></b> {OnCompleted?.Target}.{OnCompleted?.Method.Name}
 <b><size=11>activeHandle:</size></b> {ActiveHandle}
+<b><size=11>activeSceneOnLoadCompleted:</size></b> {ActiveSceneOnLoadCompleted}
 <b><size=11>callbackOnRelease:</size></b> {_callbackOnRelease}
 <b><size=11>isExecute:</size></b> {_isExecute}
 <b><size=11>isLoadingOn:</size></b> {_isLoadingOn}

@@ -94,6 +94,8 @@ namespace GameFlow
             {
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
+                    if (command.ActiveSceneOnLoadCompleted)
+                        SceneManager.SetActiveScene(handle.Result.Scene);
                     var elementHandle = MoveGameObjectToScene(handle, command.ReleaseMode());
                     command.HandleReferencePrefab(elementHandle.gameObject);
                     return;

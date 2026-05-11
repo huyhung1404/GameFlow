@@ -192,6 +192,12 @@ namespace GameFlow
             return command;
         }
 
+        public static AddCommand ActiveSceneOnLoadCompleted(this AddCommand command, bool value)
+        {
+            command.ActiveSceneOnLoadCompleted = value;
+            return command;
+        }
+
         public static AddCommand OnCompleted(this AddCommand command, OnAddCommandCompleted completed)
         {
             command.OnCompleted = completed;

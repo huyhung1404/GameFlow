@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 
 namespace GameFlow
 {
@@ -54,6 +55,8 @@ namespace GameFlow
             if (_status != ActiveHandleStatus.Succeeded) return false;
             _resultInstance.ActivateAsync().completed += _ =>
             {
+                if (_command.ActiveSceneOnLoadCompleted)
+                    SceneManager.SetActiveScene(_resultInstance.Scene);
                 _onCompleted?.Invoke(_resultInstance);
                 _onCompleted = null;
                 _command.HandleReferencePrefab(_elementHandle);
