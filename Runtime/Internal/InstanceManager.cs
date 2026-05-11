@@ -4,6 +4,7 @@ using GameFlow.Component;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace GameFlow.Internal
@@ -181,7 +182,7 @@ namespace GameFlow.Internal
             var runtimeControllerObj = new GameObject("[Auto] Flow Controller");
             var controller = runtimeControllerObj.AddComponent<GameFlowRuntimeController>();
 
-            CreateCameras(context);
+            CreateCameras(context, runtimeControllerObj.scene);
             CreateLoadingController(context);
 
             var elementContainer = new GameObject("Element Container");
@@ -193,12 +194,12 @@ namespace GameFlow.Internal
             controller.SetContainer(elementContainer.transform, uiElementContainer.transform);
         }
 
-        private static void CreateCameras(GameFlowContext context)
+        private static void CreateCameras(GameFlowContext context, Scene persistentScene)
         {
             var camerasData = context.Manager.AutoGenerateRuntimeManagerData.Cameras;
             if (camerasData == null || camerasData.Length == 0) return;
             var camera = new GameObject("[Auto] Cameras");
-            Object.DontDestroyOnLoad(camera);
+            SceneManager.MoveGameObjectToScene(camera, persistentScene);
             foreach (var cameraData in camerasData)
             {
                 var instance = Object.Instantiate(cameraData.CameraPrefab, camera.transform);

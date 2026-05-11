@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using GameFlow.Component;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GameFlow.Internal
 {
     [AddComponentMenu("Game Flow/Runtime Controller")]
     internal class GameFlowRuntimeController : MonoBehaviour
     {
-        [SerializeField] private bool m_dontDestroyOnLoad = true;
+        [SerializeField] private bool m_createScene = true;
         [SerializeField] private Transform m_elementContainer;
         [SerializeField] private Transform m_uiElementContainer;
 
@@ -62,7 +63,12 @@ namespace GameFlow.Internal
 
         private void Initialization()
         {
-            if (m_dontDestroyOnLoad) DontDestroyOnLoad(gameObject);
+            if (m_createScene)
+            {
+                var persistentScene = SceneManager.CreateScene("[Auto] GameFlow");
+                SceneManager.MoveGameObjectToScene(gameObject, persistentScene);
+            }
+
             InstanceManager.SetInstance(this);
             InstanceManager.ConfirmIsInitialized(OnContextReady);
         }
