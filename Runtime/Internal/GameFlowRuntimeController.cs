@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameFlow.Component;
@@ -14,10 +15,13 @@ namespace GameFlow.Internal
         [SerializeField] private Transform m_uiElementContainer;
 
         private readonly Queue<Command> _commands = new Queue<Command>(5);
+        private readonly Queue<Command> _priorityCommands = new Queue<Command>(5);
         private Command _current;
+        private Command _priorityCurrent;
         private GameFlowContext _context;
         private bool _isLock;
         private bool _disableKeyBack;
+        private Action _onPriorityCompleted;
         internal bool NeedUpdateBanner;
         internal OnBannerUpdate OnBannerUpdateEvent;
 
@@ -134,6 +138,19 @@ namespace GameFlow.Internal
             _commands.Enqueue(command);
         }
 
+        internal void AddPriorityCommands(List<Command> commands, Action onCompleted)
+        {
+            foreach (var command in commands)
+            {
+#if UNITY_EDITOR
+                Command.s_WaitBuildCommands.Remove(command);
+#endif
+                _priorityCommands.Enqueue(command);
+            }
+
+            _onPriorityCompleted = onCompleted;
+        }
+
         internal void OverrideCurrentCommand(CloneCommand command)
         {
             if (_current != null && !_current.IsRelease)
@@ -148,6 +165,8 @@ namespace GameFlow.Internal
 
         private bool CommandHandle()
         {
+            if (HandlePriorityCommands()) return false;
+
             if (_current != null)
             {
                 _current.Update();
@@ -163,6 +182,31 @@ namespace GameFlow.Internal
             _current.Context = _context;
             _current.PreUpdate();
             return false;
+        }
+
+        private bool HandlePriorityCommands()
+        {
+            if (_priorityCurrent == null && _priorityCommands.Count == 0) return false;
+
+            if (_priorityCurrent != null)
+            {
+                _priorityCurrent.Update();
+                if (!_priorityCurrent.IsRelease) return true;
+                _priorityCurrent.OnRelease();
+                _priorityCurrent = null;
+            }
+
+            if (_priorityCommands.Count == 0)
+            {
+                _onPriorityCompleted?.Invoke();
+                _onPriorityCompleted = null;
+                return false;
+            }
+
+            _priorityCurrent = _priorityCommands.Dequeue();
+            _priorityCurrent.Context = _context;
+            _priorityCurrent.PreUpdate();
+            return true;
         }
 
         internal void AssertCommandsEmpty()

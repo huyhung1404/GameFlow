@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GameFlow.Internal;
 using UnityEngine;
 using UnityEngine.ResourceManagement.ResourceProviders;
@@ -93,7 +94,24 @@ namespace GameFlow
         {
             if (_status != ActiveHandleStatus.Succeeded) return false;
             var context = GameFlowContext.Current;
-            context?.UIElementsRuntime.ReleaseAllElement(() => base.ActiveScene());
+            if (context == null) return false;
+
+            var elements = context.UIElementsRuntime.ElementsRuntime;
+            if (elements.Count == 0)
+            {
+                base.ActiveScene();
+                return true;
+            }
+
+            var commands = new List<Command>(elements.Count);
+            for (var i = 0; i < elements.Count; i++)
+            {
+                var releaseCommand = new ReleaseUIElementCommand(elements[i].ElementType);
+                releaseCommand.IgnoreAnimationHide = true;
+                commands.Add(releaseCommand);
+            }
+
+            context.RuntimeController.AddPriorityCommands(commands, () => base.ActiveScene());
             return true;
         }
     }
