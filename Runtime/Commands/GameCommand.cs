@@ -92,6 +92,11 @@ namespace GameFlow
 
     public static class FlowInfo
     {
+        public static bool IsInitialized()
+        {
+            return GameFlowContext.Current?.RuntimeController != null;
+        }
+
         public static int CurrentCanvasCount()
         {
             var context = GameFlowContext.Current;
