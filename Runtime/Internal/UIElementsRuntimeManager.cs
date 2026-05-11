@@ -20,12 +20,6 @@ namespace GameFlow.Internal
             ElementsRuntime.Add(userInterfaceFlowElement);
         }
 
-        internal Type GetTopElement()
-        {
-            var elementCount = ElementsRuntime.Count;
-            return elementCount == 0 ? null : ElementsRuntime[elementCount - 1].ElementType;
-        }
-
         internal int GetSortingOrder()
         {
             var elementCount = ElementsRuntime.Count;
@@ -47,39 +41,6 @@ namespace GameFlow.Internal
         internal void RemoveElement(UIFlowElement element)
         {
             ElementsRuntime.Remove(element);
-        }
-
-        internal void ReleaseAllElement(Action onReleaseCompleted)
-        {
-            var elementCount = ElementsRuntime.Count;
-            if (elementCount == 0)
-            {
-                onReleaseCompleted?.Invoke();
-                return;
-            }
-
-            var releaseCount = new ReleaseCount(onReleaseCompleted, elementCount);
-            for (var i = ElementsRuntime.Count - 1; i >= 0; i--)
-            {
-                ReleaseElement(ElementsRuntime[i], releaseCount);
-            }
-        }
-
-        private void ReleaseElement(UIFlowElement element, ReleaseCount releaseCount)
-        {
-            element.CallbackEvent?.RaiseOnRelease(true);
-            switch (element.ReleaseMode)
-            {
-                default:
-                case ElementReleaseMode.ReleaseOnClose:
-                case ElementReleaseMode.ReleaseOnCloseIncludeCallback:
-                    element.Reference.ReleaseHandlePrefab(element.RuntimeInstance, releaseCount);
-                    break;
-                case ElementReleaseMode.NoneRelease:
-                    element.RuntimeInstance.SetActive(false);
-                    releaseCount.Count();
-                    break;
-            }
         }
 
         internal void OnKeyBack()
