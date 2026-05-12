@@ -23,6 +23,9 @@ namespace GameFlow
 
         internal void EnsureCallbackEvent()
         {
+#if UNITY_EDITOR
+            if (!Application.isPlaying) return;
+#endif
             CallbackEvent ??= FlowObservable.Event(ElementType);
         }
 
