@@ -32,4 +32,19 @@ namespace GameFlow
             Release();
         }
     }
+
+    internal sealed class AddUICommand<TData> : AddUICommand
+    {
+        private readonly TData _data;
+
+        internal AddUICommand(Type elementType, TData data) : base(elementType)
+        {
+            _data = data;
+        }
+
+        internal override void RaiseActiveData(ElementCallbackEvent delegates) => delegates.RaiseOnActiveWithData(_data);
+#if UNITY_EDITOR
+        internal override string GetActiveDataInfo() => _data?.ToString() ?? "null";
+#endif
+    }
 }

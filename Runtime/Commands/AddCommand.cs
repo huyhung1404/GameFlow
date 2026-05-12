@@ -11,7 +11,6 @@ namespace GameFlow
         internal LoadingId? LoadingId;
         internal bool IsPreload;
         internal bool ActiveSceneOnLoadCompleted = true;
-        internal object ActiveData;
         internal OnAddCommandCompleted OnCompleted;
         internal ReferenceActiveHandle ActiveHandle;
         protected bool _callbackOnRelease;
@@ -146,6 +145,8 @@ namespace GameFlow
             ActiveElement();
         }
 
+        internal virtual void RaiseActiveData(ElementCallbackEvent delegates) { }
+        internal virtual string GetActiveDataInfo() => "null";
         protected abstract void ReActiveElement();
         protected abstract void ActiveElement();
 
@@ -162,7 +163,7 @@ namespace GameFlow
             if (!_callbackOnRelease) return;
             OnLoadResult(BaseElement.RuntimeInstance);
             var delegates = BaseElement.CallbackEvent;
-            if (!ReferenceEquals(ActiveData, null)) delegates.RaiseOnActiveWithData(ActiveData);
+            RaiseActiveData(delegates);
             delegates.RaiseOnActive();
         }
 
@@ -171,7 +172,7 @@ namespace GameFlow
             return $@"<b><size=11>isRelease:</size></b> {IsRelease}
 <b><size=11>loadingId:</size></b> {LoadingId}
 <b><size=11>isPreload:</size></b> {IsPreload}
-<b><size=11>activeData:</size></b> {ActiveData}
+<b><size=11>activeData:</size></b> {GetActiveDataInfo()}
 <b><size=11>onCompleted:</size></b> {OnCompleted?.Target}.{OnCompleted?.Method.Name}
 <b><size=11>activeHandle:</size></b> {ActiveHandle}
 <b><size=11>activeSceneOnLoadCompleted:</size></b> {ActiveSceneOnLoadCompleted}
@@ -181,4 +182,5 @@ namespace GameFlow
 <b><size=11>isUserInterface:</size></b> {this is AddUICommand}";
         }
     }
+
 }

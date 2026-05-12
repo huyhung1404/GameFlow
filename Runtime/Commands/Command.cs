@@ -30,7 +30,7 @@ namespace GameFlow
         
         internal bool IsRelease { get; private set; }
         internal GameFlowContext Context { get; set; }
-        protected readonly Type _elementType;
+        internal readonly Type _elementType;
 
         protected Command(Type elementType)
         {

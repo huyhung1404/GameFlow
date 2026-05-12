@@ -8,10 +8,6 @@ namespace GameFlow
         {
         }
 
-        public virtual void OnActiveWithData(object data)
-        {
-        }
-
         public virtual void OnRelease(bool isReleaseImmediately)
         {
         }
@@ -22,11 +18,6 @@ namespace GameFlow
 
         public virtual void OnReFocus()
         {
-        }
-
-        protected T Convert<T>(object data)
-        {
-            return (T)data;
         }
     }
 }

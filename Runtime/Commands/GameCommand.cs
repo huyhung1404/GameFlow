@@ -14,6 +14,14 @@ namespace GameFlow
             return Add(typeof(T));
         }
 
+        public static AddCommand Add<TElement, TData>(TData data) where TElement : GameFlowElement
+        {
+            var type = typeof(TElement);
+            return type.IsSubclassOf(s_UIElementType)
+                ? new AddUICommand<TData>(type, data)
+                : new AddGameFlowCommand<TData>(type, data);
+        }
+
         public static AddCommand Add(Type type)
         {
             return type.IsSubclassOf(s_UIElementType) ? new AddUICommand(type) : new AddGameFlowCommand(type);
@@ -22,6 +30,11 @@ namespace GameFlow
         public static LoadCommand Load<T>() where T : UIFlowElement
         {
             return Load(typeof(T));
+        }
+
+        public static LoadCommand Load<TElement, TData>(TData data) where TElement : UIFlowElement
+        {
+            return new LoadCommand<TData>(typeof(TElement), data);
         }
 
         public static LoadCommand Load(Type type)
@@ -201,12 +214,6 @@ namespace GameFlow
         public static AddCommand OnCompleted(this AddCommand command, OnAddCommandCompleted completed)
         {
             command.OnCompleted = completed;
-            return command;
-        }
-
-        public static AddCommand ActiveData(this AddCommand command, object data)
-        {
-            command.ActiveData = data;
             return command;
         }
 

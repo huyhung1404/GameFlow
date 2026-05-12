@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GameFlow.Internal;
@@ -11,6 +11,7 @@ namespace GameFlow
         protected OnActive _onActive;
         protected OnActiveWithData _onActiveWithData;
         protected OnRelease _onRelease;
+        private Dictionary<Type, Delegate> _typedActiveWithData;
         public event OnActive OnActive { add => _onActive += value; remove => _onActive -= value; }
         public event OnActiveWithData OnActiveWithData { add => _onActiveWithData += value; remove => _onActiveWithData -= value; }
         public event OnRelease OnRelease { add => _onRelease += value; remove => _onRelease -= value; }
@@ -24,6 +25,26 @@ namespace GameFlow
         public void UnregisterListener(IFlowListener listener)
         {
             _listeners?.Remove(listener);
+        }
+
+        public void AddOnActiveWithData<T>(Action<T> handler)
+        {
+            _typedActiveWithData ??= new Dictionary<Type, Delegate>();
+            var type = typeof(T);
+            if (_typedActiveWithData.TryGetValue(type, out var existing))
+                _typedActiveWithData[type] = (Action<T>)existing + handler;
+            else
+                _typedActiveWithData[type] = handler;
+        }
+
+        public void RemoveOnActiveWithData<T>(Action<T> handler)
+        {
+            if (_typedActiveWithData == null) return;
+            var type = typeof(T);
+            if (!_typedActiveWithData.TryGetValue(type, out var existing)) return;
+            var result = (Action<T>)existing - handler;
+            if (result == null) _typedActiveWithData.Remove(type);
+            else _typedActiveWithData[type] = result;
         }
 
         internal void RaiseOnActive()
@@ -44,21 +65,27 @@ namespace GameFlow
             }
         }
 
-        internal void RaiseOnActiveWithData(object data)
+        internal void RaiseOnActiveWithData<T>(T data)
         {
             try
             {
+                if (_typedActiveWithData != null && _typedActiveWithData.TryGetValue(typeof(T), out var del))
+                    ((Action<T>)del)(data);
                 _onActiveWithData?.Invoke(data);
                 if (_listeners == null) return;
                 var count = _listeners.Count;
                 for (var i = 0; i < count; i++)
                 {
-                    _listeners[i].OnActiveWithData(data);
+                    if (_listeners[i] is IFlowDataListener<T> typedListener)
+                        typedListener.OnActiveWithData(data);
                 }
             }
             catch (Exception e)
             {
-                LogError(e, "OnActiveWithData", _onActiveWithData?.GetInvocationList());
+                Delegate[] typedDelegates = null;
+                if (_typedActiveWithData != null && _typedActiveWithData.TryGetValue(typeof(T), out var del))
+                    typedDelegates = del.GetInvocationList();
+                LogError(e, $"OnActiveWithData<{typeof(T).Name}>", typedDelegates, _onActiveWithData?.GetInvocationList());
             }
         }
 
@@ -87,6 +114,7 @@ namespace GameFlow
             listenerCount = _listeners?.Count ?? 0;
             if (_onActive != null) callbackCount++;
             if (_onActiveWithData != null) callbackCount++;
+            if (_typedActiveWithData is { Count: > 0 }) callbackCount++;
             if (_onRelease != null) callbackCount++;
         }
 
@@ -95,7 +123,19 @@ namespace GameFlow
             return GetListenerInfo() +
                    $"<b><size=11>OnActive</size></b>                    {(_onActive == null ? "Event: 0" : GetDelegatesInfo(_onActive.GetInvocationList()))}\n" +
                    $"<b><size=11>OnActiveWithData</size></b>    {(_onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(_onActiveWithData.GetInvocationList()))}\n" +
+                   GetTypedActiveWithDataInfo() +
                    $"<b><size=11>OnRelease</size></b>                 {(_onRelease == null ? "Event: 0" : GetDelegatesInfo(_onRelease.GetInvocationList()))}";
+        }
+
+        protected string GetTypedActiveWithDataInfo()
+        {
+            if (_typedActiveWithData == null || _typedActiveWithData.Count == 0) return "";
+            var info = "";
+            foreach (var kvp in _typedActiveWithData)
+            {
+                info += $"<b><size=11>OnActiveWithData<{kvp.Key.Name}></size></b> {GetDelegatesInfo(kvp.Value.GetInvocationList())}\n";
+            }
+            return info;
         }
 
         protected string GetListenerInfo()
@@ -120,7 +160,20 @@ namespace GameFlow
 
         protected void LogError(Exception e, string methodName, Delegate[] delegates)
         {
+            LogError(e, methodName, null, delegates);
+        }
+
+        protected void LogError(Exception e, string methodName, Delegate[] typedDelegates, Delegate[] delegates)
+        {
             var errorMessage = $"{methodName}:\n";
+            if (typedDelegates != null)
+            {
+                foreach (var method in typedDelegates)
+                {
+                    errorMessage += $"TypedDelegates: {method.Method}/{method.Target}\n";
+                }
+            }
+
             if (delegates != null)
             {
                 foreach (var method in delegates)
@@ -232,6 +285,7 @@ namespace GameFlow
             return GetListenerInfo() +
                    $"<b><size=11>OnActive</size></b>                       {(_onActive == null ? "Event: 0" : GetDelegatesInfo(_onActive.GetInvocationList()))}\n" +
                    $"<b><size=11>OnActiveWithData</size></b>       {(_onActiveWithData == null ? "Event: 0" : GetDelegatesInfo(_onActiveWithData.GetInvocationList()))}\n" +
+                   GetTypedActiveWithDataInfo() +
                    $"<b><size=11>OnShowCompleted</size></b>     {(_onShowCompleted == null ? "Event: 0" : GetDelegatesInfo(_onShowCompleted.GetInvocationList()))}\n" +
                    $"<b><size=11>OnHide</size></b>                          {(_onHide == null ? "Event: 0" : GetDelegatesInfo(_onHide.GetInvocationList()))}\n" +
                    $"<b><size=11>OnKeyBack</size></b>                    {(_onKeyBack == null ? "Event: 0" : GetDelegatesInfo(_onKeyBack.GetInvocationList()))}\n" +

@@ -58,4 +58,19 @@ namespace GameFlow
             return base.GetFullInfo() + $"\n<b><size=11>autoActive:</size></b> {AutoActive}";
         }
     }
+
+    internal sealed class LoadCommand<TData> : LoadCommand
+    {
+        private readonly TData _data;
+
+        internal LoadCommand(Type elementType, TData data) : base(elementType)
+        {
+            _data = data;
+        }
+
+        internal override void RaiseActiveData(ElementCallbackEvent delegates) => delegates.RaiseOnActiveWithData(_data);
+#if UNITY_EDITOR
+        internal override string GetActiveDataInfo() => _data?.ToString() ?? "null";
+#endif
+    }
 }

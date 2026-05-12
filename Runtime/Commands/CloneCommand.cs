@@ -126,7 +126,7 @@ namespace GameFlow
             if (!_callbackOnRelease) return;
             OnLoadResult(_clone.RuntimeInstance());
             var delegates = _clone.CloneElementInstance().CallbackEvent;
-            if (!ReferenceEquals(_baseCommand.ActiveData, null)) delegates.RaiseOnActiveWithData(_baseCommand.ActiveData);
+            _baseCommand.RaiseActiveData(delegates);
             delegates.RaiseOnActive();
         }
 
@@ -135,7 +135,7 @@ namespace GameFlow
             return $@"<b><size=11>Is Clone</size></b>
 <b><size=11>isRelease:</size></b> {IsRelease}
 <b><size=11>loadingId:</size></b> {_baseCommand.LoadingId}
-<b><size=11>activeData:</size></b> {_baseCommand.ActiveData}
+<b><size=11>activeData:</size></b> {_baseCommand.GetActiveDataInfo()}
 <b><size=11>onCompleted:</size></b> {_baseCommand.OnCompleted?.Target}.{_baseCommand.OnCompleted?.Method.Name}
 <b><size=11>callbackOnRelease:</size></b> {_callbackOnRelease}
 <b><size=11>isExecute:</size></b> {_isExecute}
