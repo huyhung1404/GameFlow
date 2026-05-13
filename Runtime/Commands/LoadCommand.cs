@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace GameFlow
 {
@@ -7,6 +8,7 @@ namespace GameFlow
         internal bool AutoActive;
         private bool _releasedOldElements;
         private bool _waitingForRelease;
+        private AsyncOperation _unloadOperation;
 
         internal LoadCommand(Type elementType) : base(elementType)
         {
@@ -36,6 +38,12 @@ namespace GameFlow
             }
 
             if (_waitingForRelease) return;
+            if (_unloadOperation != null)
+            {
+                if (!_unloadOperation.isDone) return;
+                _unloadOperation = null;
+            }
+
             base.Update();
         }
 
@@ -45,6 +53,7 @@ namespace GameFlow
             if (elements.Count == 0)
             {
                 _waitingForRelease = false;
+                _unloadOperation = Resources.UnloadUnusedAssets();
                 return;
             }
 
